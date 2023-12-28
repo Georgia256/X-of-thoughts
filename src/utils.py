@@ -361,7 +361,7 @@ def extract_code(response):
     extract python function from model response: def solution() ... return xxx
     """
     response = response.split("def solution")[-1]
-    response = response.split("### END ###")[0]
+    response = response.split("<END>")[0]
     response = "def solution" + response.strip()
     code = []
     for line in response.split("\n"):
