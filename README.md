@@ -1,4 +1,4 @@
-# XoT
+# Pattern Recognition Project - XoT
 
 Implementation for EMNLP 2023 [paper](https://arxiv.org/pdf/2310.14628.pdf):
 
@@ -10,7 +10,7 @@ Plan, Verify and Switch: Integrated Reasoning with Diverse X-of-Thoughts
 
 Install all the dependencies in the requirements.txt file:
 ```
-pip -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ## Run the code
