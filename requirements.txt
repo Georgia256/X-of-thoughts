@@ -6,3 +6,4 @@ wandb
 func_timeout
 numpy
 transformers
+einops
