@@ -53,6 +53,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     dataset_paths = {
+        'gsm_subset': 'data/gsm8k/test_subset.jsonl',
         'gsm': 'data/gsm8k/test.jsonl',
         'gsmhard': 'data/gsmhard.jsonl',
         'algebra': 'data/algebra/test.jsonl',
