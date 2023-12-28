@@ -168,114 +168,114 @@ def get_chat_response(args, input, key, org_id, n=1):
 
     while patience > 0:
         patience -= 1
-        try:
-            if args.model in [
-                "gpt-3.5-turbo",
-                "gpt-3.5-turbo-0301",
-                "gpt-3.5-turbo-0613",
-                "gpt-4-0613",
-            ]:
-                response = openai.ChatCompletion.create(
-                    model=args.model,
-                    api_key=key,
-                    messages=input,
-                    temperature=args.temperature,
-                    # max_tokens=args.max_tokens,
-                    n=n,
-                )
-                if n == 1:
-                    prediction = response["choices"][0]["message"]["content"].strip()
-                    if prediction != "" and prediction != None:
-                        return prediction
-                else:
-                    prediction = [
-                        choice["message"]["content"].strip()
-                        for choice in response["choices"]
-                    ]
-                    if prediction[0] != "" and prediction[0] != None:
-                        return prediction
-            elif args.model in ["phi-1_5", "phi-2"]:
-                completion_input = input[0]["content"] + "\n" + input[1]["content"]
-                torch.set_default_device("cuda")
-                if args.model == "phi-1_5":
-                    model = AutoModelForCausalLM.from_pretrained(
-                        "microsoft/phi-1_5", torch_dtype="auto", trust_remote_code=True
-                    )
-                    tokenizer = AutoTokenizer.from_pretrained(
-                        "microsoft/phi-1_5", trust_remote_code=True
-                    )
-                else:
-                    model = AutoModelForCausalLM.from_pretrained(
-                        "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
-                    )
-                    tokenizer = AutoTokenizer.from_pretrained(
-                        "microsoft/phi-2", trust_remote_code=True
-                    )
-                inputs = tokenizer(completion_input, return_tensors="pt")
-                input_ids = inputs.input_ids.to(model.device)
-                n_examples = len(input[1]["content"].split("<END>")) - 1
-                # attention_mask = inputs.attention_mask.to(model.device)
-                outputs = model.generate(
-                    input_ids=input_ids,
-                    # attention_mask=attention_mask,
-                    do_sample=True,
-                    top_p=0.35,
-                    top_k=50,
-                    temperature=0.9,
-                    max_length = math.ceil(input_ids.shape[1] * (1 + 1/(n_examples-1))),  # Adjust max_length as needed
-                    eos_token_id=tokenizer.eos_token_id,  # End of sequence token
-                    pad_token_id=tokenizer.eos_token_id,  # Pad token
-                    # no_repeat_ngram_size=10,
-                    return_dict_in_generate=True,
-                    output_scores=True,
-                )
-                text = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
-                final_text = process_output(completion_input, text)
-                return final_text
-
+        # try:
+        if args.model in [
+            "gpt-3.5-turbo",
+            "gpt-3.5-turbo-0301",
+            "gpt-3.5-turbo-0613",
+            "gpt-4-0613",
+        ]:
+            response = openai.ChatCompletion.create(
+                model=args.model,
+                api_key=key,
+                messages=input,
+                temperature=args.temperature,
+                # max_tokens=args.max_tokens,
+                n=n,
+            )
+            if n == 1:
+                prediction = response["choices"][0]["message"]["content"].strip()
+                if prediction != "" and prediction != None:
+                    return prediction
             else:
-                completion_input = input[0]["content"] + "\n" + input[1]["content"]
-                response = openai.Completion.create(
-                    engine=args.model,
-                    api_key=key,
-                    prompt=completion_input,
-                    temperature=args.temperature,
-                    max_tokens=1024,
-                    n=n,
-                    top_p=1.0,
-                    frequency_penalty=0.0,
-                    presence_penalty=0.0,
-                    # stop="\n\n\n\n",
+                prediction = [
+                    choice["message"]["content"].strip()
+                    for choice in response["choices"]
+                ]
+                if prediction[0] != "" and prediction[0] != None:
+                    return prediction
+        elif args.model in ["phi-1_5", "phi-2"]:
+            completion_input = input[0]["content"] + "\n" + input[1]["content"]
+            torch.set_default_device("cuda")
+            if args.model == "phi-1_5":
+                model = AutoModelForCausalLM.from_pretrained(
+                    "microsoft/phi-1_5", torch_dtype="auto", trust_remote_code=True
                 )
-                if n == 1:
-                    prediction = response["choices"][0]["text"].strip()
-                    if prediction != "" and prediction is not None:
-                        return prediction
-                else:
-                    prediction = [
-                        choice["text"].strip() for choice in response["choices"]
-                    ]
-                    if prediction[0] != "" and prediction[0] is not None:
-                        return prediction
+                tokenizer = AutoTokenizer.from_pretrained(
+                    "microsoft/phi-1_5", trust_remote_code=True
+                )
+            else:
+                model = AutoModelForCausalLM.from_pretrained(
+                    "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
+                )
+                tokenizer = AutoTokenizer.from_pretrained(
+                    "microsoft/phi-2", trust_remote_code=True
+                )
+            inputs = tokenizer(completion_input, return_tensors="pt")
+            input_ids = inputs.input_ids.to(model.device)
+            n_examples = len(input[1]["content"].split("<END>")) - 1
+            # attention_mask = inputs.attention_mask.to(model.device)
+            outputs = model.generate(
+                input_ids=input_ids,
+                # attention_mask=attention_mask,
+                do_sample=True,
+                top_p=0.35,
+                top_k=50,
+                temperature=0.9,
+                max_length = math.ceil(input_ids.shape[1] * (1 + 1/(n_examples-1))),  # Adjust max_length as needed
+                eos_token_id=tokenizer.eos_token_id,  # End of sequence token
+                pad_token_id=tokenizer.eos_token_id,  # Pad token
+                # no_repeat_ngram_size=10,
+                return_dict_in_generate=True,
+                output_scores=True,
+            )
+            text = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
+            final_text = process_output(completion_input, text)
+            return final_text
 
-        except openai.error.RateLimitError:
-            print("Rate limit error, waiting...")
-            time.sleep(3)
+        else:
+            completion_input = input[0]["content"] + "\n" + input[1]["content"]
+            response = openai.Completion.create(
+                engine=args.model,
+                api_key=key,
+                prompt=completion_input,
+                temperature=args.temperature,
+                max_tokens=1024,
+                n=n,
+                top_p=1.0,
+                frequency_penalty=0.0,
+                presence_penalty=0.0,
+                # stop="\n\n\n\n",
+            )
+            if n == 1:
+                prediction = response["choices"][0]["text"].strip()
+                if prediction != "" and prediction is not None:
+                    return prediction
+            else:
+                prediction = [
+                    choice["text"].strip() for choice in response["choices"]
+                ]
+                if prediction[0] != "" and prediction[0] is not None:
+                    return prediction
 
-        except openai.error.APIError:
-            print("API error, waiting...")
-            time.sleep(3)
-        except openai.error.APIConnectionError:
-            print("API Connection error, waiting...")
-            time.sleep(3)
+        # except openai.error.RateLimitError:
+        #     print("Rate limit error, waiting...")
+        #     time.sleep(3)
 
-        except openai.error.Timeout:
-            print("Timeout error, waiting...")
-            time.sleep(3)
+        # except openai.error.APIError:
+        #     print("API error, waiting...")
+        #     time.sleep(3)
+        # except openai.error.APIConnectionError:
+        #     print("API Connection error, waiting...")
+        #     time.sleep(3)
 
-        except openai.error.ServiceUnavailableError:
-            print("Service unavailable error, waiting...")
-            time.sleep(3)
+        # except openai.error.Timeout:
+        #     print("Timeout error, waiting...")
+        #     time.sleep(3)
+
+        # except openai.error.ServiceUnavailableError:
+        #     print("Service unavailable error, waiting...")
+        #     time.sleep(3)
     return ""
 
 
