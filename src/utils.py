@@ -160,7 +160,7 @@ def get_stepwise_exec_results(code, method="pot"):
     return new_code_statements
 
 
-@backoff.on_exception(backoff.expo, openai.error.RateLimitError)
+#@backoff.on_exception(backoff.expo, openai.error.RateLimitError)
 def get_chat_response(args, input, key, org_id, n=1):
     if org_id is not None:
         openai.organization = org_id
