@@ -1,7 +1,7 @@
 DATASET='gsm'
 MODEL='phi-2'
 RANGE_START=0
-RANGE_END=100
+RANGE_END=1
 
 
 # cot
