@@ -230,7 +230,9 @@ def get_chat_response(args, input, key, org_id, n=1):
                 output_scores=True,
             )
             text = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
+            print("Text: ", text)
             final_text = process_output(completion_input, text)
+            print("Final text: ", final_text)
             return final_text
 
         else:
