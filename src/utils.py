@@ -215,7 +215,7 @@ def get_chat_response(args, input, key, org_id, n=1):
             input_ids = inputs.input_ids.to(model.device)
             n_examples = len(input[1]["content"].split("<END>")) - 1
             if args.mode == "plan":
-                max_length = math.ceil(2.5*input_ids.shape[1])
+                max_length = math.ceil(3*input_ids.shape[1])
             else:
                 max_length = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
             # attention_mask = inputs.attention_mask.to(model.device)
