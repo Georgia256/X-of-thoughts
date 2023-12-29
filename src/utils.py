@@ -214,8 +214,10 @@ def get_chat_response(args, input, key, org_id, n=1):
             inputs = tokenizer(completion_input, return_tensors="pt")
             input_ids = inputs.input_ids.to(model.device)
             n_examples = len(input[1]["content"].split("<END>")) - 1
+            print("N_example:", n_examples)
             if args.mode == "plan":
-                max_length = math.ceil(3*input_ids.shape[1])
+                max_length = math.ceil(5*input_ids.shape[1])
+                print("Max length:", max_length)
             else:
                 max_length = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
             # attention_mask = inputs.attention_mask.to(model.device)
