@@ -196,6 +196,7 @@ def get_chat_response(args, input, key, org_id, n=1):
                     return prediction
         elif args.model in ["phi-1_5", "phi-2"]:
             completion_input = input[0]["content"] + "\n" + input[1]["content"]
+            print("Completion input: ", completion_input)
             torch.set_default_device("cuda")
             if args.model == "phi-1_5":
                 model = AutoModelForCausalLM.from_pretrained(
@@ -205,6 +206,7 @@ def get_chat_response(args, input, key, org_id, n=1):
                     "microsoft/phi-1_5", trust_remote_code=True
                 )
             else:
+                print("Here")
                 model = AutoModelForCausalLM.from_pretrained(
                     "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
                 )
@@ -227,7 +229,7 @@ def get_chat_response(args, input, key, org_id, n=1):
                 do_sample=True,
                 top_p=0.35,
                 top_k=50,
-                temperature=0.4,
+                temperature=0.9,
                 max_length = max_len,  # Adjust max_length as needed
                 eos_token_id=tokenizer.eos_token_id,  # End of sequence token
                 pad_token_id=tokenizer.eos_token_id,  # Pad token
