@@ -160,7 +160,7 @@ def get_stepwise_exec_results(code, method="pot"):
     return new_code_statements
 
 
-#@backoff.on_exception(backoff.expo, openai.error.RateLimitError)
+# @backoff.on_exception(backoff.expo, openai.error.RateLimitError)
 def get_chat_response(args, input, key, org_id, n=1):
     if org_id is not None:
         openai.organization = org_id
@@ -197,6 +197,8 @@ def get_chat_response(args, input, key, org_id, n=1):
         elif args.model in ["phi-1_5", "phi-2"]:
             completion_input = input[0]["content"] + "\n" + input[1]["content"]
             torch.set_default_device("cuda")
+            if args.mode == "plan":
+                torch.cuda.empty_cache()
             if args.model == "phi-1_5":
                 model = AutoModelForCausalLM.from_pretrained(
                     "microsoft/phi-1_5", torch_dtype="auto", trust_remote_code=True
@@ -216,7 +218,7 @@ def get_chat_response(args, input, key, org_id, n=1):
             n_examples = len(input[1]["content"].split("<END>")) - 1
             print("N_example:", n_examples)
             if args.mode == "plan":
-                max_len = math.ceil(15*input_ids.shape[1])
+                max_len = math.ceil(15 * input_ids.shape[1])
                 print("Max length:", max_len)
             else:
                 max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
@@ -228,14 +230,14 @@ def get_chat_response(args, input, key, org_id, n=1):
                 top_p=0.35,
                 top_k=50,
                 temperature=0.9,
-                max_length = max_len,  # Adjust max_length as needed
+                max_length=max_len,  # Adjust max_length as needed
                 eos_token_id=tokenizer.eos_token_id,  # End of sequence token
                 pad_token_id=tokenizer.eos_token_id,  # Pad token
                 # no_repeat_ngram_size=10,
                 return_dict_in_generate=True,
                 output_scores=True,
             )
-            text = tokenizer.decode(outputs.sequences[0]) #, skip_special_tokens=True
+            text = tokenizer.decode(outputs.sequences[0])  # , skip_special_tokens=True
             print("Text: ", text)
             final_text = process_output(completion_input, text)
             print("Final text: ", final_text)
@@ -260,9 +262,7 @@ def get_chat_response(args, input, key, org_id, n=1):
                 if prediction != "" and prediction is not None:
                     return prediction
             else:
-                prediction = [
-                    choice["text"].strip() for choice in response["choices"]
-                ]
+                prediction = [choice["text"].strip() for choice in response["choices"]]
                 if prediction[0] != "" and prediction[0] is not None:
                     return prediction
 
