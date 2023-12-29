@@ -1,5 +1,5 @@
-RANGE_START = '0'
-RANGE_END = '100'
+RANGE_START=0
+RANGE_END=100
 
 python src/analyze.py \
   --plan outputs/gsm/plan/demo_plan_${RANGE_START}_${RANGE_END}.jsonl \
