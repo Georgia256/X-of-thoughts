@@ -214,6 +214,10 @@ def get_chat_response(args, input, key, org_id, n=1):
             inputs = tokenizer(completion_input, return_tensors="pt")
             input_ids = inputs.input_ids.to(model.device)
             n_examples = len(input[1]["content"].split("<END>")) - 1
+            if args.mode == "plan":
+                max_length = math.ceil(2.5*input_ids.shape[1])
+            else:
+                max_length = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
             # attention_mask = inputs.attention_mask.to(model.device)
             outputs = model.generate(
                 input_ids=input_ids,
@@ -222,7 +226,7 @@ def get_chat_response(args, input, key, org_id, n=1):
                 top_p=0.35,
                 top_k=50,
                 temperature=0.9,
-                max_length = math.ceil(2*input_ids.shape[1] ),  # Adjust max_length as needed * (1 + 1/(n_examples-1))
+                max_length = max_length,  # Adjust max_length as needed
                 eos_token_id=tokenizer.eos_token_id,  # End of sequence token
                 pad_token_id=tokenizer.eos_token_id,  # Pad token
                 # no_repeat_ngram_size=10,
