@@ -233,7 +233,7 @@ def get_chat_response(args, input, key, org_id, n=1):
                 max_length = max_len,  # Adjust max_length as needed
                 eos_token_id=tokenizer.eos_token_id,  # End of sequence token
                 pad_token_id=tokenizer.eos_token_id,  # Pad token
-                # no_repeat_ngram_size=10,
+                no_repeat_ngram_size=10,
                 return_dict_in_generate=True,
                 output_scores=True,
             )
