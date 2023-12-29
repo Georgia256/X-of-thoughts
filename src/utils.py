@@ -196,7 +196,7 @@ def get_chat_response(args, input, key, org_id, n=1):
                     return prediction
         elif args.model in ["phi-1_5", "phi-2"]:
             completion_input = input[0]["content"] + "\n" + input[1]["content"]
-            print("Completion input: ", completion_input)
+            #print("Completion input: ", completion_input)
             torch.set_default_device("cuda")
             if args.model == "phi-1_5":
                 model = AutoModelForCausalLM.from_pretrained(
@@ -206,7 +206,7 @@ def get_chat_response(args, input, key, org_id, n=1):
                     "microsoft/phi-1_5", trust_remote_code=True
                 )
             else:
-                print("Here")
+                #print("Here")
                 model = AutoModelForCausalLM.from_pretrained(
                     "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
                 )
@@ -216,10 +216,10 @@ def get_chat_response(args, input, key, org_id, n=1):
             inputs = tokenizer(completion_input, return_tensors="pt")
             input_ids = inputs.input_ids.to(model.device)
             n_examples = len(input[1]["content"].split("<END>")) - 1
-            print("N_example:", n_examples)
+            #print("N_example:", n_examples)
             if args.mode == "plan":
                 max_len = math.ceil(15*input_ids.shape[1])
-                print("Max length:", max_len)
+                #print("Max length:", max_len)
             else:
                 max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
             # attention_mask = inputs.attention_mask.to(model.device)
@@ -238,7 +238,7 @@ def get_chat_response(args, input, key, org_id, n=1):
                 output_scores=True,
             )
             text = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True) #, skip_special_tokens=True
-            print("Text: ", text)
+            #print("Text: ", text)
             final_text = process_output(completion_input, text)
             print("Final text: ", final_text)
             del model  # Delete the model to free up memory
