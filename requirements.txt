@@ -1,3 +1,5 @@
+transformers
+einops
 openai
 backoff
 jsonlines
@@ -5,5 +7,3 @@ sympy
 wandb
 func_timeout
 numpy
-transformers
-einops
