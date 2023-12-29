@@ -216,7 +216,7 @@ def get_chat_response(args, input, key, org_id, n=1):
             n_examples = len(input[1]["content"].split("<END>")) - 1
             print("N_example:", n_examples)
             if args.mode == "plan":
-                max_length = math.ceil(5*input_ids.shape[1])
+                max_length = math.ceil(15*input_ids.shape[1])
                 print("Max length:", max_length)
             else:
                 max_length = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
