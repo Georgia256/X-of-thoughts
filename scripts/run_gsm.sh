@@ -1,7 +1,8 @@
 DATASET='gsm'
 MODEL='phi-2'
-RANGE_START = 0
-RANGE_END = 100
+RANGE_START= '0'
+RANGE_END= '100'
+
 
 # cot
 python src/solve.py --tag DEMO --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode cot
