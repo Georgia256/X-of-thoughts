@@ -80,7 +80,7 @@ class Brain:
 
     def set_instance_check(self, instance_id):
         self.id = instance_id
-        self.instance = self.data[instance_id-self.args.range_start]
+        self.instance = self.data[instance_id-int(self.args.range_start)]
         self.cache = {k: v for k, v in self.instance.items()}
         self.api_key = self.KEYS[instance_id % len(self.KEYS)]
 
