@@ -27,6 +27,26 @@ Question: Larry spends half an hour twice a day walking and playing with his dog
 Method: Python Program
 
 
+Question: Angela is a bike messenger in New York. She needs to deliver 8 times as many packages as meals. If she needs to deliver 27 meals and packages combined, how many meals does she deliver?
+
+Method: System of linear equations
+
+
+Question: There were nine computers in the server room. Five more computers were installed each day, from monday to thursday. How many computers are now in the server room?
+
+Method: Python Program
+
+
+Question: Alyssa, Keely, and Kendall ordered 100 chicken nuggets from a fast-food restaurant. Keely and Kendall each ate twice as many as Alyssa. How many did Alyssa eat?
+
+Method: System of linear equations
+
+
+Question: Conor can chop 12 eggplants, 9 carrots, and 8 potatoes in a day. If he works 4 times a week, how many vegetables can he chop?
+
+Method: Python Program
+
+
 Question: {question}
 
 Method:
