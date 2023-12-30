@@ -235,7 +235,7 @@ def get_chat_response(args, input, key, org_id, n=1):
             text = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True) #, skip_special_tokens=True
             #print("Text: ", text)
             final_text = process_output(completion_input, text)
-            print("Final text: ", final_text)
+            #print("Final text: ", final_text)
             del model  # Delete the model to free up memory
             torch.cuda.empty_cache()
             return final_text
