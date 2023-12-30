@@ -1,11 +1,11 @@
-
-PLAN_SYSTEM = """
-You are an expert in math reasoning. Please choose the best method to solve the math word problems. Read the description of the methods and the examples. You only need to suggest the best method. Do not solve the problem.
-""".strip()
-
+# PLAN_SYSTEM = """
+# You are an expert in math reasoning. Please choose the best method to solve the math word problems. Read the description of the methods and the examples. You only need to suggest the best method. Do not solve the problem.
+# """.strip()
+PLAN_SYSTEM = """You are an expert in math reasoning. Please choose the best method to solve the math word problems. Do not solve the problem."""
 
 # 8-shot
-PLAN = """
+PLAN = (
+    """
 You need to choose the best method for the given question. Each method has its own strength. 
 The methods are described as follows:
 
@@ -50,4 +50,6 @@ Method: Python Program
 Question: {question}
 
 Method:
-""".strip()+ " "
+""".strip()
+    + " "
+)
