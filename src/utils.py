@@ -206,7 +206,6 @@ def get_chat_response(args, input, key, org_id, n=1):
                     "microsoft/phi-1_5", trust_remote_code=True
                 )
             else:
-                #print("Here")
                 model = AutoModelForCausalLM.from_pretrained(
                     "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
                 )
@@ -216,12 +215,8 @@ def get_chat_response(args, input, key, org_id, n=1):
             inputs = tokenizer(completion_input, return_tensors="pt")
             input_ids = inputs.input_ids.to(model.device)
             n_examples = len(input[1]["content"].split("<END>")) - 1
-            #print("N_example:", n_examples)
-            if args.mode == "plan":
-                max_len = 2*input_ids.shape[1]
-                print("Max length:", max_len)
-            else:
-                max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+            
+            max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
             # attention_mask = inputs.attention_mask.to(model.device)
             outputs = model.generate(
                 input_ids=input_ids,
