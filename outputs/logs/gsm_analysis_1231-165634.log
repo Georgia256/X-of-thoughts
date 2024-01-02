@@ -1,0 +1,101 @@
+INFO - Loaded 101 instances from outputs/gsm/cot/batch_4_cot_303_404.jsonl
+INFO - Loaded 101 instances from outputs/gsm/pot/batch_4_pot_303_404.jsonl
+INFO - Loaded 101 instances from outputs/gsm/eot/batch_4_eot_303_404.jsonl
+INFO - Loaded 101 instances from outputs/gsm/check_pot/batch_4_check_pot_303_404.jsonl
+INFO - Loaded 101 instances from outputs/gsm/check_eot/batch_4_check_eot_303_404.jsonl
+INFO - Loaded 101 instances from outputs/gsm/plan/batch_4_plan_303_404.jsonl
+INFO - Data length: 101
+INFO - ===== Single performance =====
+INFO - cot: 0.2871287128712871
+INFO - pot: 0.6435643564356436
+INFO - eot: 0.46534653465346537
+INFO - ===== XoT is good at =====
+INFO - cot: 0
+INFO - pot: 17
+INFO - eot: 4
+INFO - ===== OR =====
+INFO - pot or eot: 70, 0.693069306930693
+INFO - pot or cot: 66, 0.6534653465346535
+INFO - cot or eot: 53, 0.5247524752475248
+INFO - all or: 70, 0.693069306930693
+INFO - ===== Assertion confusion matrix: pot =====
+INFO - score1_check1: 48
+INFO - score1_check0: 17
+INFO - score0_check1: 11
+INFO - score0_check0: 25
+INFO - Confusion Matrix:
+INFO - |   Predicted 0 |   Predicted 1 |
+|--------------:|--------------:|
+|            25 |            11 |
+|            17 |            48 |
+INFO - Accuracy: 0.7227722772277227
+INFO - False Positive Rate: 0.3055555555555556
+INFO - False Negative Rate: 0.26153846153846155
+INFO - ===== Assertion confusion matrix: eot =====
+INFO - score1_check1: 23
+INFO - score1_check0: 24
+INFO - score0_check1: 8
+INFO - score0_check0: 46
+INFO - Confusion Matrix:
+INFO - |   Predicted 0 |   Predicted 1 |
+|--------------:|--------------:|
+|            46 |             8 |
+|            24 |            23 |
+INFO - Accuracy: 0.6831683168316832
+INFO - False Positive Rate: 0.14814814814814814
+INFO - False Negative Rate: 0.5106382978723404
+INFO - Confusion Matrix:
+INFO - |   Predicted 0 |   Predicted 1 |
+|--------------:|--------------:|
+|             9 |            27 |
+|             0 |            65 |
+INFO - Accuracy: 0.7326732673267327
+INFO - False Positive Rate: 0.75
+INFO - False Negative Rate: 0.0
+INFO - Confusion Matrix:
+INFO - |   Predicted 0 |   Predicted 1 |
+|--------------:|--------------:|
+|            30 |            24 |
+|             0 |            47 |
+INFO - Accuracy: 0.7623762376237624
+INFO - False Positive Rate: 0.4444444444444444
+INFO - False Negative Rate: 0.0
+INFO - ===== Assert pot & eot =====
+INFO - 0.5643564356435643
+INFO - ===== Assert pot & cot =====
+INFO - 0.5247524752475248
+INFO - ===== Assert eot & pot =====
+INFO - 0.6138613861386139
+INFO - ===== Assert eot & cot =====
+INFO - 0.39603960396039606
+INFO - ===== Passive pot & cot =====
+INFO - 0.6435643564356436
+INFO - ===== Passive eot & cot =====
+INFO - 0.504950495049505
+INFO - ===== Assert eot & pot & cot =====
+INFO - 0.5148514851485149
+INFO - ===== Assert pot & eot & cot =====
+INFO - 0.5346534653465347
+INFO - ===== Majority Vote =====
+INFO - 0.5544554455445545
+INFO - ===== Plan PoT & EoT =====
+INFO - 0.5346534653465347
+INFO - Unknown plan method: 0
+INFO - ===== Plan PoT & CoT =====
+INFO - 0.39603960396039606
+INFO - Unknown plan method: 0
+INFO - Count PoT: 33 (0.32673267326732675), CoT: 68 (0.6732673267326733)
+INFO - ===== Plan Assert PE =====
+INFO - 0.5742574257425742
+INFO - Unknown plan method: 0
+INFO - ===== Plan Passive XoT =====
+INFO - 0.6237623762376238
+INFO - Avg Steps: 1.2673267326732673
+INFO - Unknown plan method: 0
+INFO - ===== XoT main results =====
+INFO - 0.5148514851485149
+INFO - Avg Steps: 1.9405940594059405
+INFO - Unknown plan method: 0
+INFO - ===== PEC ratio =====
+INFO - PoT: 39,0.38613861386138615, EoT: 26, 0.25742574257425743,CoT: 36,0.3564356435643564
+INFO - Save results at outputs/logs/gsm_analysis_1231-165634.log
