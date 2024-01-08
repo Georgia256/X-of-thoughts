@@ -123,7 +123,7 @@ if __name__ == "__main__":
             brain.think_check(method)
         elif phase == 'refine':
             brain.set_instance_check(inst_i)
-            brain.think_refine(method)
+            brain.think_refine()
         else:
             brain.set_instance(inst_i)
             if method == 'plan':
