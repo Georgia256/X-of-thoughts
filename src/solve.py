@@ -35,7 +35,7 @@ if __name__ == "__main__":
     parser.add_argument("--data_path", default='', type=str)
     parser.add_argument("-d", "--dataset", default='gsm', type=str)
     parser.add_argument("-o", "--output_dir", default='outputs/', type=str)
-    parser.add_argument("--mode", required=True, type=str, help='cot, pot, eot, peano, check_pot, check_eot, refine_cot, refine_pot, refine_eot')
+    parser.add_argument("--mode", required=True, type=str, help='cot, pot, eot, peano, check_pot, check_eot, refine_pot')
     parser.add_argument("--range_start", default='0', type=str)
     parser.add_argument("--range_end", default='end', type=str)
     parser.add_argument("--tag", default='debug', type=str)
