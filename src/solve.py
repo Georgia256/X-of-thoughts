@@ -35,7 +35,7 @@ if __name__ == "__main__":
     parser.add_argument("--data_path", default='', type=str)
     parser.add_argument("-d", "--dataset", default='gsm', type=str)
     parser.add_argument("-o", "--output_dir", default='outputs/', type=str)
-    parser.add_argument("--mode", required=True, type=str, help='cot, pot, eot, peano, check_pot, check_eot')
+    parser.add_argument("--mode", required=True, type=str, help='cot, pot, eot, peano, check_pot, check_eot, refine_cot, refine_pot, refine_eot')
     parser.add_argument("--range_start", default='0', type=str)
     parser.add_argument("--range_end", default='end', type=str)
     parser.add_argument("--tag", default='debug', type=str)
@@ -110,6 +110,9 @@ if __name__ == "__main__":
     elif 'advice' in args.mode:
         phase = 'advice'
         method = args.mode.split('_')[-1]
+    elif 'refine' in args.mode:
+        phase = 'refine'
+        method = args.mode.split('_')[-1]
     else:
         phase = 'reason'
         method = args.mode
@@ -118,6 +121,9 @@ if __name__ == "__main__":
         if phase == 'check':
             brain.set_instance_check(inst_i)
             brain.think_check(method)
+        elif phase == 'refine':
+            brain.set_instance_check(inst_i)
+            brain.think_refine(method)
         else:
             brain.set_instance(inst_i)
             if method == 'plan':
