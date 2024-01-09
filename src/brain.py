@@ -321,51 +321,48 @@ class Brain:
 
     ####
     def think_meta_eval(self, method='pot'):
-    """
-    metacognitive_eval
-    """
-    question = self.cache["inst/question"]
-    pred = self.cache[f'reason/{method}/ans']
-    if method == 'cot':
-        cot_thoughts = self.cache[f'reason/{method}']
-    elif method == 'pot':
-        code = self.cache[f'reason/{method}']
-        variables = get_stepwise_exec_results(code, method)
-    elif method == 'eot':
-        code = self.cache[f'reason/{method}/equations']
-        try:
-            var_dict = safe_solve_equation_system(code)
-            all_var_name = sort_words_by_first_appearance(list(var_dict.keys()), ' '.join(code))
-            all_var_name = [name for name in all_var_name if name != 'x' and name != 'ans']
-            variables = [f"{name} = {var_dict[name]}" for name in all_var_name]
-        except Exception as e:
-            variables = code
-    else:
-        raise NotImplementedError(f"Method {method} not supported")
+        question = self.cache["inst/question"]
+        pred = self.cache[f'reason/{method}/ans']
+        if method == 'cot':
+            cot_thoughts = self.cache[f'reason/{method}']
+        elif method == 'pot':
+            code = self.cache[f'reason/{method}']
+            variables = get_stepwise_exec_results(code, method)
+        elif method == 'eot':
+            code = self.cache[f'reason/{method}/equations']
+            try:
+                var_dict = safe_solve_equation_system(code)
+                all_var_name = sort_words_by_first_appearance(list(var_dict.keys()), ' '.join(code))
+                all_var_name = [name for name in all_var_name if name != 'x' and name != 'ans']
+                variables = [f"{name} = {var_dict[name]}" for name in all_var_name]
+            except Exception as e:
+                variables = code
+        else:
+            raise NotImplementedError(f"Method {method} not supported")
 
-    chat_input = self.build_chat_input(ASSERT_SYSTEM, ASSERT_PROMPT.format(question=question,
+        chat_input = self.build_chat_input(ASSERT_SYSTEM, ASSERT_PROMPT.format(question=question,
                                                                            variables='\n'.join(variables)))
-    response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
-    self.cache[f'think/metacognitive_eval/{method}/variables'] = variables
-    self.cache[f'think/metacognitive_eval/{method}'] = response
+        response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
+        self.cache[f'think/metacognitive_eval/{method}/variables'] = variables
+        self.cache[f'think/metacognitive_eval/{method}'] = response
 
-    # Execute the code for each method
-    if method == 'pot' or method == 'cot':
-        code = variables + [f"ans = {pred}"] + [response]
-    elif method == 'eot':
-        code = [f"x = {pred}"] + variables + [f"ans = x"] + [response]
-    code_str = '\n'.join(code)
+        # Execute the code for each method
+        if method == 'pot' or method == 'cot':
+            code = variables + [f"ans = {pred}"] + [response]
+        elif method == 'eot':
+            code = [f"x = {pred}"] + variables + [f"ans = x"] + [response]
+            code_str = '\n'.join(code)
 
-    check_flag = False if timeout_exec(code_str) is None else True
+        check_flag = False if timeout_exec(code_str) is None else True
 
-    self.cache[f'think/metacognitive_eval/{method}/flag'] = int(check_flag)
+        self.cache[f'think/metacognitive_eval/{method}/flag'] = int(check_flag)
 
-    if self.debug:
-        print(f"=== inst i: {self.id} ===")
-        print(f"code: {code_str}")
-        print(f"response: {response}")
-        print(f"score: {self.cache[f'reason/{method}/score']}")
-        print(f"flag: {check_flag}")
+        if self.debug:
+            print(f"=== inst i: {self.id} ===")
+            print(f"code: {code_str}")
+            print(f"response: {response}")
+            print(f"score: {self.cache[f'reason/{method}/score']}")
+            print(f"flag: {check_flag}")
 
 
     ####
