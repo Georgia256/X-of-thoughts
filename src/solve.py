@@ -113,8 +113,8 @@ if __name__ == "__main__":
     elif 'refine' in args.mode:
         phase = 'refine'
         method = args.mode.split('_')[-1]
-    elif 'meta_eval' in args.mode:
-        phase = 'meta_eval'
+    elif 'metacognitive_eval' in args.mode:
+        phase = 'metacognitive_eval'
         method = args.mode.split('_')[-1]
     else:
         phase = 'reason'
@@ -127,7 +127,7 @@ if __name__ == "__main__":
         elif phase == 'refine':
             brain.set_instance_check(inst_i)
             brain.think_refine()
-        elif phase='meta_eval':
+        elif phase=='metacognitive_eval':
             brain.set_instance_check(inst_i)
             brain.think_meta_eval(method)
         else:
