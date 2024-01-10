@@ -321,10 +321,18 @@ class Brain:
 
     ####
     def think_meta_eval(self, method='pot'):
+        if method not in ['cot', 'pot', 'eot']:
+            raise ValueError(f"Invalid method '{method}' passed to think_meta_eval")
+
         question = self.cache["inst/question"]
-        pred = self.cache[f'reason/{method}/ans']
+        pred = self.cache.get(f'reason/{method}/ans')
+        if pred is None:
+            raise ValueError(f"Prediction for method '{method}' not found in cache")
+
+    # Handling different methods
         if method == 'cot':
             cot_thoughts = self.cache[f'reason/{method}']
+        # Additional logic for 'cot' if needed
         elif method == 'pot':
             code = self.cache[f'reason/{method}']
             variables = get_stepwise_exec_results(code, method)
@@ -337,8 +345,6 @@ class Brain:
                 variables = [f"{name} = {var_dict[name]}" for name in all_var_name]
             except Exception as e:
                 variables = code
-        else:
-            raise NotImplementedError(f"Method {method} not supported")
 
         chat_input = self.build_chat_input(ASSERT_SYSTEM, ASSERT_PROMPT.format(question=question,
                                                                            variables='\n'.join(variables)))
@@ -346,9 +352,11 @@ class Brain:
         self.cache[f'think/metacognitive_eval/{method}/variables'] = variables
         self.cache[f'think/metacognitive_eval/{method}'] = response
 
-        # Execute the code for each method
-        if method == 'pot' or method == 'cot':
+    # Execute the code for each method
+        code_str = ''
+        if method in ['pot', 'cot']:
             code = variables + [f"ans = {pred}"] + [response]
+            code_str = '\n'.join(code)
         elif method == 'eot':
             code = [f"x = {pred}"] + variables + [f"ans = x"] + [response]
             code_str = '\n'.join(code)
@@ -361,9 +369,8 @@ class Brain:
             print(f"=== inst i: {self.id} ===")
             print(f"code: {code_str}")
             print(f"response: {response}")
-            print(f"score: {self.cache[f'reason/{method}/score']}")
+            print(f"score: {self.cache.get(f'reason/{method}/score', 'N/A')}")
             print(f"flag: {check_flag}")
-
 
     ####
     def think_refine(self):
