@@ -114,7 +114,7 @@ if __name__ == "__main__":
         phase = 'refine'
         method = args.mode.split('_')[-1]
     elif 'metacognitive_eval' in args.mode:
-        phase = 'metacognitive_eval'
+        phase = 'metacognitive_eot'
         method = args.mode.split('_')[-1]
     else:
         phase = 'reason'
