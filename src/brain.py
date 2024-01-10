@@ -342,10 +342,10 @@ class Brain:
         pred_init = self.cache.get(f"reason/{method}/ans")
         if pred_init is None:
             raise ValueError(f"Prediction for method '{method}' not found in cache")
-
+        answer = self.cache[f"reason/{method}"]
         chat_input = self.build_chat_input(
             META_EVAL_SYSTEM,
-            META_EVAL.format(question=question, answer=pred_init),
+            META_EVAL.format(question=question, answer=answer),
         )
         response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
         self.cache[f"metacognitive_eval/{method}"] = response
@@ -353,9 +353,13 @@ class Brain:
         if "The solution is correct" in response:
             pred = pred_init
             self.cache[f"metacognitive_eval/{method}/ans"] = pred
-        elif "The correct answer is" in response:  # may need to change depending on the prompt
+        elif (
+            "The correct answer is" in response
+        ):  # may need to change depending on the prompt
             answer_format_flag = "The answer is" in response
-            pred_str = response.split("The answer is")[-1].strip(".").replace(",", "").strip()
+            pred_str = (
+                response.split("The answer is")[-1].strip(".").replace(",", "").strip()
+            )
             try:
                 all_digit = re.findall(r"[-+]?\d*\.?\d+|\d+", pred_str)
                 if answer_format_flag:
@@ -373,9 +377,7 @@ class Brain:
         score = 0.0
         if pred is not None:
             score = 1.0 if abs(pred - self.cache["inst/gold_answer"]) < 1e-3 else 0.0
-        self.cache[f"metacognitive_eval/{method}/ans"] = pred
         self.cache[f"metacognitive_eval/{method}/score"] = score
-        self.metrics["cot/correct"] += score
 
         if self.debug:
             print(f"=== inst i: {self.id} ===")
