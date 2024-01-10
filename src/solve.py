@@ -35,7 +35,7 @@ if __name__ == "__main__":
     parser.add_argument("--data_path", default='', type=str)
     parser.add_argument("-d", "--dataset", default='gsm', type=str)
     parser.add_argument("-o", "--output_dir", default='outputs/', type=str)
-    parser.add_argument("--mode", required=True, type=str, help='cot, pot, eot, peano, check_pot, check_eot, refine_pot,metacognitive_eval')
+    parser.add_argument("--mode", required=True, type=str, help='cot, pot, eot, peano, check_pot, check_eot, refine_pot, metacognitive_eval_cot')
     parser.add_argument("--range_start", default='0', type=str)
     parser.add_argument("--range_end", default='end', type=str)
     parser.add_argument("--tag", default='debug', type=str)
@@ -114,7 +114,7 @@ if __name__ == "__main__":
         phase = 'refine'
         method = args.mode.split('_')[-1]
     elif 'metacognitive_eval' in args.mode:
-        phase = 'metacognitive_eot'
+        phase = 'metacognitive_eval'
         method = args.mode.split('_')[-1]
     else:
         phase = 'reason'
