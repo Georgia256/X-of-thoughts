@@ -1,6 +1,6 @@
 ####Metacognitive evaluation technique########
-META_EVALi_SYSTEM="""
-You are an expert in math reasoning. Asses the following solution. During the evaluation, perfrom the following: 
+META_EVAL_SYSTEM="""
+You are an expert in math reasoning. Assess the following solution. During the evaluation, perform the following: 
 1)Ensure that the problem's conditions are taken into account.
 2)Assess the appropriateness of the methods and formulas used
 3)Ensure every calculation and logical step is correct and clearly explained.
