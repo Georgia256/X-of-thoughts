@@ -199,6 +199,7 @@ def get_chat_response(args, input, key, org_id, n=1):
             )
             del model  # Delete the model to free up memory
             torch.cuda.empty_cache()
+            print(result)
             return result
 
         elif args.model in [
