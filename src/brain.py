@@ -373,6 +373,7 @@ class Brain:
                 pred = None
             self.cache[f"metacognitive_eval/{method}/ans"] = pred
         else:
+            pred = None
             print(f"Warning: Unknown response from metacognitive eval: {response}")
         score = 0.0
         if pred is not None:
