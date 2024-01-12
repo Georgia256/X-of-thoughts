@@ -7,3 +7,4 @@ func_timeout == 4.3.5
 numpy == 1.24.3
 transformers == 4.36.2
 einops == 0.7.0
+accelerate == 0.26.1
