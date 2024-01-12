@@ -15,7 +15,7 @@ from prompts.eot import EOT_SYSTEM, EOT
 from prompts.peano import PEANO_SYSTEM, PEANO
 from prompts.check import ASSERT_SYSTEM, ASSERT_PROMPT
 from prompts.self_refine import REFINE_SYSTEM, REFINE
-from prompts.metacognitive_eval import META_EVAL_SYSTEM, META_EVAL
+from prompts.metacognitive_eval_cot import META_EVAL_SYSTEM, META_EVAL
 
 
 from utils import *
@@ -334,7 +334,7 @@ class Brain:
             print(f"flag: {check_flag}")
 
     ####
-    def think_meta_eval(self, method="pot"):
+    def think_meta_eval(self, method="cot"):
         if method not in ["cot", "pot", "eot"]:
             raise ValueError(f"Invalid method '{method}' passed to think_meta_eval")
 
@@ -350,12 +350,10 @@ class Brain:
         response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
         self.cache[f"metacognitive_eval/{method}"] = response
 
-        if "The solution is correct" in response:
+        if "the solution is correct" in response.lower():
             pred = pred_init
             self.cache[f"metacognitive_eval/{method}/ans"] = pred
-        elif (
-            "The correct answer is" in response
-        ):  # may need to change depending on the prompt
+        elif "the solution is incorrect" in response.lower():
             answer_format_flag = "The answer is" in response
             pred_str = (
                 response.split("The answer is")[-1].strip(".").replace(",", "").strip()
@@ -374,6 +372,8 @@ class Brain:
                 print(pred_str)
                 pred = None
             self.cache[f"metacognitive_eval/{method}/ans"] = pred
+        else:
+            print(f"Warning: Unknown response from metacognitive eval: {response}")
         score = 0.0
         if pred is not None:
             score = 1.0 if abs(pred - self.cache["inst/gold_answer"]) < 1e-3 else 0.0

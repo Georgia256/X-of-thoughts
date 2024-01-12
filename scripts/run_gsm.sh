@@ -19,5 +19,5 @@ python src/solve.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANG
 python src/solve.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode plan
 '''
 #meta_eval
-python src/solve.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode metacognitive_eval --data_path outputs/gsm/eot/${TAG}_eot_${RANGE_START}_${RANGE_END}.jsonl
+python src/solve.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode metacognitive_eval_cot --data_path outputs/gsm/cot/${TAG}_cot_${RANGE_START}_${RANGE_END}.jsonl
 
