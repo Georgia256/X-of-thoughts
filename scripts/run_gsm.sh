@@ -4,7 +4,7 @@ RANGE_START=$1
 RANGE_END=$2
 TAG=$3
 
-
+start_time=$(date +%s)
 # cot
 #python src/solve.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode cot
 # eot
@@ -21,3 +21,8 @@ TAG=$3
 #meta_eval
 python src/solve.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode metacognitive_eval_cot --data_path outputs/gsm/cot/${TAG}_cot_${RANGE_START}_${RANGE_END}.jsonl
 
+end_time=$(date +%s)
+hours=$(($elapsed_time / 3600))
+minutes=$((($elapsed_time % 3600) / 60))
+seconds=$(($elapsed_time % 60))
+echo "Total time taken: $hours hour(s), $minutes minute(s), and $seconds second(s)"

@@ -16,8 +16,9 @@ from tqdm import tqdm
 from utils import get_var_assign
 from brain import Brain
 
-os.environ['WANDB_START_METHOD'] = 'thread'
-os.environ['WANDB_MODE'] = 'offline'
+os.environ["WANDB_START_METHOD"] = "thread"
+os.environ["WANDB_MODE"] = "offline"
+
 
 def load_dataset(data_path):
     instances = []
@@ -30,39 +31,45 @@ def load_dataset(data_path):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_path", default='', type=str)
-    parser.add_argument("-d", "--dataset", default='gsm', type=str)
-    parser.add_argument("-o", "--output_dir", default='outputs/', type=str)
-    parser.add_argument("--mode", required=True, type=str, help='cot, pot, eot, peano, check_pot, check_eot, refine_pot, metacognitive_eval_cot')
-    parser.add_argument("--range_start", default='0', type=str)
-    parser.add_argument("--range_end", default='end', type=str)
-    parser.add_argument("--tag", default='debug', type=str)
-    parser.add_argument("--model", default='gpt-3.5-turbo-0613', type=str)
+    parser.add_argument("--data_path", default="", type=str)
+    parser.add_argument("-d", "--dataset", default="gsm", type=str)
+    parser.add_argument("-o", "--output_dir", default="outputs/", type=str)
+    parser.add_argument(
+        "--mode",
+        required=True,
+        type=str,
+        help="cot, pot, eot, peano, check_pot, check_eot, refine_pot, metacognitive_eval_cot",
+    )
+    parser.add_argument("--range_start", default="0", type=str)
+    parser.add_argument("--range_end", default="end", type=str)
+    parser.add_argument("--tag", default="debug", type=str)
+    parser.add_argument("--model", default="gpt-3.5-turbo-0613", type=str)
     parser.add_argument("--temperature", default=0.0, type=float)
-    parser.add_argument("--key_group", default='a', type=str, help='api group')
-    parser.add_argument("--org_id", default="", type=str, help='api organisation')
+    parser.add_argument("--key_group", default="a", type=str, help="api group")
+    parser.add_argument("--org_id", default="", type=str, help="api organisation")
     parser.add_argument("--overwrite", default=True, type=bool)
-    parser.add_argument("--debug", action='store_true')
-    parser.add_argument("--enable_wandb", action='store_true')
-    parser.add_argument("--wandb_entity", default='', type=str, help='wandb entity to login')
+    parser.add_argument("--debug", action="store_true")
+    parser.add_argument("--enable_wandb", action="store_true")
+    parser.add_argument(
+        "--wandb_entity", default="", type=str, help="wandb entity to login"
+    )
     # Brain args
     parser.add_argument("--max_turns", default=10, type=int)
 
     args = parser.parse_args()
 
     dataset_paths = {
-        'gsm': 'data/gsm8k/test.jsonl',
-        'gsmhard': 'data/gsmhard.jsonl',
-        'algebra': 'data/algebra/test.jsonl',
-        'addsub': 'data/mawpsaddsub.jsonl',
-        'singleop': 'data/mawpssingleop.jsonl',
-        'singleeq': 'data/mawpssingleeq.jsonl',
-        'multiarith': 'data/mawpsmultiarith.jsonl',
-        'svamp': 'data/svamp.jsonl',
-        'asdiv': 'data/asdiv.jsonl',
-        'aqua': 'data/aqua.jsonl',
+        "gsm": "data/gsm8k/test.jsonl",
+        "gsmhard": "data/gsmhard.jsonl",
+        "algebra": "data/algebra/test.jsonl",
+        "addsub": "data/mawpsaddsub.jsonl",
+        "singleop": "data/mawpssingleop.jsonl",
+        "singleeq": "data/mawpssingleeq.jsonl",
+        "multiarith": "data/mawpsmultiarith.jsonl",
+        "svamp": "data/svamp.jsonl",
+        "asdiv": "data/asdiv.jsonl",
+        "aqua": "data/aqua.jsonl",
     }
 
     if len(args.data_path) == 0:
@@ -71,17 +78,23 @@ if __name__ == "__main__":
     args.output_dir = os.path.join(args.output_dir, args.dataset, args.mode)
 
     if args.temperature > 0:
-        args.tag = args.tag + f'_t{args.temperature}'
-    args.tag = args.tag + f'_{args.mode}' + '_debug' if args.debug else args.tag + f'_{args.mode}'
+        args.tag = args.tag + f"_t{args.temperature}"
+    args.tag = (
+        args.tag + f"_{args.mode}" + "_debug"
+        if args.debug
+        else args.tag + f"_{args.mode}"
+    )
     timestr = time.strftime("%m%d-%H%M%S")
     os.makedirs(args.output_dir, exist_ok=True)
 
     if not args.debug and args.enable_wandb:
-        wandb.init(project='chatgpt',
-                   entity=args.wandb_entity,
-                   name=f"{args.dataset}_{args.tag}_{args.mode}",
-                   config=vars(args),
-                   save_code=True)
+        wandb.init(
+            project="chatgpt",
+            entity=args.wandb_entity,
+            name=f"{args.dataset}_{args.tag}_{args.mode}",
+            config=vars(args),
+            save_code=True,
+        )
         # save code
         print(os.getcwd())
         wandb.run.log_code("./src")
@@ -96,51 +109,55 @@ if __name__ == "__main__":
     # ===== Loop =====
     args.range_end = 10 if args.debug else args.range_end
     range_start = int(args.range_start)
-    range_end = int(args.range_end) if args.range_end != 'end' else len(brain.data)
+    range_end = int(args.range_end) if args.range_end != "end" else len(brain.data)
     inst_range = range(range_start, range_end)
     pbar = tqdm(inst_range)
 
-    phase, method = '', ''  # phase: check/reason/reflection method: cot/pot/eot/peano/plan/pal/refine
-    if 'check' in args.mode:
-        phase = 'check'
-        method = args.mode.split('_')[-1]
-    elif 'reflection' in args.mode:
-        phase = 'reflection'
-        method = args.mode.split('_')[-1]
-    elif 'advice' in args.mode:
-        phase = 'advice'
-        method = args.mode.split('_')[-1]
-    elif 'refine' in args.mode:
-        phase = 'refine'
-        method = args.mode.split('_')[-1]
-    elif 'metacognitive_eval' in args.mode:
-        phase = 'metacognitive_eval'
-        method = args.mode.split('_')[-1]
+    phase, method = (
+        "",
+        "",
+    )  # phase: check/reason/reflection method: cot/pot/eot/peano/plan/pal/refine
+    if "check" in args.mode:
+        phase = "check"
+        method = args.mode.split("_")[-1]
+    elif "reflection" in args.mode:
+        phase = "reflection"
+        method = args.mode.split("_")[-1]
+    elif "advice" in args.mode:
+        phase = "advice"
+        method = args.mode.split("_")[-1]
+    elif "refine" in args.mode:
+        phase = "refine"
+        method = args.mode.split("_")[-1]
+    elif "metacognitive_eval" in args.mode:
+        phase = "metacognitive_eval"
+        method = args.mode.split("_")[-1]
     else:
-        phase = 'reason'
+        phase = "reason"
         method = args.mode
 
     for inst_i in pbar:
-        if phase == 'check':
+        if phase == "check":
             brain.set_instance_check(inst_i)
             brain.think_check(method)
-        elif phase == 'refine':
+        elif phase == "refine":
             brain.set_instance_check(inst_i)
             brain.think_refine()
-        elif phase=='metacognitive_eval':
+        elif phase == "metacognitive_eval":
             brain.set_instance_check(inst_i)
-            brain.think_meta_eval(method)
+            brain.think_meta_eval_deepseek(method)
+            #brain.think_meta_eval(method)
         else:
             brain.set_instance(inst_i)
-            if method == 'plan':
+            if method == "plan":
                 brain.plan()
-            elif method == 'cot':
+            elif method == "cot":
                 brain.reason_cot()
-            elif method == 'pot':
+            elif method == "pot":
                 brain.reason_pot()
-            elif method == 'eot':
+            elif method == "eot":
                 brain.reason_eot()
-            elif method == 'peano':
+            elif method == "peano":
                 brain.reason_peano()
 
         brain.save_cache()
@@ -152,14 +169,16 @@ if __name__ == "__main__":
 
     metric = brain.get_metrics()
     print(f"========= Metric: {metric}")
-    with open(os.path.join(args.output_dir, f'{args.tag}_metric.json'), 'w') as f:
+    with open(os.path.join(args.output_dir, f"{args.tag}_metric.json"), "w") as f:
         output_json = json.dumps(metric)
-        f.write(output_json + '\n')
+        f.write(output_json + "\n")
 
     if not args.debug and args.enable_wandb:
         wandb.log(metric)
 
     print(f"Save results at {brain.result_path}")
     print(f"Save metrics at {os.path.join(args.output_dir, f'{args.tag}_metric.json')}")
-    print(f"Total inference time: {round((t_end - t_start) / 60, 4)} mins, "
-          f"i.e. {round((t_end - t_start) / 3600, 4)} hours.")
+    print(
+        f"Total inference time: {round((t_end - t_start) / 60, 4)} mins, "
+        f"i.e. {round((t_end - t_start) / 3600, 4)} hours."
+    )
