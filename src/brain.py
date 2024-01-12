@@ -15,7 +15,7 @@ from prompts.eot import EOT_SYSTEM, EOT
 from prompts.peano import PEANO_SYSTEM, PEANO
 from prompts.check import ASSERT_SYSTEM, ASSERT_PROMPT
 from prompts.self_refine import REFINE_SYSTEM, REFINE
-from prompts.metacognitive_eval_cot import META_EVAL_SYSTEM, META_EVAL
+from prompts.metacognitive_eval_deepseek import META_EVAL_SYSTEM, META_EVAL
 
 
 from utils import *
