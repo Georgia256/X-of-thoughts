@@ -5,6 +5,7 @@ You are an expert in math reasoning. Assess the following solution. During the e
 3)Ensure every calculation and logical step is correct and clearly explained.
 4)Verify if the final answer is accurate and addresses the question.
 5)State your conclusion about whether the solution is correct or incorrect, and if it is incorrect provide the correct solution.
+6)Provide the final numeric result seperately.
 Your answer must be in the following format:
 Evaluation:...
 Conclusion:...
