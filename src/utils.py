@@ -192,7 +192,7 @@ def get_chat_response(args, input, key, org_id, n=1):
             input_tensor = tokenizer.apply_chat_template(
                 messages, add_generation_prompt=True, return_tensors="pt"
             )
-            outputs = model.generate(input_tensor.to(model.device), max_new_tokens=1000)
+            outputs = model.generate(input_tensor.to(model.device), max_new_tokens=1800)
 
             result = tokenizer.decode(
                 outputs[0][input_tensor.shape[1] :], skip_special_tokens=True
