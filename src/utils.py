@@ -191,7 +191,9 @@ def get_chat_response(args, input, key, org_id, n=1):
             result = tokenizer.decode(
                 outputs[0][input_tensor.shape[1] :], skip_special_tokens=True
             )
-            print(result)
+            del model  # Delete the model to free up memory
+            torch.cuda.empty_cache()
+            return result
 
         elif args.model in [
             "gpt-3.5-turbo",
