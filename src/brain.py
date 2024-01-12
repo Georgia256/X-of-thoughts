@@ -354,9 +354,9 @@ class Brain:
             pred = pred_init
             self.cache[f"metacognitive_eval/{method}/ans"] = pred
         elif "the solution is incorrect" in response.lower():
-            answer_format_flag = "The answer is" in response
+            answer_format_flag = "Corrected solution:" in response
             pred_str = (
-                response.split("The answer is")[-1].strip(".").replace(",", "").strip()
+                response.split("Corrected solution:")[-1].strip(".").replace(",", "").strip()
             )
             try:
                 all_digit = re.findall(r"[-+]?\d*\.?\d+|\d+", pred_str)

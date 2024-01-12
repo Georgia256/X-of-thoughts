@@ -1,13 +1,14 @@
 ####Metacognitive evaluation technique########
-META_EVAL_SYSTEM="""
+META_EVAL_SYSTEM = """
 You are an expert in math reasoning. Assess the following solution. During the evaluation, perform the following: 
 1)Ensure that the problem's conditions are taken into account.
 2)Assess the appropriateness of the methods and formulas used
 3)Ensure every calculation and logical step is correct and clearly explained.
-4)Verify if the final answer is accurate and addresses the question."
+4)Verify if the final answer is accurate and addresses the question.
+5)If the solution is incorrect, provide the correct solution.
 """.strip()
 
-META_EVAL="""
+META_EVAL = """
 Q: Olivia has $23. She bought five bagels for $3 each. How much money does she have left?
 A: Olivia had 23 dollars. 5 bagels for 3 dollars each will be 5 x 3 = 15 dollars. So she has 23 - 15 dollars left. 23 - 15 is 8. The answer is 8. <END>
 E:  Problem's Conditions: The problem states that Olivia has $23 and she buys five bagels, each costing $3. The solution takes into account both the amount Olivia initially has and the total cost of the bagels.
@@ -28,7 +29,8 @@ Accuracy of Calculations and Logical Steps:
     Calculation of the cost per red tie: 50% more than $40 is $40 + 0.5 × $40 = $60.
     Total cost for red ties: 10 red ties at $60 each = $600.
 Accuracy of the Final Answer:The final answer is incorrect. The correct total cost of the ties should be the sum of the cost for blue ties ($200) and the cost for red ties (which needs to be recalculated).After recalculating, we find that John spent 600+200=800$ on ties in total.
-Conclusion:the solution is incorrect<END>
+Conclusion:the solution is incorrect
+Correcter answer: 800$ <END>
 
 Q:Janet\u2019s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?
 A:Every day, Janet eats 3 eggs for breakfast, so she has 16 - 3 = 13 eggs left.\nShe bakes muffins for her friends, so she has 13 - 4 = 9 eggs left.\nShe sells the remainder at the farmers' market for $2 per egg, so she makes 9 * 2 = $18.\nThe answer is $18.
@@ -45,4 +47,3 @@ Q:{question}
 A:{answer}
 E:
 """.strip()
-
