@@ -406,7 +406,7 @@ class Brain:
         )
         response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
         self.cache[f"metacognitive_eval/{method}"] = response
-        match = re.search(r"Conclusion:(.*?)Correct solution", text, re.DOTALL)
+        match = re.search(r"Conclusion:(.*?)Correct solution", response, re.DOTALL)
         matched_str = match.group(1).strip()
         if "incorrect" in matched_str.lower():
             answer_format_flag = "Final numeric result:" in response
@@ -430,7 +430,7 @@ class Brain:
                 print(pred_str)
                 pred = None
             self.cache[f"metacognitive_eval/{method}/ans"] = pred
-        elif "correct" in matched_str:
+        elif "correct" in matched_str.lower():
             pred = pred_init
             self.cache[f"metacognitive_eval/{method}/ans"] = pred
         else:
