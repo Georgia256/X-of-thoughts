@@ -178,7 +178,13 @@ def get_chat_response(args, input, key, org_id, n=1):
             # use deepseek LLM
             model_name = "deepseek-ai/deepseek-llm-7b-chat"
             tokenizer = AutoTokenizer.from_pretrained(model_name)
-            model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.bfloat16, offload_folder="offload", offload_state_dict = True, device_map="auto")
+            model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                torch_dtype=torch.bfloat16,
+                offload_folder="offload",
+                offload_state_dict=True,
+                device_map="auto",
+            )
             model.generation_config = GenerationConfig.from_pretrained(model_name)
             model.generation_config.pad_token_id = model.generation_config.eos_token_id
 
