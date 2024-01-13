@@ -18,4 +18,4 @@ TAG=$3
 #python src/solve.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode plan 
 
 #meta_eval
-python src/solve.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode metacognitive_eval_cot --data_path outputs/gsm/cot/minibatches/${TAG}_cot_${RANGE_START}_${RANGE_END}.jsonl
+python src/solve.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode metacognitive_eval_cot --data_path outputs/gsm/cot/${TAG}_cot_${RANGE_START}_${RANGE_END}.jsonl
