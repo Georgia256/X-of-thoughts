@@ -9,4 +9,5 @@ python src/analyze.py \
   --eot outputs/gsm/eot/${TAG}_eot_${RANGE_START}_${RANGE_END}.jsonl \
   --pot_assertion outputs/gsm/check_pot/${TAG}_check_pot_${RANGE_START}_${RANGE_END}.jsonl \
   --eot_assertion outputs/gsm/check_eot/${TAG}_check_eot_${RANGE_START}_${RANGE_END}.jsonl \
+  --meta_eval outputs/gsm/cot/metacognitive_eval_cot/${TAG}_metacognitive_eval_${RANGE_START}_${RANGE_END}.jsonl \
   --tag gsm_analysis
