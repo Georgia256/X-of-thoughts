@@ -412,19 +412,27 @@ class Brain:
         else:
             matched_str = match.group(1).strip()
         if "incorrect" in matched_str.lower():
-            answer_format_flag = "Final numeric result:" in response
-            pred_str = (
-                response.split("Final numeric result:")[-1]
-                .strip(".")
-                .replace(",", "")
-                .strip()
-            )
+            if "Final numeric result:" in response:
+            #answer_format_flag = "Final numeric result:" in response
+                pred_str = (
+                    response.split("Final numeric result:")[-1]
+                    .strip(".")
+                    .replace(",", "")
+                    .strip()
+                )
+            else:
+                pred_str = (
+                    response.split("Correct solution:")[-1]
+                    .strip(".")
+                    .replace(",", "")
+                    .strip()
+                )
             try:
                 all_digit = re.findall(r"[-+]?\d*\.?\d+|\d+", pred_str)
-                if answer_format_flag:
-                    pred = all_digit[0]
-                else:
-                    pred = all_digit[-1]
+                # if answer_format_flag:
+                #     pred = all_digit[0]
+                # else:
+                pred = all_digit[-1]
                 pred = floatify_ans(pred)
                 if pred is not None and "%" in pred_str:
                     pred = pred / 100
