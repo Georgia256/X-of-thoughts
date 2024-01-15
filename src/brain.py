@@ -397,8 +397,8 @@ class Brain:
 
         question = self.cache["inst/question"]
         pred_init = self.cache.get(f"reason/{method}/ans")
-        if pred_init is None:
-            raise ValueError(f"Prediction for method '{method}' not found in cache")
+        # if pred_init is None:
+        #     raise ValueError(f"Prediction for method '{method}' not found in cache")
         answer = self.cache[f"reason/{method}"]
         chat_input = self.build_chat_input(
             META_EVAL_SYSTEM,

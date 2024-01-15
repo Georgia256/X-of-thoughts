@@ -4,12 +4,12 @@ import re
 import sys
 
 
-if len(sys.argv) != 3:
-    print("Usage: script.py <input_folder> <output_file>")
-    sys.exit(1)
+# if len(sys.argv) != 3:
+#     print("Usage: script.py <input_folder> <output_file>")
+#     sys.exit(1)
 
-input_directory = sys.argv[1]
-output_file = sys.argv[2]
+input_directory = "folder"
+output_file = "output.jsonl"
 
 
 # Function to extract number from filename
@@ -22,7 +22,7 @@ def extract_number(filename):
 jsonl_files = [
     f
     for f in os.listdir(input_directory)
-    if f.startswith("batch") and f.endswith(".jsonl")
+    if f.startswith("minibatch") and f.endswith(".jsonl")
 ]
 
 # Sort files based on the extracted number
