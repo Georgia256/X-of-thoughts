@@ -12,8 +12,14 @@ PLAN = """
 Question: Arnel had ten boxes of pencils with the same number of pencils in each box.  He kept ten pencils and shared the remaining pencils equally with his five friends. If his friends got eight pencils each, how many pencils are in each box?
 Method: System of linear equations <END>
 
+Question: Olivia has $23. She bought five bagels for $3 each. How much money does she have left?
+Method:  Chain of Thought <END>
+
 Question: Larry spends half an hour twice a day walking and playing with his dog. He also spends a fifth of an hour every day feeding his dog. How many minutes does Larry spend on his dog each day?
 Method: Python Program <END>
+
+Question: Janet\u2019s ducks lay 16 eggs per day. She eats three for breakfast every morning and bakes muffins for her friends every day with four. She sells the remainder at the farmers' market daily for $2 per fresh duck egg. How much in dollars does she make every day at the farmers' market?
+Method:  Chain of Thought <END>
 
 Question: Angela is a bike messenger in New York. She needs to deliver 8 times as many packages as meals. If she needs to deliver 27 meals and packages combined, how many meals does she deliver?
 Method: System of linear equations <END>
@@ -32,6 +38,9 @@ Method: System of linear equations <END>
 
 Question: Conor can chop 12 eggplants, 9 carrots, and 8 potatoes in a day. If he works 4 times a week, how many vegetables can he chop?
 Method: Python Program <END>
+
+Question: A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bolts in total does it take?
+Method:  Chain of Thought <END>
 
 Question: {question}
 Method:
