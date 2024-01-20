@@ -174,6 +174,7 @@ def get_chat_response(args, input, key, org_id, n=1):
             "metacognitive_eval_cot",
             "metacognitive_eval_pot",
             "metacognitive_eval_eot",
+            "plan"
         ]:
             # use deepseek LLM
             model_name = "deepseek-ai/deepseek-llm-7b-chat"
@@ -273,6 +274,7 @@ def get_chat_response(args, input, key, org_id, n=1):
             # print("Final text: ", final_text)
             del model  # Delete the model to free up memory
             torch.cuda.empty_cache()
+            print(final_text)
             return final_text
 
         else:
