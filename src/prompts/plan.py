@@ -5,48 +5,48 @@
 
 PLAN_SYSTEM = """
 You are an expert in math reasoning. Please choose the best method to solve the math word problems between the following methods: 
-- Sequence of Logical Steps: This method is ideal for multi-step reasoning problems, where each step builds on the previous one. It's like a conversation with oneself, breaking down the question into a series of logical steps or considerations. This method shines in scenarios where the reasoning path is critical, such as complex problems with multiple variables, puzzles, or problems requiring a narrative explanation of the reasoning process.
-- Python Program: This method generates a Python program that can solve the given question. It is used for questions involving straightforward arithmetic operations or when implementing complex logical operations, like "if-else" statements.
-- System of linear equations: This method involves formulating a math model as a system of linear equations to solve for unknown variables. It's best for questions where variables are integral to the problem and can be defined in equations, particularly for backward reasoning processes.
+- Chain of Thought: This method is ideal for multi-step reasoning problems, where each step builds on the previous one. It's like a conversation with oneself, breaking down the question into a series of logical steps or considerations. This method shines in scenarios where the reasoning path is critical, such as complex problems with multiple variables, puzzles, or problems requiring a narrative explanation of the reasoning process.
+- Program of Thought: This method generates a Python program that can solve the given question. It is used for questions involving straightforward arithmetic operations or when implementing complex logical operations, like "if-else" statements.
+- Equations of Thought: This method involves formulating a math model as a system of linear equations to solve for unknown variables. It's best for questions where variables are integral to the problem and can be defined in equations, particularly for backward reasoning processes.
 """.strip()
 
 # 8-shot
 PLAN = """
 Question: Arnel had ten boxes of pencils with the same number of pencils in each box.  He kept ten pencils and shared the remaining pencils equally with his five friends. If his friends got eight pencils each, how many pencils are in each box?
-Method: System of linear equations <END>
+Method: Equations of Thought <END>
 
 Question: A gardener has a new flower bed that can fit 24 flowers. He plants tulips and roses. He plants twice as many tulips as roses. How many of each type does he plant?
-Method:  Sequence of Logical Steps <END>
+Method: Chain of Thought <END>
 
 Question: Larry spends half an hour twice a day walking and playing with his dog. He also spends a fifth of an hour every day feeding his dog. How many minutes does Larry spend on his dog each day?
-Method: Python Program <END>
+Method: Program of Thought <END>
 
 Question: A library initially had 1,500 books. Last year, they added thrice as many books as they sold. If the total number of books is now 2,100, how many books were added and sold?
-Method:  Sequence of Logical Steps <END>
+Method: Chain of Thought <END>
 
 Question: Angela is a bike messenger in New York. She needs to deliver 8 times as many packages as meals. If she needs to deliver 27 meals and packages combined, how many meals does she deliver?
-Method: System of linear equations <END>
+Method: Equations of Thought <END>
 
 Question: Last year Dallas was 3 times the age of his sister Darcy. Darcy is twice as old as Dexter who is 8 right now. How old is Dallas now?
-Method: System of linear equations <END>
+Method: Equations of Thought <END>
 
 Question: A small poultry farm has 300 chickens, 200 turkeys and 80 guinea fowls. A strange, incurable disease hit the farm and every day the farmer lost 20 chickens, 8 turkeys and 5 guinea fowls. After a week, how many birds will be left in the poultry?
-Method: Python Program <END>
+Method: Program of Thought <END>
 
 Question: In a game, a player earns 5 points for each level completed and loses 2 points for each level failed. If the player completed 15 levels and failed 4, what is their total score?
-Method: Sequence of Logical Steps <END>
+Method: Chain of Thought <END>
 
 Question: There were nine computers in the server room. Five more computers were installed each day, from monday to thursday. How many computers are now in the server room?
-Method: Python Program <END>
+Method: Program of Thought <END>
 
 Question: Alyssa, Keely, and Kendall ordered 100 chicken nuggets from a fast-food restaurant. Keely and Kendall each ate twice as many as Alyssa. How many did Alyssa eat?
-Method: System of linear equations <END>
+Method: Equations of Thought <END>
 
 Question: Conor can chop 12 eggplants, 9 carrots, and 8 potatoes in a day. If he works 4 times a week, how many vegetables can he chop?
-Method: Python Program <END>
+Method: Program of Thought <END>
 
 Question: If each page of a book contains about 300 words, approximately how many words are in a book with 450 pages?
-Method:  Sequence of Logical Steps <END>
+Method: Chain of Thought <END>
 
 Question: {question}
 Method:
