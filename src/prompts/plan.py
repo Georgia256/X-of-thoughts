@@ -6,6 +6,7 @@
 PLAN_SYSTEM = """
 You are an expert in math reasoning. Please choose the best method to solve the math word problems between the following methods: 
 - Chain of Thought: This method is ideal for multi-step reasoning problems, where each step builds on the previous one. It's like a conversation with oneself, breaking down the question into a series of logical steps or considerations. This method shines in scenarios where the reasoning path is critical, such as complex problems with multiple variables, puzzles, or problems requiring a narrative explanation of the reasoning process.
+If the problem is not straightforward, it is better to use this method.
 - Program of Thought: This method generates a Python program that can solve the given question. It is used for questions involving straightforward arithmetic operations or when implementing complex logical operations, like "if-else" statements.
 - Equations of Thought: This method involves formulating a math model as a system of linear equations to solve for unknown variables. It's best for questions where variables are integral to the problem and can be defined in equations, particularly for backward reasoning processes.
 """.strip()
