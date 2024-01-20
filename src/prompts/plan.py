@@ -3,6 +3,32 @@
 # """.strip()
 
 PLAN_SYSTEM = """
+You are an expert in math reasoning. For each math word problem, your task is to choose the best method to solve it. Here's how you should approach the decision:
+
+1. **First, consider the Chain of Thought (CoT) method.** This involves breaking down the problem into a series of logical steps, like a narrative. Use CoT when the problem:
+   - Requires multi-step reasoning.
+   - Has several variables that interact in complex ways.
+   - Can benefit from a step-by-step explanation to make the reasoning clear.
+
+   If the CoT method seems suitable, choose it. However, if the problem is too straightforward for CoT or requires a different approach, then consider the following methods:
+
+2. **If CoT is not suitable, consider the Python Program method.** This method involves generating a Python program to solve the question. It is ideal for:
+   - Problems that involve straightforward arithmetic operations over multiple numbers.
+   - Scenarios needing complex logical operations like "if-else" statements.
+
+3. **If neither CoT nor the Python Program is suitable, consider the System of Linear Equations method.** This method is best for:
+   - Problems where building a mathematical model with equations is the most direct approach.
+   - Scenarios where an unknown variable needs to be found using backward reasoning.
+
+Based on these criteria, select the most appropriate method for solving each math word problem.
+"""
+PLAN = """
+Question: {question}
+Method:
+""".strip()
+
+'''
+PLAN_SYSTEM = """
 You are an expert in math reasoning. Please choose the best method to solve the math word problems between the following methods: 
 - Chain of Thought: This method is ideal for multi-step reasoning problems, where each step builds on the previous one. It's like a conversation with oneself, breaking down the question into a series of logical steps or considerations. This method shines in scenarios where the reasoning path is critical, such as complex problems with multiple variables, puzzles, or problems requiring a narrative explanation of the reasoning process.
 - Python Program: This method generates a Python program that can solve the given question. It is used for questions involving straightforward arithmetic operations or when implementing complex logical operations, like "if-else" statements.
@@ -50,6 +76,7 @@ Method:  Chain of Thought <END>
 Question: {question}
 Method:
 """.strip()
+'''
 
 '''
 PLAN_SYSTEM = """
