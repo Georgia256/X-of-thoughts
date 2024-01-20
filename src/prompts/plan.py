@@ -2,35 +2,10 @@
 # You are an expert in math reasoning. Please choose the best method to solve the math word problems. Read the description of the methods and the examples. You only need to suggest the best method. Do not solve the problem.
 # """.strip()
 
-PLAN_SYSTEM = """
-You are an expert in math reasoning. For each math word problem, your task is to choose the best method to solve it. Here's how you should approach the decision:
 
-1. **First, consider the Chain of Thought (CoT) method.** This involves breaking down the problem into a series of logical steps, like a narrative. Use CoT when the problem:
-   - Requires multi-step reasoning.
-   - Has several variables that interact in complex ways.
-   - Can benefit from a step-by-step explanation to make the reasoning clear.
-
-   If the CoT method seems suitable, choose it. However, if the problem is too straightforward for CoT or requires a different approach, then consider the following methods:
-
-2. **If CoT is not suitable, consider the Python Program method.** This method involves generating a Python program to solve the question. It is ideal for:
-   - Problems that involve straightforward arithmetic operations over multiple numbers.
-   - Scenarios needing complex logical operations like "if-else" statements.
-
-3. **If neither CoT nor the Python Program is suitable, consider the System of Linear Equations method.** This method is best for:
-   - Problems where building a mathematical model with equations is the most direct approach.
-   - Scenarios where an unknown variable needs to be found using backward reasoning.
-
-Based on these criteria, select the most appropriate method for solving each math word problem.
-"""
-PLAN = """
-Question: {question}
-Method:
-""".strip()
-
-'''
 PLAN_SYSTEM = """
 You are an expert in math reasoning. Please choose the best method to solve the math word problems between the following methods: 
-- Chain of Thought: This method is ideal for multi-step reasoning problems, where each step builds on the previous one. It's like a conversation with oneself, breaking down the question into a series of logical steps or considerations. This method shines in scenarios where the reasoning path is critical, such as complex problems with multiple variables, puzzles, or problems requiring a narrative explanation of the reasoning process.
+- Sequence of Logical Steps: This method is ideal for multi-step reasoning problems, where each step builds on the previous one. It's like a conversation with oneself, breaking down the question into a series of logical steps or considerations. This method shines in scenarios where the reasoning path is critical, such as complex problems with multiple variables, puzzles, or problems requiring a narrative explanation of the reasoning process.
 - Python Program: This method generates a Python program that can solve the given question. It is used for questions involving straightforward arithmetic operations or when implementing complex logical operations, like "if-else" statements.
 - System of linear equations: This method involves formulating a math model as a system of linear equations to solve for unknown variables. It's best for questions where variables are integral to the problem and can be defined in equations, particularly for backward reasoning processes.
 """.strip()
@@ -41,13 +16,13 @@ Question: Arnel had ten boxes of pencils with the same number of pencils in each
 Method: System of linear equations <END>
 
 Question: A gardener has a new flower bed that can fit 24 flowers. He plants tulips and roses. He plants twice as many tulips as roses. How many of each type does he plant?
-Method:  Chain of Thought <END>
+Method:  Sequence of Logical Steps <END>
 
 Question: Larry spends half an hour twice a day walking and playing with his dog. He also spends a fifth of an hour every day feeding his dog. How many minutes does Larry spend on his dog each day?
 Method: Python Program <END>
 
 Question: A library initially had 1,500 books. Last year, they added thrice as many books as they sold. If the total number of books is now 2,100, how many books were added and sold?
-Method:  Chain of Thought <END>
+Method:  Sequence of Logical Steps <END>
 
 Question: Angela is a bike messenger in New York. She needs to deliver 8 times as many packages as meals. If she needs to deliver 27 meals and packages combined, how many meals does she deliver?
 Method: System of linear equations <END>
@@ -59,7 +34,7 @@ Question: A small poultry farm has 300 chickens, 200 turkeys and 80 guinea fowls
 Method: Python Program <END>
 
 Question: In a game, a player earns 5 points for each level completed and loses 2 points for each level failed. If the player completed 15 levels and failed 4, what is their total score?
-Method: Chain of Thought <END>
+Method: Sequence of Logical Steps <END>
 
 Question: There were nine computers in the server room. Five more computers were installed each day, from monday to thursday. How many computers are now in the server room?
 Method: Python Program <END>
@@ -71,12 +46,11 @@ Question: Conor can chop 12 eggplants, 9 carrots, and 8 potatoes in a day. If he
 Method: Python Program <END>
 
 Question: If each page of a book contains about 300 words, approximately how many words are in a book with 450 pages?
-Method:  Chain of Thought <END>
+Method:  Sequence of Logical Steps <END>
 
 Question: {question}
 Method:
 """.strip()
-'''
 
 '''
 PLAN_SYSTEM = """
