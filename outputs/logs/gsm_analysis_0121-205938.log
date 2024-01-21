@@ -80,14 +80,14 @@ INFO - 0.6039603960396039
 INFO - ===== Majority Vote =====
 INFO - 0.5346534653465347
 INFO - ===== XoT main results =====
-INFO - 0.5445544554455446
-INFO - Avg Steps: 1.7425742574257426
+INFO - 0.5544554455445545
+INFO - Avg Steps: 1.7326732673267327
 INFO - Unknown plan method: 0
 INFO - ===== PEC ratio =====
-INFO - PoT: 33,0.32673267326732675, EoT: 20, 0.19801980198019803,CoT: 48,0.4752475247524752
+INFO - PoT: 38,0.37623762376237624, EoT: 20, 0.19801980198019803,CoT: 43,0.42574257425742573
 INFO - ===== Metacognitive evaluation results =====
 INFO - TP: 29, FP: 33, FN: 7, TN: 32
 INFO - Evalution Accuracy: 0.6039603960396039
 INFO - Numeric result accuracy: 0.32673267326732675
 INFO - Corrected instances: 4
-INFO - Save results at outputs/logs/gsm_analysis_0121-204353.log
+INFO - Save results at outputs/logs/gsm_analysis_0121-205938.log
