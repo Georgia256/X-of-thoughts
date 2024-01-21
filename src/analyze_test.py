@@ -500,8 +500,8 @@ if __name__ == "__main__":
 
             # Create a list of tuples with method names and ratings
             ratings_list = [
-                ("Chain_of_Thought", chain_of_thought_rating),
                 ("Python_Program", python_program_rating),
+                ("Chain_of_Thought", chain_of_thought_rating),
                 ("System_of_linear_equations", system_of_linear_equations_rating),
             ]
 
