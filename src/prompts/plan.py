@@ -16,7 +16,9 @@ You are an expert in math reasoning. Please choose the best method to solve the 
 - Chain of Thought: This method involves breaking down the question into a series of logical steps or considerations, almost like a narrative or a conversation with oneself. It's typically used when the problem requires multi-step reasoning, where each step builds upon the previous one. The method is particularly useful for complex problems that don't lend themselves to straightforward computational or algorithmic solutions. Instead of directly arriving at the answer, the chain of thought method involves articulating each step of the thought process, providing clarity and justification for each decision or inference made along the way. This approach is ideal for problems where the reasoning path is as important as the final answer, such as in puzzles, riddles, or scenarios with multiple variables and possible interpretations.
 Before choosing a method, please rate the probability of successfully solving this problem using each method on a scale from 1 to 5, where 1 indicates very low probability and 5 indicates very high probability. Then, proceed to choose a method. If this score is 4 or higher, choose Chain of Thought. You should just choose the most suitable method, not solve the problem.
 Remember to follow this format:
-cot_rating:<rating><END>
+cot_rating:{rating}
+pot_rating:{rating}
+eot_rating:{rating}
 Method: {method} <END>
 """.strip()
 #################
