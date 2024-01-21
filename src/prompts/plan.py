@@ -19,7 +19,31 @@ Python_Program_rating:{rating}
 System_of_linear_equations_rating:{rating}
 Chain_of_Thought_rating:{rating}
 """.strip()
-#################
+#3-shot
+PLAN="""
+Question: Arnel had ten boxes of pencils with the same number of pencils in each box.  He kept ten pencils and shared the remaining pencils equally with his five friends. If his friends got eight pencils each, how many pencils are in each box?
+Python_Program_rating:3
+System_of_linear_equations_rating:5
+Chain_of_Thought_rating:4 <END>
+
+Question: Olivia has $23. She bought five bagels for $3 each. How much money does she have left?
+Python_Program_rating:2
+System_of_linear_equations_rating:2
+Chain_of_Thought_rating:5 <END>
+
+Question: Larry spends half an hour twice a day walking and playing with his dog. He also spends a fifth of an hour every day feeding his dog. How many minutes does Larry spend on his dog each day?
+Python_Program_rating:5
+System_of_linear_equations_rating:2
+Chain_of_Thought_rating:3 <END>
+
+Question: {question}
+Python_Program_rating:
+System_of_linear_equations_rating:
+Chain_of_Thought_rating:
+""".strip()
+
+################
+'''
 # 8-shot
 PLAN = """
 Question: Arnel had ten boxes of pencils with the same number of pencils in each box.  He kept ten pencils and shared the remaining pencils equally with his five friends. If his friends got eight pencils each, how many pencils are in each box?
@@ -58,7 +82,7 @@ Method:  Chain of Thought <END>
 Question: {question}
 Method:
 """.strip()
-
+'''
 '''
 PLAN_SYSTEM = """
 You are an expert in math reasoning. Please choose the best method to solve the math word problems between the following methods: 
