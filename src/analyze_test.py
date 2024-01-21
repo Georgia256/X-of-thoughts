@@ -494,9 +494,9 @@ if __name__ == "__main__":
             system_of_linear_equations_rating = re.search(system_of_linear_equations_pattern, temp)
             chain_of_thought_rating = re.search(chain_of_thought_pattern, temp)
             # Convert found ratings to integers, if found
-            python_program_rating = float(python_program_rating.group(1)) if python_program_rating else None
-            system_of_linear_equations_rating = float(system_of_linear_equations_rating.group(1)) if system_of_linear_equations_rating else None
-            chain_of_thought_rating = float(chain_of_thought_rating.group(1)) if chain_of_thought_rating else None
+            python_program_rating = float(python_program_rating.group(1)) if python_program_rating else 0.0
+            system_of_linear_equations_rating = float(system_of_linear_equations_rating.group(1)) if system_of_linear_equations_rating else 0.0
+            chain_of_thought_rating = float(chain_of_thought_rating.group(1)) if chain_of_thought_rating else 0.0
 
             # Create a list of tuples with method names and ratings
             ratings_list = [
