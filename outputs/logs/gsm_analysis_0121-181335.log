@@ -99,3 +99,9 @@ INFO - Avg Steps: 1.9405940594059405
 INFO - Unknown plan method: 0
 INFO - ===== PEC ratio =====
 INFO - PoT: 44,0.43564356435643564, EoT: 22, 0.21782178217821782,CoT: 35,0.3465346534653465
+INFO - ===== Metacognitive evaluation results =====
+INFO - TP: 29, FP: 33, FN: 7, TN: 32
+INFO - Evalution Accuracy: 0.6039603960396039
+INFO - Numeric result accuracy: 0.32673267326732675
+INFO - Corrected instances: 4
+INFO - Save results at outputs/logs/gsm_analysis_0121-181335.log
