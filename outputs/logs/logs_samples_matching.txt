@@ -18,3 +18,5 @@ gsm_analysis_0108-131910.log -> file for all 1319 samples
 
 gsm_analysis_0114-215117.log -> batch_1 with metacognitive_eval scores
 gsm_analysis_0121-181335.log -> batch_1 with metacognitive_eval scores v2
+
+gsm_analysis_0121-204353.log -> batch_1 with 3 plan methods & metacognitive_eval scores v2
