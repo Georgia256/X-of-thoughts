@@ -173,8 +173,8 @@ def get_chat_response(args, input, key, org_id, n=1):
         if args.mode in [
             "metacognitive_eval_cot",
             "metacognitive_eval_pot",
-            "metacognitive_eval_eot" #,
-            #"plan"
+            "metacognitive_eval_eot",
+            "plan"
         ]:
             # use deepseek LLM
             model_name = "deepseek-ai/deepseek-llm-7b-chat"
