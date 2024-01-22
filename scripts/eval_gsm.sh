@@ -2,7 +2,7 @@ RANGE_START=$1
 RANGE_END=$2
 TAG=$3
 
-python src/analyze_test.py \
+python src/analyze.py \
   --plan outputs/gsm/plan/${TAG}_plan_${RANGE_START}_${RANGE_END}.jsonl \
   --cot outputs/gsm/cot/${TAG}_cot_${RANGE_START}_${RANGE_END}.jsonl \
   --pot outputs/gsm/pot/${TAG}_pot_${RANGE_START}_${RANGE_END}.jsonl \
