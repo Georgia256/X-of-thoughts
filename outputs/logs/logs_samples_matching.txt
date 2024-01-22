@@ -20,3 +20,4 @@ gsm_analysis_0114-215117.log -> batch_1 with metacognitive_eval scores
 gsm_analysis_0121-181335.log -> batch_1 with metacognitive_eval scores v2
 
 gsm_analysis_0121-205938.log -> batch_1 with 3 plan methods & metacognitive_eval scores v2
+gsm_analysis_0122-134307.log -> batch_1 with 3 plan methods with weighted ratings & metacognitive_eval scores v2
