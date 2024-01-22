@@ -14,7 +14,7 @@ gsm_analysis_0103-045141.log -> RANGE_START=1010, RANGE_END=1111
 gsm_analysis_0105-123059.log -> RANGE_START=1111, RANGE_END=1212
 gsm_analysis_0105-131529.log -> RANGE_START=1212, RANGE_END=1319
 
-gsm_analysis_0108-131910.log -> file for all 1319 samples
+gsm_analysis_0122-181006.log -> file for all 1319 samples
 
 gsm_analysis_0114-215117.log -> batch_1 with metacognitive_eval scores
 gsm_analysis_0121-181335.log -> batch_1 with metacognitive_eval scores v2
