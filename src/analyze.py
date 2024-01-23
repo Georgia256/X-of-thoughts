@@ -19,7 +19,7 @@ if __name__ == "__main__":
     parser.add_argument("--eot", default='', type=str)
     parser.add_argument("--pot_assertion", default='', type=str)
     parser.add_argument("--eot_assertion", default='', type=str)
-    parser.add_argument("--metacognitive_eval", default='', type=str)
+    #parser.add_argument("--metacognitive_eval", default='', type=str)
     parser.add_argument("--log_dir", default='outputs/logs', type=str)
     parser.add_argument("--tag", default='', type=str)
 
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     eot_data = load_result(args.eot)
     pot_assertion_data = load_result(args.pot_assertion)
     eot_assertion_data = load_result(args.eot_assertion)
-    meta_eval_data = load_result(args.metacognitive_eval)
+    #meta_eval_data = load_result(args.metacognitive_eval)
     if len(args.plan) > 0:
         plan_data = load_result(args.plan)
     else:
@@ -529,6 +529,7 @@ if __name__ == "__main__":
         logger.info(f"PoT: {pec_cnt['p']},{pec_cnt['p'] / data_len}, EoT: {pec_cnt['e']}, {pec_cnt['e'] / data_len},"
                     f"CoT: {pec_cnt['c']},{pec_cnt['c'] / data_len}")
         
+        '''
         # ===== Metacognitive eval results =====
         tp =0
         fp = 0
@@ -559,6 +560,6 @@ if __name__ == "__main__":
         logger.info(f"Evalution Accuracy: {evalution_accuracy}")
         logger.info(f"Numeric result accuracy: {result_accuracy / data_len}")
         logger.info(f"Corrected instances: {corrected_instances}")
-
+'''
 
     logger.info(f"Save results at {log_path}")
