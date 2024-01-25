@@ -6,6 +6,7 @@ import time
 import backoff
 from time import sleep
 import torch
+import math
 import jsonlines
 
 from prompts.plan import PLAN_SYSTEM, PLAN
@@ -19,6 +20,7 @@ from prompts.metacognitive_eval_deepseek import META_EVAL_SYSTEM, META_EVAL
 
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans
+from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 
 from utils import *
 
