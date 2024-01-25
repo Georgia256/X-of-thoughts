@@ -97,7 +97,7 @@ def openai_phi2_handler(prompt):
     return final_text
 '''
 from IPython.core.inputtransformer2 import ESC_HELP
-from openai.error import Error  # Add this line to import the Error class
+#from openai.error import Error  # Add this line to import the Error class
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def completion_with_backoff(**kwargs):
