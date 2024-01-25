@@ -19,8 +19,8 @@ import openai
     stop_after_attempt,
     wait_random_exponential,
 )  # for exponential backoff'''
-import datasets
-from datasets import load_dataset
+#import datasets
+#from datasets import load_dataset
 
 import re
 import time
@@ -37,7 +37,7 @@ openai.api_key = ""
 #use_chat_api = True
 #api_model='gpt-3.5-turbo'
 api_model='microsoft/phi-2'
-use_phi2 = True
+#use_phi2 = True
 from IPython.core.inputtransformer2 import ESC_HELP
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def completion_with_backoff(**kwargs):
@@ -318,7 +318,16 @@ correct = 0
 wrong = 0
 total = 0
 
-dataset = load_dataset("gsm8k","main")
+def load_dataset(data_path):
+    instances = []
+    with open(data_path, "r+", encoding="utf8") as f:
+        for inst in jsonlines.Reader(f):
+            instances.append(inst)
+
+    print(f"Load {len(instances)} data from {data_path}.")
+    return instances
+
+dataset = load_dataset("data/gsm8k/test.jsonl")
 
 
 for questions_number in range(num_questions_to_solve):
@@ -481,7 +490,7 @@ store_answer = []
 store_chosen_cache = []
 
 
-dataset = load_dataset("gsm8k","main")
+dataset = load_dataset("data/gsm8k/test.jsonl")
 
 
 
