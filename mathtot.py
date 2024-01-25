@@ -1,6 +1,9 @@
-#pip install openai transformers datasets --quiet
+pip install openai transformers datasets --quiet
 
-#pip install sentence_transformers --quiet
+pip install sentence_transformers --quiet
+
+pip install tenacity
+
 
 import openai
 '''from tenacity import (
