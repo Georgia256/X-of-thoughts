@@ -27,11 +27,17 @@ import time
 from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans
 import numpy as np
+import os
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from tenacity import retry, stop_after_attempt, wait_random_exponential
 
 
 openai.api_key = ""
-use_chat_api = True
-api_model='gpt-3.5-turbo'
+#use_chat_api = True
+#api_model='gpt-3.5-turbo'
+api_model='microsoft/phi-2'
+use_phi2 = True
 from IPython.core.inputtransformer2 import ESC_HELP
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def completion_with_backoff(**kwargs):
@@ -70,17 +76,39 @@ def openai_api_call_handler(prompt, max_tokens, temperature, k=1, stop=None):
       return response
 
     except openai.error.RateLimitError as e:
-        sleep_duratoin = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
-        print(f'{str(e)}, sleep for {sleep_duratoin}s, set it by env OPENAI_RATE_TIMEOUT')
-        time.sleep(sleep_duratoin)
+        sleep_duration = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
+        print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
+        time.sleep(sleep_duration)
+
+def openai_phi2_handler(prompt):
+    while True:
+        try:
+            response = completion_with_backoff(
+                model=api_model,
+                prompt=prompt,
+                max_tokens=1024,
+                temperature=0.9,
+                top_p=0.35,
+                top_k=50,
+                n=1,
+                return_prompt=True
+            )
+            return response.choices[0].message['content']
+        except openai.error.RateLimitError as e:
+            sleep_duration = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
+            print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
+            time.sleep(sleep_duration)
 
 def openai_choice2text_handler(choice):
+    text = choice.split(" ")[3]  # Assuming the choice structure remains constant
+    return text
+'''
   if use_chat_api:
       text = choice['message']['content']
   else:
       text = choice.text.strip()
   return text
-
+'''
 def generate_text(prompt, k):
   if use_chat_api:
       thoughts = []
@@ -90,9 +118,17 @@ def generate_text(prompt, k):
           thoughts += [text]
       return thoughts
   else:
-      response = openai_api_call_handler(prompt, 300, 1.1, k)
+      response = openai_api_call_handler(prompt, 1024, 0.9, k)
       thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
       return thoughts
+
+def generate_text_phi(prompt, k):
+    thoughts = []
+    for _ in range(k):
+        response = openai_phi2_handler(prompt)
+        text = openai_choice2text_handler(response)
+        thoughts.append(text)
+    return thoughts
 
 def ranking(prompt,question,past):
   # ranks = []
@@ -110,7 +146,7 @@ def ranking(prompt,question,past):
 
   DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
   """
-  a = generate_text(comparison_prompt,1)
+  a = generate_text_phi(comparison_prompt,1)
   return a
 
 def parse_output_options(output):
@@ -184,11 +220,19 @@ for i in range(max_steps):
   print("*****************NEW STEP*****************")
   print(f"The status array is {status}")
   initial_promp = initial_promp_temp + str(status) + output_string
-  out = generate_text(initial_promp,k)[0]
+  out = generate_text_phi(initial_promp,k)[0]
   # print(f"The output from the GPT is {out}")
   outputs = parse_output_options(out)
   print(f"The parsed output is {outputs}")
   option = ranking(outputs,question,status)
+
+# Call reason_tot to get the reason for the chosen option
+  #reason = reason_tot(initial_prompt, option)
+
+# Display the reason
+  #print(f"The reason for the chosen option is:\n{reason}")
+
+
   if("None") in status:
     status = [option]
   else:
@@ -288,7 +332,7 @@ for questions_number in range(num_questions_to_solve):
     print("*****************NEW STEP*****************")
     print(f"The status array is {status} \n\n")
     initial_promp = initial_promp_temp + str(question) + str("\n Steps taken so far:") + str(status) + output_string
-    out = generate_text(initial_promp,k)
+    out = generate_text_phi(initial_promp,k)
 
     for j in range(k):
       print(f"######## This is the thought from instance number {j} ##########")
@@ -306,10 +350,10 @@ for questions_number in range(num_questions_to_solve):
     print("\n\n\n")
 
 
-  question_summary = generate_text(summary_question_prompt + str(question),1)
+  question_summary = generate_text_phi(summary_question_prompt + str(question),1)
   predict_prompt_full = predict_prompt + str(question_summary) + str("Based on the current status - ") + str(status) + str("\n Just give the answer in number nothing else no text")
 
-  answer = generate_text(predict_prompt_full ,1)
+  answer = generate_text_phi(predict_prompt_full ,1)
 
   pred.append(answer[0])
   true.append(true_answer)
@@ -455,7 +499,7 @@ for questions_number in range(num_questions_to_solve):
     print("*****************NEW STEP*****************")
     print(f"The status array is {status} \n\n")
     initial_promp = initial_prompt_temp + str(question) + str("\n Steps taken so far:") + str(status) + output_string
-    out = generate_text(initial_promp,k)
+    out = generate_text_phi(initial_promp,k)
 
     for j in range(k):
       print(f"######## This is the thought from instance number {j} ##########")
@@ -490,10 +534,10 @@ for questions_number in range(num_questions_to_solve):
     print("\n\n\n")
 
 
-  question_summary = generate_text(summary_question_prompt + str(question),1)
+  question_summary = generate_text_phi(summary_question_prompt + str(question),1)
   predict_prompt_full = predict_prompt + str(question_summary) + str("Based on the current status - ") + str(status) + str("\n Just give the final answer in number nothing else no text, no calculations")
 
-  answer = generate_text(predict_prompt_full ,1)
+  answer = generate_text_phi(predict_prompt_full ,1)
 
   pred.append([answer[0]]*max_steps)
   true.append([true_answer]*max_steps)
