@@ -24,7 +24,7 @@ from utils import *
 
 KEY_GROUP = {"a": ["YOUR_API_KEY"]}
 
-api_model='phi-2'
+api_model="phi-2"
 
 
 def load_dataset(data_path):
@@ -35,7 +35,7 @@ def load_dataset(data_path):
 
     print(f"Load {len(instances)} data from {data_path}.")
     return instances
-
+'''
 def openai_phi2_handler(prompt):
     model=api_model
     completion_input = prompt[0]["content"] + "\n" + prompt[1]["content"] 
@@ -85,7 +85,42 @@ def openai_phi2_handler(prompt):
     torch.cuda.empty_cache()
     print(final_text)
     return final_text
-        
+'''
+
+def openai_phi2_handler(prompt):
+    model_name = "microsoft/phi-2"
+    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", trust_remote_code=True)
+    
+    completion_input = prompt.split("\n")
+    
+    inputs = tokenizer(completion_input, return_tensors="pt")
+    input_ids = inputs.input_ids.to(model.device)
+    
+    n_examples = len(completion_input) - 1
+    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+    
+    outputs = model.generate(
+        input_ids=input_ids,
+        do_sample=True,
+        top_p=0.35,
+        top_k=50,
+        temperature=0.9,
+        max_length=max_len,
+        eos_token_id=tokenizer.eos_token_id,
+        pad_token_id=tokenizer.eos_token_id,
+        return_dict_in_generate=True,
+        output_scores=True,
+    )
+    
+    text = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
+    final_text = process_output(completion_input, text)
+    
+    del model
+    torch.cuda.empty_cache()
+    print(final_text)
+    return final_text
+
 
 def openai_choice2text_handler(choice):
     text = choice.split(" ")[3]  # Assuming the choice structure remains constant
