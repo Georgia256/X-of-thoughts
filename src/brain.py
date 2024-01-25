@@ -38,7 +38,7 @@ def load_dataset(data_path):
 
 def openai_phi2_handler(prompt):
     model=api_model
-    completion_input = input[0]["content"] + "\n" + input[1]["content"]
+    completion_input = prompt[0]["content"] + "\n" + prompt[1]["content"] 
     # print("Completion input: ", completion_input)
     torch.set_default_device("cuda")
     if model == "phi-1_5":
