@@ -36,6 +36,103 @@ def load_dataset(data_path):
     print(f"Load {len(instances)} data from {data_path}.")
     return instances
 
+def openai_phi2_handler(prompt):
+    model=api_model
+    completion_input = input[0]["content"] + "\n" + input[1]["content"]
+    # print("Completion input: ", completion_input)
+    torch.set_default_device("cuda")
+    if model == "phi-1_5":
+        model = AutoModelForCausalLM.from_pretrained(
+            "microsoft/phi-1_5", torch_dtype="auto", trust_remote_code=True
+        )
+        tokenizer = AutoTokenizer.from_pretrained(
+            "microsoft/phi-1_5", trust_remote_code=True
+        )
+    else:
+        model = AutoModelForCausalLM.from_pretrained(
+            "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
+        )
+        tokenizer = AutoTokenizer.from_pretrained(
+            "microsoft/phi-2", trust_remote_code=True
+        )
+    inputs = tokenizer(completion_input, return_tensors="pt")
+    input_ids = inputs.input_ids.to(model.device)
+    n_examples = len(input[1]["content"].split("<END>")) - 1
+
+    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+    # attention_mask = inputs.attention_mask.to(model.device)
+    outputs = model.generate(
+        input_ids=input_ids,
+        # attention_mask=attention_mask,
+        do_sample=True,
+        top_p=0.35,
+        top_k=50,
+        temperature=0.9,
+        max_length=max_len,  # Adjust max_length as needed
+        eos_token_id=tokenizer.eos_token_id,  # End of sequence token
+        pad_token_id=tokenizer.eos_token_id,  # Pad token
+        # no_repeat_ngram_size=10,
+        return_dict_in_generate=True,
+        output_scores=True,
+    )
+    text = tokenizer.decode(
+        outputs.sequences[0], skip_special_tokens=True
+    )  # , skip_special_tokens=True
+    # print("Text: ", text)
+    final_text = process_output(completion_input, text)
+    # print("Final text: ", final_text)
+    del model  # Delete the model to free up memory
+    torch.cuda.empty_cache()
+    print(final_text)
+    return final_text
+        
+
+def openai_choice2text_handler(choice):
+    text = choice.split(" ")[3]  # Assuming the choice structure remains constant
+    return text
+    '''
+    if use_chat_api:
+        text = choice['message']['content']
+    else:
+        text = choice.text.strip()
+    return text
+    '''
+
+def generate_text_phi(prompt, k):
+    thoughts = []
+    for _ in range(k):
+        response = openai_phi2_handler(prompt)
+        text = openai_choice2text_handler(response)
+        thoughts.append(text)
+    return thoughts
+
+def ranking(prompt,question,past):
+    # ranks = []
+    # for i in range(len(prompt)):
+    comparison_prompt = f"""
+    To achieve the following goal: '{question}', and based on the current steps taken towards solving the problem {past}
+    pessimistically value the below mentioned step and choose one of the follwing options that will be the best option towards the goal.
+    Return the exact same chosen option, dont change or format it.
+    The options to choose from \n
+    {prompt}\n
+
+    NOTE:
+    1) Evaluate all the options and choose the option which is the best direction for the next step to move based on the past solution we have found till now. Dont choose the output that jumps to the result directly.
+    2)MAKE SURE YOU DONT CHOOSE THE OPTION THAT HAS A SIMILAR MEANING (STEP) TO WHAT IS ALREADY THERE IN THE PAST SOLUTION ARRAY.
+
+    DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
+    """
+    a = generate_text_phi(comparison_prompt,1)
+    return a
+
+def parse_output_options(output):
+    # output = output.split("Output")[1:]
+    # output = " ".join(output).strip()
+    output = output.split("\n")
+    return output
+
+    
+
 
 class Brain:
     def __init__(self, args):
@@ -595,101 +692,6 @@ class Brain:
         self.metrics["total"] = len(self.data)
         return self.metrics
     
-    def openai_phi2_handler(prompt):
-        model=api_model
-        completion_input = input[0]["content"] + "\n" + input[1]["content"]
-        # print("Completion input: ", completion_input)
-        torch.set_default_device("cuda")
-        if model == "phi-1_5":
-            model = AutoModelForCausalLM.from_pretrained(
-                "microsoft/phi-1_5", torch_dtype="auto", trust_remote_code=True
-            )
-            tokenizer = AutoTokenizer.from_pretrained(
-                "microsoft/phi-1_5", trust_remote_code=True
-            )
-        else:
-            model = AutoModelForCausalLM.from_pretrained(
-                "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
-            )
-            tokenizer = AutoTokenizer.from_pretrained(
-                "microsoft/phi-2", trust_remote_code=True
-            )
-        inputs = tokenizer(completion_input, return_tensors="pt")
-        input_ids = inputs.input_ids.to(model.device)
-        n_examples = len(input[1]["content"].split("<END>")) - 1
-
-        max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
-        # attention_mask = inputs.attention_mask.to(model.device)
-        outputs = model.generate(
-            input_ids=input_ids,
-            # attention_mask=attention_mask,
-            do_sample=True,
-            top_p=0.35,
-            top_k=50,
-            temperature=0.9,
-            max_length=max_len,  # Adjust max_length as needed
-            eos_token_id=tokenizer.eos_token_id,  # End of sequence token
-            pad_token_id=tokenizer.eos_token_id,  # Pad token
-            # no_repeat_ngram_size=10,
-            return_dict_in_generate=True,
-            output_scores=True,
-        )
-        text = tokenizer.decode(
-            outputs.sequences[0], skip_special_tokens=True
-        )  # , skip_special_tokens=True
-        # print("Text: ", text)
-        final_text = process_output(completion_input, text)
-        # print("Final text: ", final_text)
-        del model  # Delete the model to free up memory
-        torch.cuda.empty_cache()
-        print(final_text)
-        return final_text
-            
-
-    def openai_choice2text_handler(choice):
-        text = choice.split(" ")[3]  # Assuming the choice structure remains constant
-        return text
-    '''
-    if use_chat_api:
-        text = choice['message']['content']
-    else:
-        text = choice.text.strip()
-    return text
-    '''
-
-    def generate_text_phi(prompt, k):
-        thoughts = []
-        for _ in range(k):
-            response = openai_phi2_handler(prompt)
-            text = openai_choice2text_handler(response)
-            thoughts.append(text)
-        return thoughts
-
-    def ranking(prompt,question,past):
-        # ranks = []
-        # for i in range(len(prompt)):
-        comparison_prompt = f"""
-        To achieve the following goal: '{question}', and based on the current steps taken towards solving the problem {past}
-        pessimistically value the below mentioned step and choose one of the follwing options that will be the best option towards the goal.
-        Return the exact same chosen option, dont change or format it.
-        The options to choose from \n
-        {prompt}\n
-
-        NOTE:
-        1) Evaluate all the options and choose the option which is the best direction for the next step to move based on the past solution we have found till now. Dont choose the output that jumps to the result directly.
-        2)MAKE SURE YOU DONT CHOOSE THE OPTION THAT HAS A SIMILAR MEANING (STEP) TO WHAT IS ALREADY THERE IN THE PAST SOLUTION ARRAY.
-
-        DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
-        """
-        a = generate_text_phi(comparison_prompt,1)
-        return a
-    
-    def parse_output_options(output):
-        # output = output.split("Output")[1:]
-        # output = " ".join(output).strip()
-        output = output.split("\n")
-        return output
-
     def reason_tot(self):
         """# Single GPT Instance with multiple thoughts"""
 
