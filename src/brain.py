@@ -53,7 +53,7 @@ def load_dataset(data_path):
 
     print(f"Load {len(instances)} data from {data_path}.")
     return instances
-
+'''
 def openai_phi2_handler(prompt):
     model=api_model
     completion_input = prompt[0]["content"] + "\n" + prompt[1]["content"] 
@@ -100,6 +100,63 @@ def openai_phi2_handler(prompt):
     final_text = process_output(completion_input, text)
     # print("Final text: ", final_text)
     del model  # Delete the model to free up memory
+    torch.cuda.empty_cache()
+    print(final_text)
+    return final_text
+    '''
+def openai_phi2_handler(prompt):
+    model = api_model
+
+    # Split the prompt into lines
+    prompt_lines = prompt.strip().split('\n')
+
+    # Extract relevant content from the prompt
+    question = prompt_lines[0].split("'")[1]
+    past = prompt_lines[1].split("problem ")[1]
+    options = prompt_lines[6:]
+
+    # Construct completion input from the extracted content
+    completion_input = f"To achieve the following goal: '{question}', and based on the current steps taken towards solving the {past}"
+    completion_input += "\n".join(options)
+
+    # Rest of your function remains the same...
+    torch.set_default_device("cuda")
+    if model == "phi-1_5":
+        model = AutoModelForCausalLM.from_pretrained(
+            "microsoft/phi-1_5", torch_dtype="auto", trust_remote_code=True
+        )
+        tokenizer = AutoTokenizer.from_pretrained(
+            "microsoft/phi-1_5", trust_remote_code=True
+        )
+    else:
+        model = AutoModelForCausalLM.from_pretrained(
+            "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
+        )
+        tokenizer = AutoTokenizer.from_pretrained(
+            "microsoft/phi-2", trust_remote_code=True
+        )
+    inputs = tokenizer(completion_input, return_tensors="pt")
+    input_ids = inputs.input_ids.to(model.device)
+    n_examples = len(input[1]["content"].split("<END>")) - 1
+
+    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+    outputs = model.generate(
+        input_ids=input_ids,
+        do_sample=True,
+        top_p=0.35,
+        top_k=50,
+        temperature=0.9,
+        max_length=max_len,
+        eos_token_id=tokenizer.eos_token_id,
+        pad_token_id=tokenizer.eos_token_id,
+        return_dict_in_generate=True,
+        output_scores=True,
+    )
+    text = tokenizer.decode(
+        outputs.sequences[0], skip_special_tokens=True
+    )
+    final_text = process_output(completion_input, text)
+    del model
     torch.cuda.empty_cache()
     print(final_text)
     return final_text
