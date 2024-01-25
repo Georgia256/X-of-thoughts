@@ -101,7 +101,7 @@ from IPython.core.inputtransformer2 import ESC_HELP
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def completion_with_backoff(**kwargs):
-    response = openai.ChatCompletion.create(**kwargs)
+    response = openai.Completion.create(**kwargs)
     return response
 
 def openai_phi2_handler(prompt, max_tokens=1024, temperature=0.9, k=1, stop=None):
