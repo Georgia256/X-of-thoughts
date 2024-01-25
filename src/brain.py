@@ -106,29 +106,29 @@ def completion_with_backoff(**kwargs):
 
 def openai_phi2_handler(prompt, max_tokens=1024, temperature=0.9, k=1, stop=None):
     while True:
-        try:
-            messages = [
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-            response = completion_with_backoff(
-                model=api_model,
-                messages=messages,
-                max_tokens=max_tokens,
-                temperature=temperature,
-            )
-            with open("openai.logs", 'a') as log_file:
-                log_file.write("\n" + "-----------" + '\n' + "Prompt : " + prompt + "\n")
-            return response
-        except Error as e:
+       # try:
+        messages = [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+        response = completion_with_backoff(
+            model=api_model,
+            messages=messages,
+            max_tokens=max_tokens,
+            temperature=temperature,
+        )
+        with open("openai.logs", 'a') as log_file:
+            log_file.write("\n" + "-----------" + '\n' + "Prompt : " + prompt + "\n")
+        return response
+      '''  except Error as e:
             if isinstance(e, openai.error.RateLimitError):
                 sleep_duration = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
                 print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
                 time.sleep(sleep_duration)
             else:
-                raise e
+                raise e'''
 
 
 '''def openai_phi2_handler(prompt):
