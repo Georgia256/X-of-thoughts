@@ -9,16 +9,16 @@ Original file is located at
 # Installing requirements
 """
 
-pip install openai transformers datasets --quiet
+#pip install openai transformers datasets --quiet
 
-pip install sentence_transformers --quiet
+#pip install sentence_transformers --quiet
 
 import openai
-from tenacity import (
+'''from tenacity import (
     retry,
     stop_after_attempt,
     wait_random_exponential,
-)  # for exponential backoff
+)  # for exponential backoff'''
 import datasets
 from datasets import load_dataset
 
