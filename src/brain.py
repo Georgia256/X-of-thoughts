@@ -36,6 +36,14 @@ KEY_GROUP = {"a": ["YOUR_API_KEY"]}
 
 api_model="phi-2"
 
+from IPython.core.inputtransformer2 import ESC_HELP
+#from openai.error import Error  # Add this line to import the Error class
+
+@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
+def completion_with_backoff(**kwargs):
+    response = openai.Completion.create(**kwargs)
+    return response
+
 
 def load_dataset(data_path):
     instances = []
@@ -45,7 +53,7 @@ def load_dataset(data_path):
 
     print(f"Load {len(instances)} data from {data_path}.")
     return instances
-'''
+
 def openai_phi2_handler(prompt):
     model=api_model
     completion_input = prompt[0]["content"] + "\n" + prompt[1]["content"] 
@@ -95,78 +103,6 @@ def openai_phi2_handler(prompt):
     torch.cuda.empty_cache()
     print(final_text)
     return final_text
-'''
-from IPython.core.inputtransformer2 import ESC_HELP
-#from openai.error import Error  # Add this line to import the Error class
-
-@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def completion_with_backoff(**kwargs):
-    response = openai.Completion.create(**kwargs)
-    return response
-
-def openai_phi2_handler(prompt, max_tokens=1024, temperature=0.9, k=1, stop=None):
-    while True:
-       # try:
-        messages = [
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
-        response = completion_with_backoff(
-            model=api_model,
-            messages=messages,
-            max_tokens=max_tokens,
-            temperature=temperature,
-        )
-        with open("openai.logs", 'a') as log_file:
-            log_file.write("\n" + "-----------" + '\n' + "Prompt : " + prompt + "\n")
-        return response
-        '''  
-        except Error as e:
-            if isinstance(e, openai.error.RateLimitError):
-                sleep_duration = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
-                print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
-                time.sleep(sleep_duration)
-            else:
-                raise e'''
-
-
-'''def openai_phi2_handler(prompt):
-    model_name = "microsoft/phi-2"
-    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", trust_remote_code=True)
-    
-    completion_input = prompt.split("\n")
-    
-    inputs = tokenizer(completion_input, return_tensors="pt")
-    input_ids = inputs.input_ids.to(model.device)
-    
-    n_examples = len(completion_input) - 1
-    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
-    
-    outputs = model.generate(
-        input_ids=input_ids,
-        do_sample=True,
-        top_p=0.35,
-        top_k=50,
-        temperature=0.9,
-        max_length=max_len,
-        eos_token_id=tokenizer.eos_token_id,
-        pad_token_id=tokenizer.eos_token_id,
-        return_dict_in_generate=True,
-        output_scores=True,
-    )
-    
-    text = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
-    final_text = process_output(completion_input, text)
-    
-    del model
-    torch.cuda.empty_cache()
-    print(final_text)
-    return final_text'''
-
-
 
 def openai_choice2text_handler(choice):
     text = choice.split(" ")[3]  # Assuming the choice structure remains constant
