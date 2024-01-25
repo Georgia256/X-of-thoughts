@@ -97,10 +97,16 @@ def openai_phi2_handler(prompt):
     return final_text
 '''
 from IPython.core.inputtransformer2 import ESC_HELP
+from openai import Model, Error
+
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def completion_with_backoff(**kwargs):
-  response = openai.ChatCompletion.create(**kwargs)
-  return response
+    try:
+        model = Model.retrieve(kwargs['model'])
+        response = model.create(**kwargs)
+        return response
+    except Error as e:
+        raise e
 
 '''def openai_phi2_handler(prompt):
     model_name = "microsoft/phi-2"
@@ -135,46 +141,32 @@ def completion_with_backoff(**kwargs):
     torch.cuda.empty_cache()
     print(final_text)
     return final_text'''
-def openai_phi2_handler(prompt):
-    model_name = "microsoft/phi-2"
-    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", trust_remote_code=True)
-    
-    completion_input = prompt.split("\n")
-    
-    inputs = tokenizer(completion_input, return_tensors="pt")
-    input_ids = inputs.input_ids.to(model.device)
-    
-    n_examples = len(completion_input) - 1
-    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+def openai_phi2_handler(prompt, max_tokens=1024, temperature=0.9, k=1, stop=None):
     while True:
         try:
-            outputs = model.generate(
-                input_ids=input_ids,
-                do_sample=True,
-                top_p=0.35,
-                top_k=50,
-                temperature=0.9,
-                max_length=max_len,
-                eos_token_id=tokenizer.eos_token_id,
-                pad_token_id=tokenizer.eos_token_id,
-                return_dict_in_generate=True,
-                output_scores=True,
+            messages = [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+            response = completion_with_backoff(
+                model=api_model,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=temperature,
             )
-
             with open("openai.logs", 'a') as log_file:
-                log_file.write("\n" + "-----------" + '\n' +"Prompt : "+ prompt+"\n")
-            text = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
-            final_text = process_output(completion_input, text)
-            
-            del model
-            torch.cuda.empty_cache()
-            print(final_text)
-            return final_text
-        except openai.error.RateLimitError as e:
-            sleep_duration = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
-            print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
-            time.sleep(sleep_duration)
+                log_file.write("\n" + "-----------" + '\n' + "Prompt : " + prompt + "\n")
+            return response
+        except Error as e:
+            if isinstance(e, openai.error.RateLimitError):
+                sleep_duration = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
+                print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
+                time.sleep(sleep_duration)
+            else:
+                raise e
+
 
 
 def openai_choice2text_handler(choice):
