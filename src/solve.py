@@ -39,7 +39,7 @@ if __name__ == "__main__":
         "--mode",
         required=True,
         type=str,
-        help="cot, pot, eot, peano, check_pot, check_eot, refine_pot, metacognitive_eval_cot",
+        help="cot, pot, eot, peano, check_pot, check_eot, refine_pot, metacognitive_eval_cot, tot",
     )
     parser.add_argument("--range_start", default="0", type=str)
     parser.add_argument("--range_end", default="end", type=str)

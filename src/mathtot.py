@@ -225,6 +225,14 @@ for i in range(max_steps):
   outputs = parse_output_options(out)
   print(f"The parsed output is {outputs}")
   option = ranking(outputs,question,status)
+
+# Call reason_tot to get the reason for the chosen option
+  #reason = reason_tot(initial_prompt, option)
+
+# Display the reason
+  #print(f"The reason for the chosen option is:\n{reason}")
+
+
   if("None") in status:
     status = [option]
   else:

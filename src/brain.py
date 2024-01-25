@@ -100,6 +100,27 @@ class Brain:
             print(f"chat_input: {chat_input}")
             print(f"response: {response}")
 
+    def reason_tot(prompt, results):
+        """
+        This function processes the results obtained from the MathToT model
+        and returns the reason for the chosen option.
+
+        Parameters:
+        - prompt (str): The original prompt for the math problem.
+        - results (list): List of ranked options obtained from MathToT.
+
+        Returns:
+        - str: The reason for the chosen option.
+        """
+        # Extract the chosen option
+        chosen_option = results[0]
+
+        # Formulate a reason based on the chosen option
+        reason = f"The option '{chosen_option}' was chosen as the best next step for the math problem described in the prompt:\n\n{prompt}"
+
+        return reason
+
+
     def reason_cot(self):
         """
         Reasoning with Chain-of-Thought, prompts from COT
