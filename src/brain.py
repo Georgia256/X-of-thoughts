@@ -17,6 +17,7 @@ from prompts.check import ASSERT_SYSTEM, ASSERT_PROMPT
 from prompts.self_refine import REFINE_SYSTEM, REFINE
 from prompts.metacognitive_eval_deepseek import META_EVAL_SYSTEM, META_EVAL
 
+from prompts.tot import TOT_SYSTEM, TOT
 
 from utils import *
 
@@ -62,6 +63,7 @@ class Brain:
             "cot/correct": 0.0,
             "pot/correct": 0.0,
             "eot/correct": 0.0,
+            "tot/correct": 0.0,
             "peano/correct": 0.0,
             "refine/correct": 0.0,
         }
@@ -140,6 +142,45 @@ class Brain:
             print(f"chat_input: {chat_input}")
             print(f"response: {response}")
             print(f"score: {score}")
+    
+    def reason_tot(self):
+
+        question = self.cache["inst/question"]
+        tot_prompt = TOT_SYSTEM.format(input=question)
+        chat_input = self.build_chat_input(tot_prompt, TOT.format(question=question))
+        response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
+        self.cache["reason/tot"] = response
+
+        # execute
+        answer_format_flag = "the answer is" in response.lower()
+        pred_str = response.split("the answer is")[-1].strip(".").replace(",", "").strip()
+
+        try:
+            all_digit = re.findall(r"[-+]?\d*\.?\d+|\d+", pred_str)
+            if answer_format_flag:
+                pred = all_digit[0]
+            else:
+                pred = all_digit[-1]
+            pred = floatify_ans(pred)
+            if pred is not None and "%" in pred_str:
+                pred = pred / 100
+        except Exception as e:
+            print(e)
+            print(pred_str)
+            pred = None
+        score = 0.0
+        if pred is not None:
+            score = 1.0 if abs(pred - self.cache["inst/gold_answer"]) < 1e-3 else 0.0
+        self.cache["reason/tot/ans"] = pred
+        self.cache["reason/tot/score"] = score
+        self.metrics["tot/correct"] += score
+
+        if self.debug:
+            print(f"=== inst i: {self.id} ===")
+            print(f"chat_input: {chat_input}")
+            print(f"response: {response}")
+            print(f"score: {score}")
+
 
     def reason_pot(self):
         """
@@ -587,6 +628,7 @@ class Brain:
         self.metrics["eot/acc"] = self.metrics["eot/correct"] / len(self.data)
         self.metrics["peano/acc"] = self.metrics["peano/correct"] / len(self.data)
         self.metrics["refine/acc"] = self.metrics["refine/correct"] / len(self.data)
+        self.metrics["tot/acc"] = self.metrics["tot/correct"] / len(self.data)
 
         self.metrics["total"] = len(self.data)
         return self.metrics
