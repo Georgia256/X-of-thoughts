@@ -69,7 +69,7 @@ def generate_text_phi(prompt, k):
         thoughts.append(text)
     return thoughts
     '''
-    response = openai_phi2_handler(prompt, 300, 1.1, k)
+    response = openai_phi2_handler(prompt)
     thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
     return thoughts
 
