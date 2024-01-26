@@ -52,9 +52,11 @@ def completion_with_backoff(input_data):
     )
     inputs = tokenizer(completion_input, return_tensors="pt")
     input_ids = inputs.input_ids.to(model.device)
-    n_examples = len(input_data[1]["content"].split("<END>")) - 1
+    #n_examples = len(input_data[1]["content"].split("<END>")) - 1
+    max_tokens = 1024
+    max_len = len(input_ids[0]) + max_tokens
 
-    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+    #max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
     # attention_mask = inputs.attention_mask.to(model.device)
     outputs = model.generate(
         input_ids=input_ids,
