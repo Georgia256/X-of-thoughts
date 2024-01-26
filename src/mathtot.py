@@ -335,7 +335,7 @@ wrong = 0
 total = 0
 
 
-dataset = load_dataset("gsm8k","main")#("data/gsm8k/test.jsonl")
+dataset = myload_dataset(data_path)#("data/gsm8k/test.jsonl")
 
 
 for questions_number in range(num_questions_to_solve):
@@ -498,7 +498,7 @@ store_answer = []
 store_chosen_cache = []
 
 
-dataset = load_dataset("gsm8k","main")#("data/gsm8k/test.jsonl")
+dataset = myload_dataset(data_path)#("data/gsm8k/test.jsonl")
 
 
 
