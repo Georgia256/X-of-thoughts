@@ -40,41 +40,16 @@ from IPython.core.inputtransformer2 import ESC_HELP
 #from openai.error import Error  # Add this line to import the Error class
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def completion_with_backoff(**kwargs):
-    response = openai.Completion.create(**kwargs)
-    return response
-
-
-def load_dataset(data_path):
-    instances = []
-    with open(data_path, "r+", encoding="utf8") as f:
-        for inst in jsonlines.Reader(f):
-            instances.append(inst)
-
-    print(f"Load {len(instances)} data from {data_path}.")
-    return instances
-'''
-def openai_phi2_handler(prompt):
-    model=api_model
-    completion_input = prompt[0]["content"] + "\n" + prompt[1]["content"] 
-    # print("Completion input: ", completion_input)
-    torch.set_default_device("cuda")
-    if model == "phi-1_5":
-        model = AutoModelForCausalLM.from_pretrained(
-            "microsoft/phi-1_5", torch_dtype="auto", trust_remote_code=True
-        )
-        tokenizer = AutoTokenizer.from_pretrained(
-            "microsoft/phi-1_5", trust_remote_code=True
-        )
-    else:
-        model = AutoModelForCausalLM.from_pretrained(
-            "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
-        )
-        tokenizer = AutoTokenizer.from_pretrained(
-            "microsoft/phi-2", trust_remote_code=True
-        )
-    inputs = tokenizer(completion_input, return_tensors="pt")
-    input_ids = inputs.input_ids.to(model.device)
+def completion_with_backoff(prompt, max_tokens, temperature, k=1, stop=None):
+    model = AutoModelForCausalLM.from_pretrained(
+        "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
+    )
+    tokenizer = AutoTokenizer.from_pretrained(
+        "microsoft/phi-2", trust_remote_code=True
+    )
+    #inputs = tokenizer(completion_input, return_tensors="pt")
+    #input_ids = inputs.input_ids.to(model.device)
+    input_ids = tokenizer.encode(prompt, return_tensors="pt")
     n_examples = len(input[1]["content"].split("<END>")) - 1
 
     max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
@@ -97,82 +72,33 @@ def openai_phi2_handler(prompt):
         outputs.sequences[0], skip_special_tokens=True
     )  # , skip_special_tokens=True
     # print("Text: ", text)
-    final_text = process_output(completion_input, text)
+    #final_text = process_output(completion_input, text)
     # print("Final text: ", final_text)
-    del model  # Delete the model to free up memory
-    torch.cuda.empty_cache()
-    print(final_text)
-    return final_text
-    '''
-'''
-def openai_phi2_handler(prompt):
-    model = api_model
+    #del model  # Delete the model to free up memory
+    #torch.cuda.empty_cache()
+    #print(final_text)
+    return text
 
-    # Split the prompt into lines
-    prompt_lines = prompt.strip().split('\n')
 
-    # Extract relevant content from the prompt
-    question = prompt_lines[0].split("'")[1]
-    past = prompt_lines[1].split("problem ")[1]
-    options = prompt_lines[6:]
+def load_dataset(data_path):
+    instances = []
+    with open(data_path, "r+", encoding="utf8") as f:
+        for inst in jsonlines.Reader(f):
+            instances.append(inst)
 
-    # Construct completion input from the extracted content
-    completion_input = f"To achieve the following goal: '{question}', and based on the current steps taken towards solving the {past}"
-    completion_input += "\n".join(options)
-
-    # Rest of your function remains the same...
-    torch.set_default_device("cuda")
-    if model == "phi-1_5":
-        model = AutoModelForCausalLM.from_pretrained(
-            "microsoft/phi-1_5", torch_dtype="auto", trust_remote_code=True
-        )
-        tokenizer = AutoTokenizer.from_pretrained(
-            "microsoft/phi-1_5", trust_remote_code=True
-        )
-    else:
-        model = AutoModelForCausalLM.from_pretrained(
-            "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
-        )
-        tokenizer = AutoTokenizer.from_pretrained(
-            "microsoft/phi-2", trust_remote_code=True
-        )
-    inputs = tokenizer(completion_input, return_tensors="pt")
-    input_ids = inputs.input_ids.to(model.device)
-    n_examples = len(input[1]["content"].split("<END>")) - 1
-
-    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
-    outputs = model.generate(
-        input_ids=input_ids,
-        do_sample=True,
-        top_p=0.35,
-        top_k=50,
-        temperature=0.9,
-        max_length=max_len,
-        eos_token_id=tokenizer.eos_token_id,
-        pad_token_id=tokenizer.eos_token_id,
-        return_dict_in_generate=True,
-        output_scores=True,
-    )
-    text = tokenizer.decode(
-        outputs.sequences[0], skip_special_tokens=True
-    )
-    final_text = process_output(completion_input, text)
-    del model
-    torch.cuda.empty_cache()
-    print(final_text)
-    return final_text '''
+    print(f"Load {len(instances)} data from {data_path}.")
+    return instances
 
 def openai_phi2_handler(prompt, max_tokens, temperature, k=1, stop=None):
   while True:
     try:
         response = completion_with_backoff(
-            engine=api_model,
-            prompt=prompt,
-            n=k,
-            max_tokens=max_tokens,
-            stop=stop,
-            temperature=temperature,
-        )
+                prompt=prompt,
+                max_tokens=max_tokens,
+                temperature=temperature,
+                k=k,
+                stop=stop,
+            )
 
         with open("openai.logs", 'a') as log_file:
             log_file.write("\n" + "-----------" + '\n' +"Prompt : "+ prompt+"\n")
