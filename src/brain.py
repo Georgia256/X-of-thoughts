@@ -108,18 +108,26 @@ def openai_phi2_handler(prompt):
         print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
         time.sleep(sleep_duration)
 
-
+    '''
 def openai_choice2text_handler(choice):
     
     #text = choice.split(" ")[3]  # Assuming the choice structure remains constant
     #return text
-    '''
     if use_chat_api:
         text = choice['message']['content']
     else:
-    '''
+    
     text = choice.text.strip()
     return text
+    '''
+
+def openai_choice2text_handler(response):
+    if isinstance(response, str):
+        # If response is already a string, return it directly
+        return response
+    elif 'text' in response:
+        # If response is a dictionary and contains 'text' attribute, return it
+        return response['text'].strip()
     
 
 def generate_text_phi(prompt, k):
