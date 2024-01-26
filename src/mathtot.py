@@ -338,7 +338,7 @@ for questions_number in range(num_questions_to_solve):
   status = ["None"]
 
   #question = dataset["train"][questions_number+2:questions_number+3]["question"][0]
-  question_data = dataset["train"][questions_number]
+  question_data = dataset["train"][int(questions_number)]
   question = question_data["question"]
   true_answer = float(question_data["answer"].split("####")[-1].strip())
   #true_answer = float(dataset["train"][questions_number+2:questions_number+3]["answer"][0].split("####")[-1].strip())
