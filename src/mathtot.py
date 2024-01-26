@@ -38,7 +38,7 @@ def myload_dataset(data_path):
 
     print(f"Load {len(instances)} data from {data_path}.")
     return instances
-
+'''
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def completion_with_backoff(input_data):
     completion_input = input_data[0]["content"] + "\n" + input_data[1]["content"]
@@ -97,6 +97,33 @@ def openai_phi2_handler(prompt):
         sleep_duration = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
         print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
         time.sleep(sleep_duration)
+'''
+@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
+def completion_with_backoff(**kwargs):
+  response = openai.ChatCompletion.create(**kwargs)
+  return response
+
+def openai_phi2_handler(prompt, max_tokens, temperature, k=1, stop=None):
+  while True:
+    try:
+      
+      response = completion_with_backoff(
+          engine=api_model,
+          prompt=prompt,
+          n=k,
+          max_tokens=max_tokens,
+          stop=stop,
+          temperature=temperature,
+      )
+
+      with open("openai.logs", 'a') as log_file:
+          log_file.write("\n" + "-----------" + '\n' +"Prompt : "+ prompt+"\n")
+      return response
+
+    except openai.error.RateLimitError as e:
+        sleep_duratoin = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
+        print(f'{str(e)}, sleep for {sleep_duratoin}s, set it by env OPENAI_RATE_TIMEOUT')
+        time.sleep(sleep_duratoin)
 
 def openai_choice2text_handler(response):
     '''
@@ -120,7 +147,7 @@ def generate_text_phi(prompt, k):
         thoughts.append(text)
     return thoughts
     '''
-    response = openai_phi2_handler(prompt)
+    response = openai_phi2_handler(prompt,1024,0.9,k)
     thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
     return thoughts
 
