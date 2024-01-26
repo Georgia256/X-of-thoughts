@@ -109,7 +109,7 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
     )
     inputs = tokenizer(prompt, return_tensors="pt")
     input_ids = inputs.input_ids.to(model.device)
-    n_examples = len(input[1]["content"].split("<END>")) - 1
+    n_examples = len(prompt[1]["content"].split("<END>")) - 1
 
     max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
 
