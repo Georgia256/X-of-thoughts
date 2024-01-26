@@ -169,7 +169,6 @@ def parse_output_options(output):
 
     
 
-
 class Brain:
     def __init__(self, args):
         self.args = args

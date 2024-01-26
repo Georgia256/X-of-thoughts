@@ -19,6 +19,8 @@ import jsonlines
 import json
 from utils import *
 
+import datasets
+from datasets import load_dataset
 
 KEY_GROUP = {"a": ["YOUR_API_KEY"]}
 
@@ -71,8 +73,8 @@ def completion_with_backoff(input_data):
     print(final_text)
     return final_text
 
-
-def load_dataset(data_path):
+'''
+def myload_dataset(data_path):
     instances = []
     with open(data_path, "r+", encoding="utf8") as f:
         for inst in jsonlines.Reader(f):
@@ -80,11 +82,12 @@ def load_dataset(data_path):
 
     print(f"Load {len(instances)} data from {data_path}.")
     return instances
+'''
 
 def openai_phi2_handler(prompt):
   while True:
     try:
-        input_data = load_dataset("data/gsm8k/test.jsonl")  # Pass your data path here
+        input_data = load_dataset("gsm8k","main")#("data/gsm8k/test.jsonl")  # Pass your data path here
         response = completion_with_backoff(input_data)
 
         with open("openai.logs", 'a') as log_file:
@@ -322,26 +325,15 @@ correct = 0
 wrong = 0
 total = 0
 
-'''def load_dataset(data_path):
-    instances = []
-    with open(data_path, "r+", encoding="utf8") as f:
-        for inst in jsonlines.Reader(f):
-            instances.append(inst)
 
-    print(f"Load {len(instances)} data from {data_path}.")
-    return instances '''
-
-dataset = load_dataset("data/gsm8k/test.jsonl")
+dataset = load_dataset("gsm8k","main")#("data/gsm8k/test.jsonl")
 
 
 for questions_number in range(num_questions_to_solve):
   status = ["None"]
 
-  #question = dataset["train"][questions_number+2:questions_number+3]["question"][0]
-  question_data = dataset["train"][int(questions_number)]
-  question = question_data["question"]
-  true_answer = float(question_data["answer"].split("####")[-1].strip())
-  #true_answer = float(dataset["train"][questions_number+2:questions_number+3]["answer"][0].split("####")[-1].strip())
+  question = dataset["train"][questions_number+2:questions_number+3]["question"][0]
+  true_answer = float(dataset["train"][questions_number+2:questions_number+3]["answer"][0].split("####")[-1].strip())
 
   for i in range(max_steps):
     layer_options = []
@@ -497,7 +489,7 @@ store_answer = []
 store_chosen_cache = []
 
 
-dataset = load_dataset("data/gsm8k/test.jsonl")
+dataset = load_dataset("gsm8k","main")#("data/gsm8k/test.jsonl")
 
 
 
