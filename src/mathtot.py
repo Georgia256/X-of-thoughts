@@ -29,6 +29,7 @@ api_model="phi-2"
 from IPython.core.inputtransformer2 import ESC_HELP
 #from openai.error import Error  # Add this line to import the Error class
 
+data_path = "data/gsm8k/test.jsonl"
 
 def myload_dataset(data_path):
     instances = []
@@ -109,7 +110,7 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
     )
     inputs = tokenizer(prompt, return_tensors="pt")
     input_ids = inputs.input_ids.to(model.device)
-    n_examples = len(prompt[1]["content"].split("<END>")) - 1
+    n_examples = len(prompt.split("<END>")) - 1
 
     max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
 
@@ -130,31 +131,15 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
     return completions
 
 # Modified function to handle phi-2 completions
-def openai_phi2_handler(prompt,temperature, k=1, stop=None):
+def openai_phi2_handler(prompt, temperature, k=1, stop=None):
     completions = phi2_completion(prompt, temperature, k, stop)
     return completions
 
 def openai_choice2text_handler(completion):
-    '''
-    if isinstance(response, str):
-        # If response is already a string, return it directly
-        return response
-    elif "text" in response:
-        # If response is a dictionary and contains 'text' attribute, return it
-        return response["text"].strip()
-    '''
     text = completion.strip()
     return text
 
 def generate_text_phi(prompt, k):
-    '''
-    thoughts = []
-    for _ in range(k):
-        response = openai_phi2_handler(prompt)
-        text = openai_choice2text_handler(response)
-        thoughts.append(text)
-    return thoughts
-    '''
     response = openai_phi2_handler(prompt, 0.9, k)
     thoughts = [openai_choice2text_handler(completion) for completion in response]
     return thoughts
