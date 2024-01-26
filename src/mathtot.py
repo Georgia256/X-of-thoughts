@@ -130,7 +130,7 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
     return completions
 
 # Modified function to handle phi-2 completions
-def openai_phi2_handler(prompt, max_tokens, temperature, k=1, stop=None):
+def openai_phi2_handler(prompt,temperature, k=1, stop=None):
     completions = phi2_completion(prompt, max_tokens, temperature, k, stop)
     return completions
 
