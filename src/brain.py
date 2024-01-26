@@ -50,9 +50,10 @@ def completion_with_backoff(prompt, max_tokens, temperature, k=1, stop=None):
     #inputs = tokenizer(completion_input, return_tensors="pt")
     #input_ids = inputs.input_ids.to(model.device)
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
-    n_examples = len(input[1]["content"].split("<END>")) - 1
+    #n_examples = len(input[1]["content"].split("<END>")) - 1
 
-    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+    #max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+    max_len = len(input_ids[0]) + max_tokens
     # attention_mask = inputs.attention_mask.to(model.device)
     outputs = model.generate(
         input_ids=input_ids,
