@@ -99,31 +99,37 @@ def openai_phi2_handler(prompt):
         time.sleep(sleep_duration)
 '''
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def completion_with_backoff(**kwargs):
-  response = openai.ChatCompletion.create(**kwargs)
-  return response
+def phi2_completion(prompt, max_tokens, temperature, k=1, stop=None):
+    torch.set_default_device("cuda")
+    model = AutoModelForCausalLM.from_pretrained(
+        "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
+    )
+    tokenizer = AutoTokenizer.from_pretrained(
+        "microsoft/phi-2", trust_remote_code=True
+    )
+    inputs = tokenizer(prompt, return_tensors="pt")
+    input_ids = inputs.input_ids.to(model.device)
 
+    # Generate completion
+    outputs = model.generate(
+        input_ids=input_ids,
+        max_length=max_tokens,
+        temperature=temperature,
+        num_return_sequences=k,
+        pad_token_id=tokenizer.eos_token_id,
+        eos_token_id=tokenizer.eos_token_id,
+        **({"do_sample": True, "top_k": 50, "top_p": 0.95} if stop is None else {"early_stopping": True, "max_length": stop})
+    )
+
+    # Decode the generated sequences
+    completions = [tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
+
+    return completions
+
+# Modified function to handle phi-2 completions
 def openai_phi2_handler(prompt, max_tokens, temperature, k=1, stop=None):
-  while True:
-    try:
-      
-      response = completion_with_backoff(
-          engine=api_model,
-          prompt=prompt,
-          n=k,
-          max_tokens=max_tokens,
-          stop=stop,
-          temperature=temperature,
-      )
-
-      with open("openai.logs", 'a') as log_file:
-          log_file.write("\n" + "-----------" + '\n' +"Prompt : "+ prompt+"\n")
-      return response
-
-    except openai.error.RateLimitError as e:
-        sleep_duratoin = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
-        print(f'{str(e)}, sleep for {sleep_duratoin}s, set it by env OPENAI_RATE_TIMEOUT')
-        time.sleep(sleep_duratoin)
+    completions = phi2_completion(prompt, max_tokens, temperature, k, stop)
+    return completions
 
 def openai_choice2text_handler(response):
     '''
