@@ -40,7 +40,7 @@ from IPython.core.inputtransformer2 import ESC_HELP
 #from openai.error import Error  # Add this line to import the Error class
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def completion_with_backoff(prompt, max_tokens, temperature, k=1, stop=None):
+def completion_with_backoff():
     completion_input = input[0]["content"] + "\n" + input[1]["content"]
     torch.set_default_device("cuda")
     model = AutoModelForCausalLM.from_pretrained(
@@ -93,13 +93,7 @@ def load_dataset(data_path):
 def openai_phi2_handler(prompt, max_tokens, temperature, k=1, stop=None):
   while True:
     try:
-        response = completion_with_backoff(
-                prompt=prompt,
-                max_tokens=max_tokens,
-                temperature=temperature,
-                k=k,
-                stop=stop,
-            )
+        response = completion_with_backoff()
 
         with open("openai.logs", 'a') as log_file:
             log_file.write("\n" + "-----------" + '\n' +"Prompt : "+ prompt+"\n")
