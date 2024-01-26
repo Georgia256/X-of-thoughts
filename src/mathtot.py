@@ -100,20 +100,29 @@ def openai_phi2_handler(prompt):
         time.sleep(sleep_duration)
 
 def openai_choice2text_handler(response):
+    '''
     if isinstance(response, str):
         # If response is already a string, return it directly
         return response
     elif "text" in response:
         # If response is a dictionary and contains 'text' attribute, return it
         return response["text"].strip()
+    '''
+    text = choice.text.strip()
+    return text
     
 
 def generate_text_phi(prompt, k):
+    '''
     thoughts = []
     for _ in range(k):
         response = openai_phi2_handler(prompt)
         text = openai_choice2text_handler(response)
         thoughts.append(text)
+    return thoughts
+    '''
+    response = openai_phi2_handler(prompt, 300, 1.1, k)
+    thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
     return thoughts
 
 def generate_text(prompt, k):
