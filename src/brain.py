@@ -111,23 +111,28 @@ def openai_phi2_handler(prompt):
 
 def openai_choice2text_handler(choice):
     
-    text = choice.split(" ")[3]  # Assuming the choice structure remains constant
-    return text
+    #text = choice.split(" ")[3]  # Assuming the choice structure remains constant
+    #return text
     '''
     if use_chat_api:
         text = choice['message']['content']
     else:
     '''
-    #text = choice.text.strip()
-    #return text
+    text = choice.text.strip()
+    return text
     
 
 def generate_text_phi(prompt, k):
+    '''
     thoughts = []
     for _ in range(k):
         response = openai_phi2_handler(prompt)
         text = openai_choice2text_handler(response)
         thoughts.append(text)
+    return thoughts
+    '''
+    response = openai_phi2_handler(prompt)
+    thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
     return thoughts
 
 def ranking(prompt,question,past):
