@@ -47,38 +47,21 @@ def completion_with_backoff(prompt, max_tokens, temperature, k=1, stop=None):
     tokenizer = AutoTokenizer.from_pretrained(
         "microsoft/phi-2", trust_remote_code=True
     )
-    #inputs = tokenizer(completion_input, return_tensors="pt")
-    #input_ids = inputs.input_ids.to(model.device)
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
-    #n_examples = len(input[1]["content"].split("<END>")) - 1
-
-    #max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
-    max_len = len(input_ids[0]) + max_tokens
-    # attention_mask = inputs.attention_mask.to(model.device)
-    outputs = model.generate(
-        input_ids=input_ids,
-        # attention_mask=attention_mask,
+    max_length = len(input_ids[0]) + max_tokens
+    output = model.generate(
+        input_ids,
         do_sample=True,
-        top_p=0.35,
-        top_k=50,
-        temperature=0.9,
-        max_length=max_len,  # Adjust max_length as needed
-        eos_token_id=tokenizer.eos_token_id,  # End of sequence token
-        pad_token_id=tokenizer.eos_token_id,  # Pad token
-        # no_repeat_ngram_size=10,
-        return_dict_in_generate=True,
-        output_scores=True,
+        max_length=max_length,
+        temperature=temperature,
+        num_return_sequences=k,
+        pad_token_id=tokenizer.eos_token_id,
+        eos_token_id=tokenizer.eos_token_id,
+        early_stopping=True,
+        num_beams=1
     )
-    text = tokenizer.decode(
-        outputs.sequences[0], skip_special_tokens=True
-    )  # , skip_special_tokens=True
-    # print("Text: ", text)
-    #final_text = process_output(completion_input, text)
-    # print("Final text: ", final_text)
-    #del model  # Delete the model to free up memory
-    #torch.cuda.empty_cache()
-    #print(final_text)
-    return text
+    response = [tokenizer.decode(ids, skip_special_tokens=True) for ids in output]
+    return response
 
 
 def load_dataset(data_path):
