@@ -131,7 +131,7 @@ def openai_phi2_handler(prompt, max_tokens, temperature, k=1, stop=None):
     completions = phi2_completion(prompt, max_tokens, temperature, k, stop)
     return completions
 
-def openai_choice2text_handler(response):
+def openai_choice2text_handler(completion):
     '''
     if isinstance(response, str):
         # If response is already a string, return it directly
@@ -140,9 +140,8 @@ def openai_choice2text_handler(response):
         # If response is a dictionary and contains 'text' attribute, return it
         return response["text"].strip()
     '''
-    text = choice.text.strip()
+    text = completion.strip()
     return text
-    
 
 def generate_text_phi(prompt, k):
     '''
