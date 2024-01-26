@@ -100,7 +100,13 @@ def openai_phi2_handler(prompt):
 '''
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def phi2_completion(prompt, max_tokens, temperature, k=1, stop=None):
-    
+    torch.set_default_device("cuda")
+    model = AutoModelForCausalLM.from_pretrained(
+        "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
+    )
+    tokenizer = AutoTokenizer.from_pretrained(
+        "microsoft/phi-2", trust_remote_code=True
+    )
     inputs = tokenizer(prompt, return_tensors="pt")
     input_ids = inputs.input_ids.to(model.device)
 
