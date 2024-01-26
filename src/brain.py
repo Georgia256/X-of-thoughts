@@ -93,7 +93,7 @@ def load_dataset(data_path):
     print(f"Load {len(instances)} data from {data_path}.")
     return instances
 
-def openai_phi2_handler(prompt, max_tokens, temperature, k=1, stop=None):
+def openai_phi2_handler(prompt):
   while True:
     try:
         input_data = load_dataset("data/gsm8k/test.jsonl")  # Pass your data path here
