@@ -337,8 +337,11 @@ dataset = load_dataset("data/gsm8k/test.jsonl")
 for questions_number in range(num_questions_to_solve):
   status = ["None"]
 
-  question = dataset["train"][questions_number+2:questions_number+3]["question"][0]
-  true_answer = float(dataset["train"][questions_number+2:questions_number+3]["answer"][0].split("####")[-1].strip())
+  #question = dataset["train"][questions_number+2:questions_number+3]["question"][0]
+  question_data = dataset["train"][questions_number+2:questions_number+3]
+  question = question_data[0]["question"]
+  true_answer = float(question_data[0]["answer"].split("####")[-1].strip())
+  #true_answer = float(dataset["train"][questions_number+2:questions_number+3]["answer"][0].split("####")[-1].strip())
 
   for i in range(max_steps):
     layer_options = []
