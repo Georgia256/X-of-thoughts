@@ -1,11 +1,10 @@
 import openai
-'''from tenacity import (
+from tenacity import (
     retry,
     stop_after_attempt,
     wait_random_exponential,
 )  # for exponential backoff'''
 #import datasets
-#from datasets import load_dataset
 
 import re
 import time
@@ -101,9 +100,9 @@ def openai_choice2text_handler(response):
     if isinstance(response, str):
         # If response is already a string, return it directly
         return response
-    elif 'text' in response:
+    elif "text" in response:
         # If response is a dictionary and contains 'text' attribute, return it
-        return response['text'].strip()
+        return response["text"].strip()
     
 
 def generate_text_phi(prompt, k):
