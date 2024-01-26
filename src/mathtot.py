@@ -99,7 +99,7 @@ def openai_phi2_handler(prompt):
         time.sleep(sleep_duration)
 '''
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def phi2_completion(prompt, max_tokens, temperature, k=1, stop=None):
+def phi2_completion(prompt, temperature, k=1, stop=None):
     torch.set_default_device("cuda")
     model = AutoModelForCausalLM.from_pretrained(
         "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
@@ -109,11 +109,14 @@ def phi2_completion(prompt, max_tokens, temperature, k=1, stop=None):
     )
     inputs = tokenizer(prompt, return_tensors="pt")
     input_ids = inputs.input_ids.to(model.device)
+    n_examples = len(input[1]["content"].split("<END>")) - 1
+
+    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
 
     # Generate completion
     outputs = model.generate(
         input_ids=input_ids,
-        max_length=max_tokens,
+        max_length=max_len,
         temperature=temperature,
         num_return_sequences=k,
         pad_token_id=tokenizer.eos_token_id,
@@ -152,7 +155,7 @@ def generate_text_phi(prompt, k):
         thoughts.append(text)
     return thoughts
     '''
-    response = openai_phi2_handler(prompt, 100, 0.9, k)
+    response = openai_phi2_handler(prompt, 0.9, k)
     thoughts = [openai_choice2text_handler(completion) for completion in response]
     return thoughts
 
