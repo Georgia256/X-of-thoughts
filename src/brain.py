@@ -104,6 +104,7 @@ def openai_phi2_handler(prompt):
     print(final_text)
     return final_text
     '''
+'''
 def openai_phi2_handler(prompt):
     model = api_model
 
@@ -159,25 +160,50 @@ def openai_phi2_handler(prompt):
     del model
     torch.cuda.empty_cache()
     print(final_text)
-    return final_text
+    return final_text '''
+
+def openai_phi2_handler(prompt, max_tokens, temperature, k=1, stop=None):
+  while True:
+    try:
+        response = completion_with_backoff(
+            engine=api_model,
+            prompt=prompt,
+            n=k,
+            max_tokens=max_tokens,
+            stop=stop,
+            temperature=temperature,
+        )
+
+        with open("openai.logs", 'a') as log_file:
+            log_file.write("\n" + "-----------" + '\n' +"Prompt : "+ prompt+"\n")
+        return response
+
+    except openai.error.RateLimitError as e:
+        sleep_duratoin = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
+        print(f'{str(e)}, sleep for {sleep_duratoin}s, set it by env OPENAI_RATE_TIMEOUT')
+        time.sleep(sleep_duratoin)
+
 
 def openai_choice2text_handler(choice):
+    '''
     text = choice.split(" ")[3]  # Assuming the choice structure remains constant
     return text
-    '''
+    
     if use_chat_api:
         text = choice['message']['content']
     else:
-        text = choice.text.strip()
-    return text
     '''
+    text = choice.text.strip()
+    return text
+    
 
 def generate_text_phi(prompt, k):
     thoughts = []
     for _ in range(k):
-        response = openai_phi2_handler(prompt)
-        text = openai_choice2text_handler(response)
-        thoughts.append(text)
+        response = openai_phi2_handler(prompt, 1024, 0.9, k)
+        thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
+        #text = openai_choice2text_handler(response)
+        #thoughts.append(text)
     return thoughts
 
 def ranking(prompt,question,past):
