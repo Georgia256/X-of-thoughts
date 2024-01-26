@@ -123,17 +123,16 @@ def openai_choice2text_handler(choice):
     
 
 def generate_text_phi(prompt, k):
-    '''
     thoughts = []
     for _ in range(k):
         response = openai_phi2_handler(prompt)
         text = openai_choice2text_handler(response)
         thoughts.append(text)
     return thoughts
-    '''
-    response = openai_phi2_handler(prompt)
-    thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
-    return thoughts
+    
+    #response = openai_phi2_handler(prompt)
+    #thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
+    #return thoughts
 
 def ranking(prompt,question,past):
     # ranks = []
