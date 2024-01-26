@@ -40,8 +40,8 @@ from IPython.core.inputtransformer2 import ESC_HELP
 #from openai.error import Error  # Add this line to import the Error class
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def completion_with_backoff():
-    completion_input = input[0]["content"] + "\n" + input[1]["content"]
+def completion_with_backoff(input_data):
+    completion_input = input_data[0]["content"] + "\n" + input_data[1]["content"]
     torch.set_default_device("cuda")
     model = AutoModelForCausalLM.from_pretrained(
         "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
@@ -51,7 +51,7 @@ def completion_with_backoff():
     )
     inputs = tokenizer(completion_input, return_tensors="pt")
     input_ids = inputs.input_ids.to(model.device)
-    n_examples = len(input[1]["content"].split("<END>")) - 1
+    n_examples = len(input_data[1]["content"].split("<END>")) - 1
 
     max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
     # attention_mask = inputs.attention_mask.to(model.device)
@@ -93,16 +93,17 @@ def load_dataset(data_path):
 def openai_phi2_handler(prompt, max_tokens, temperature, k=1, stop=None):
   while True:
     try:
-        response = completion_with_backoff()
+        input_data = load_dataset("data/gsm8k/test.jsonl")  # Pass your data path here
+        response = completion_with_backoff(input_data)
 
         with open("openai.logs", 'a') as log_file:
             log_file.write("\n" + "-----------" + '\n' +"Prompt : "+ prompt+"\n")
         return response
 
     except openai.error.RateLimitError as e:
-        sleep_duratoin = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
-        print(f'{str(e)}, sleep for {sleep_duratoin}s, set it by env OPENAI_RATE_TIMEOUT')
-        time.sleep(sleep_duratoin)
+        sleep_duration = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
+        print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
+        time.sleep(sleep_duration)
 
 
 def openai_choice2text_handler(choice):
