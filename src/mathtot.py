@@ -30,86 +30,34 @@ from IPython.core.inputtransformer2 import ESC_HELP
 #from openai.error import Error  # Add this line to import the Error class
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def completion_with_backoff(input_data):
-    completion_input = input_data[0]["content"] + "\n" + input_data[1]["content"]
-    #completion_input = input_data[0].get("content", "") + "\n" + input_data[1].get("content", "")
-    torch.set_default_device("cuda")
-    model = AutoModelForCausalLM.from_pretrained(
-        "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
-    )
-    tokenizer = AutoTokenizer.from_pretrained(
-        "microsoft/phi-2", trust_remote_code=True
-    )
-    inputs = tokenizer(completion_input, return_tensors="pt")
-    input_ids = inputs.input_ids.to(model.device)
-    #n_examples = len(input_data[1]["content"].split("<END>")) - 1
-    max_tokens = 1024
-    max_len = len(input_ids[0]) + max_tokens
-
-    #max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
-    # attention_mask = inputs.attention_mask.to(model.device)
-    outputs = model.generate(
-        input_ids=input_ids,
-        # attention_mask=attention_mask,
-        do_sample=True,
-        top_p=0.35,
-        top_k=50,
-        temperature=0.9,
-        max_length=max_len,  # Adjust max_length as needed
-        eos_token_id=tokenizer.eos_token_id,  # End of sequence token
-        pad_token_id=tokenizer.eos_token_id,  # Pad token
-        # no_repeat_ngram_size=10,
-        return_dict_in_generate=True,
-        output_scores=True,
-    )
-    text = tokenizer.decode(
-        outputs.sequences[0], skip_special_tokens=True
-    )  # , skip_special_tokens=True
-    # print("Text: ", text)
-    final_text = process_output(completion_input, text)
-    # print("Final text: ", final_text)
-    del model  # Delete the model to free up memory
-    torch.cuda.empty_cache()
-    print(final_text)
-    return final_text
-
-'''
-def myload_dataset(data_path):
-    instances = []
-    with open(data_path, "r+", encoding="utf8") as f:
-        for inst in jsonlines.Reader(f):
-            instances.append(inst)
-
-    print(f"Load {len(instances)} data from {data_path}.")
-    return instances
-'''
+def completion_with_backoff(**kwargs):
+    response = openai.ChatCompletion.create(**kwargs)
+    return response
 
 def openai_phi2_handler(prompt):
-  while True:
-    try:
-        input_data = load_dataset("gsm8k","main")#("data/gsm8k/test.jsonl")  # Pass your data path here
-        response = completion_with_backoff(input_data)
+    while True:
+        try:
+            response = completion_with_backoff(
+                model=api_model,
+                prompt=prompt,
+                n=1,
+                max_tokens=300,
+                temperature=1.1,
+            )
 
-        with open("openai.logs", 'a') as log_file:
-            log_file.write("\n" + "-----------" + '\n' +"Prompt : "+ prompt+"\n")
-        return response
+            with open("openai.logs", 'a') as log_file:
+                log_file.write("\n" + "-----------" + '\n' + "Prompt : " + prompt + "\n")
+            return response
 
-    except openai.error.RateLimitError as e:
-        sleep_duration = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
-        print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
-        time.sleep(sleep_duration)
+        except openai.error.RateLimitError as e:
+            sleep_duration = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
+            print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
+            time.sleep(sleep_duration)
 
 def openai_choice2text_handler(response):
-    '''
-    if isinstance(response, str):
-        # If response is already a string, return it directly
-        return response
-    elif "text" in response:
-        # If response is a dictionary and contains 'text' attribute, return it
-        return response["text"].strip()
-    '''
-    text = choice.text.strip()
+    text = response.choices[0].text.strip()
     return text
+
     
 
 def generate_text_phi(prompt, k):
@@ -138,13 +86,6 @@ def generate_text(prompt, k):
       thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
       return thoughts
 
-def generate_text_phi(prompt, k):
-    thoughts = []
-    for _ in range(k):
-        response = openai_phi2_handler(prompt)
-        text = openai_choice2text_handler(response)
-        thoughts.append(text)
-    return thoughts
 
 def ranking(prompt,question,past):
   # ranks = []
