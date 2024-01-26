@@ -41,7 +41,8 @@ from IPython.core.inputtransformer2 import ESC_HELP
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def completion_with_backoff(input_data):
-    completion_input = input_data[0]["content"] + "\n" + input_data[1]["content"]
+    #completion_input = input_data[0]["content"] + "\n" + input_data[1]["content"]
+    completion_input = input_data[0].get("content", "") + "\n" + input_data[1].get("content", "")
     torch.set_default_device("cuda")
     model = AutoModelForCausalLM.from_pretrained(
         "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
