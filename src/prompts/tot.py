@@ -12,7 +12,7 @@ IMPORTANT: MAKE SURE NOT TO HAVE THE DIRECT ANSWER IN YOUR POSSIBLE STEPS OUTPUT
 
 
 # prompt from TOT
-TOT = """
+TOT = ( """
 Input: "Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?"
 
 Steps take so far: [Calculate the price of cheddar cheese which is $10 (given)]
@@ -42,3 +42,6 @@ Input: {question}
 Steps taken so far:
 Output: Possible next steps: 
 """.strip()
+    + "\n"
+)
+
