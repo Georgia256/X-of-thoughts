@@ -40,9 +40,7 @@ from IPython.core.inputtransformer2 import ESC_HELP
 #from openai.error import Error  # Add this line to import the Error class
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def completion_with_backoff(input_data):
-    #completion_input = input_data[0]["content"] + "\n" + input_data[1]["content"]
-    completion_input = input_data[0].get("content", "") + "\n" + input_data[1].get("content", "")
+def phi2_completion(prompt, temperature, k=1, stop=None):
     torch.set_default_device("cuda")
     model = AutoModelForCausalLM.from_pretrained(
         "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
@@ -50,38 +48,27 @@ def completion_with_backoff(input_data):
     tokenizer = AutoTokenizer.from_pretrained(
         "microsoft/phi-2", trust_remote_code=True
     )
-    inputs = tokenizer(completion_input, return_tensors="pt")
+    inputs = tokenizer(prompt, return_tensors="pt")
     input_ids = inputs.input_ids.to(model.device)
-    #n_examples = len(input_data[1]["content"].split("<END>")) - 1
-    max_tokens = 1024
-    max_len = len(input_ids[0]) + max_tokens
+    n_examples = len(prompt.split("<END>")) - 1
 
-    #max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
-    # attention_mask = inputs.attention_mask.to(model.device)
+    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+
+    # Generate completion
     outputs = model.generate(
         input_ids=input_ids,
-        # attention_mask=attention_mask,
-        do_sample=True,
-        top_p=0.35,
-        top_k=50,
-        temperature=0.9,
-        max_length=max_len,  # Adjust max_length as needed
-        eos_token_id=tokenizer.eos_token_id,  # End of sequence token
-        pad_token_id=tokenizer.eos_token_id,  # Pad token
-        # no_repeat_ngram_size=10,
-        return_dict_in_generate=True,
-        output_scores=True,
+        max_length=max_len,
+        temperature=temperature,
+        num_return_sequences=k,
+        pad_token_id=tokenizer.eos_token_id,
+        eos_token_id=tokenizer.eos_token_id,
+        **({"do_sample": True, "top_k": 50, "top_p": 0.95} if stop is None else {"early_stopping": True, "max_length": stop})
     )
-    text = tokenizer.decode(
-        outputs.sequences[0], skip_special_tokens=True
-    )  # , skip_special_tokens=True
-    # print("Text: ", text)
-    final_text = process_output(completion_input, text)
-    # print("Final text: ", final_text)
-    del model  # Delete the model to free up memory
-    torch.cuda.empty_cache()
-    print(final_text)
-    return final_text
+
+    # Decode the generated sequences
+    completions = [tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
+
+    return completions
 
 
 def load_dataset(data_path):
@@ -93,55 +80,18 @@ def load_dataset(data_path):
     print(f"Load {len(instances)} data from {data_path}.")
     return instances
 
-def openai_phi2_handler(prompt):
-  while True:
-    try:
-        input_data = load_dataset("data/gsm8k/test.jsonl")  # Pass your data path here
-        response = completion_with_backoff(input_data)
+def openai_phi2_handler(prompt, temperature, k=1, stop=None):
+    completions = phi2_completion(prompt, temperature, k, stop)
+    return completions
 
-        with open("openai.logs", 'a') as log_file:
-            log_file.write("\n" + "-----------" + '\n' +"Prompt : "+ prompt+"\n")
-        return response
-
-    except openai.error.RateLimitError as e:
-        sleep_duration = os.environ.get("OPENAI_RATE_TIMEOUT", 30)
-        print(f'{str(e)}, sleep for {sleep_duration}s, set it by env OPENAI_RATE_TIMEOUT')
-        time.sleep(sleep_duration)
-
-    '''
-def openai_choice2text_handler(choice):
-    
-    #text = choice.split(" ")[3]  # Assuming the choice structure remains constant
-    #return text
-    if use_chat_api:
-        text = choice['message']['content']
-    else:
-    
-    text = choice.text.strip()
+def openai_choice2text_handler(completion):
+    text = completion.strip()
     return text
-    '''
-
-def openai_choice2text_handler(response):
-    if isinstance(response, str):
-        # If response is already a string, return it directly
-        return response
-    elif 'text' in response:
-        # If response is a dictionary and contains 'text' attribute, return it
-        return response['text'].strip()
-    
 
 def generate_text_phi(prompt, k):
-    thoughts = []
-    for _ in range(k):
-        response = openai_phi2_handler(prompt)
-        text = openai_choice2text_handler(response)
-        thoughts.append(text)
+    response = openai_phi2_handler(prompt, 0.9, k)
+    thoughts = [openai_choice2text_handler(completion) for completion in response]
     return thoughts
-    
-    #response = openai_phi2_handler(prompt)
-    #thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
-    #return thoughts
-
 def ranking(prompt,question,past):
     # ranks = []
     # for i in range(len(prompt)):
@@ -728,293 +678,6 @@ class Brain:
         return self.metrics
     
     def reason_tot(self):
-        """# Single GPT Instance with multiple thoughts"""
-
-        initial_promp_temp = f"""
-        Imagine you are trying to solve a math problem with a step-by-step approach. At each step, you should propose a single next step to solve the problem involving a single arithmetic option. If there are multiple options for how to proceed, you should generate up to 3 options.
-
-        The format of the problem is as below, follow this format only
-        Input: XXXX
-        Steps taken so far: YYYY
-        Output: ZZZZ
-
-        NOTE: The options should not be sequential or connected with each other, each option should be in a way that it can be evaluated independently. Dont jump to the result directly.
-        IMPORTANT: MAKE SURE NOT TO HAVE THE DIRECT ANSWER IN YOUR POSSIBLE STEPS OUTPUT, JUST MAKE ONE STEP AT A TIME.
-        Solved Example:
-
-        Example 1
-        Input: "Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?"
-
-        Steps take so far: [Calculate the price of cheddar cheese which is $10 (given)]
-
-
-        Output: Possible independent steps:
-        1) Calculate the price of cold cuts which is 2*10 = $20.
-        2)Calculate the price of cream cheese which is 10/2 = $5 per pound.
-
-        Example 2
-        Input: "Weng earns $12 an hour for babysitting. Yesterday, she just did 50 minutes of babysitting. How much did she earn?"
-
-        Steps taken so far: [None]
-
-        Output: Possible next steps:
-        1) Convert the minutes of babysitting to hours.
-        2) Convert the wage per hour to wage per minute.
-
-        Example 3
-        Input: "James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?"
-
-        Steps taken so far: [Number of letter written to 1 friend in a week = 2 as he writes twice a week]
-
-        Output: Possible next steps:
-        1) Number of letter written to 2 friends in a week = 2*2 = 4 letters a week.
-        2) Calculate the number of pages written to 1 friend in a week = 2*3 = 6 pages.
-
-
-        Now give the possible steps for the below question
-        Input: "Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"
-
-        Steps taken so far:
-
-        """
-
-        output_string = " \n Output: Possible independent steps:"
-
-
-        question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
-
-        #Parameters
-
-        max_steps = 3
-        k=1
-        status = ["None"]
-
-        for i in range(max_steps):
-            print("*****************NEW STEP*****************")
-            print(f"The status array is {status}")
-            initial_promp = initial_promp_temp + str(status) + output_string
-            out = generate_text_phi(initial_promp,k)[0]
-            # print(f"The output from the GPT is {out}")
-            outputs = parse_output_options(out)
-            print(f"The parsed output is {outputs}")
-            option = ranking(outputs,question,status)
-
-            # Call reason_tot to get the reason for the chosen option
-            #reason = reason_tot(initial_prompt, option)
-
-            # Display the reason
-            #print(f"The reason for the chosen option is:\n{reason}")
-
-
-            if("None") in status:
-                status = [option]
-            else:
-                status.append(option)
-            print(f"The option chosen as the best choice is {option}")
-            print("\n\n\n")
-
-        """# Having multiple GPT instances (num thoughts =k) each with multiple thoughts"""
-
-        initial_promp_temp = f"""
-        Imagine you are trying to solve a math problem with a step-by-step approach. At each step, you should propose a single next step to solve the problem involving a single arithmetic option. If there are multiple options for how to proceed, you should generate up to 3 options.
-
-        The format of the problem is as below, follow this format only
-        Input: XXXX
-        Steps taken so far: YYYY
-        Output: ZZZZ
-
-        NOTE: The options should not be sequential or connected with each other, each option should be in a way that it can be evaluated independently. Dont jump to the result directly.
-        IMPORTANT: MAKE SURE NOT TO HAVE THE DIRECT ANSWER IN YOUR POSSIBLE STEPS OUTPUT, JUST MAKE ONE STEP AT A TIME.
-        Solved Example:
-
-        Example 1
-        Input: "Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?"
-
-        Steps take so far: [Calculate the price of cheddar cheese which is $10 (given)]
-
-
-        Output: Possible independent steps:
-        1) Calculate the price of cold cuts which is; Solving =  2*10 = $20.
-        2)Calculate the price of cream cheese which is; Solving = 10/2 = $5 per pound.
-
-        Example 2
-        Input: "Weng earns $12 an hour for babysitting. Yesterday, she just did 50 minutes of babysitting. How much did she earn?"
-
-        Steps taken so far: [None]
-
-        Output: Possible next steps:
-        1) Convert the minutes of babysitting to hours; Solving = 50/60 = 0.833
-        2) Convert the wage per hour to wage per minute; Solving = 12/60 = $0.2 per minute
-
-        Example 3
-        Input: "James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?"
-
-        Steps taken so far: [step 1: Number of letter written to 1 friend in a week = 2 as he writes twice a week, step 2: Number of letter written to 2 friends in a week ; Solving = 2*2 = 4 letters a week.,step 3: Number of letters written to both the friends in a year; Solving = 4*52 = 208 letters.]
-
-        Output: Possible next steps:
-        1) Number of pages written to both the friends in a year. This will be our final solution; Solving = 208*3 = 624 pages.
-
-
-        Now give the possible steps for the below question, Dont directly give the final answer to the question just solve that independant step arithmetically.
-
-        Input:
-
-        """
-
-        output_string = " \n Output: Possible independent steps:"
-
-        summary_question_prompt = """
-        Given the question, try to give the final goal of the question in less than 10 words
-        Question:
-
-        """
-
-        predict_prompt = """
-        Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. Use only the knowledge provided in the steps below.
-        Question Summary -
-
-        """
-
-        """## k=1 Max steps 5"""
-
-        #Parameters
-        questions_big = []
-        status_big = []
-
-
-        max_steps = 5
-        k=2
-        pred = []
-        true = []
-        num_questions_to_solve = 50
-        correct = 0
-        wrong = 0
-        total = 0
-
-        '''def load_dataset(data_path):
-            instances = []
-            with open(data_path, "r+", encoding="utf8") as f:
-                for inst in jsonlines.Reader(f):
-                    instances.append(inst)
-
-            print(f"Load {len(instances)} data from {data_path}.")
-            return instances '''
-
-        dataset = load_dataset("data/gsm8k/test.jsonl")
-
-
-        for questions_number in range(num_questions_to_solve):
-            status = ["None"]
-
-            question = dataset["train"][questions_number+2:questions_number+3]["question"][0]
-            true_answer = float(dataset["train"][questions_number+2:questions_number+3]["answer"][0].split("####")[-1].strip())
-
-            for i in range(max_steps):
-                layer_options = []
-                print("*****************NEW STEP*****************")
-                print(f"The status array is {status} \n\n")
-                initial_promp = initial_promp_temp + str(question) + str("\n Steps taken so far:") + str(status) + output_string
-                out = generate_text_phi(initial_promp,k)
-
-                for j in range(k):
-                    print(f"######## This is the thought from instance number {j} ##########")
-                    outputs = parse_output_options(out[j])
-                    print(f"The parsed output is {outputs}")
-                    a = [one_option[3:] for one_option in outputs]
-                    layer_options.extend(a)
-
-                    chosen_option = ranking(layer_options,question,status)
-                if("None") in status:
-                    status = [chosen_option]
-                else:
-                    status.append(chosen_option)
-                    print(f"The option chosen as the best choice is {chosen_option}")
-                    print("\n\n\n")
-
-
-            question_summary = generate_text_phi(summary_question_prompt + str(question),1)
-            predict_prompt_full = predict_prompt + str(question_summary) + str("Based on the current status - ") + str(status) + str("\n Just give the answer in number nothing else no text")
-
-            answer = generate_text_phi(predict_prompt_full ,1)
-
-            pred.append(answer[0])
-            true.append(true_answer)
-
-
-            try:
-                if(float(answer[0])==true_answer):
-                    correct +=1
-                else:
-                    wrong+=1
-                total+=1
-            except:
-                continue
-
-            questions_big.append(question)
-            status_big.append(status)
-            print(f"Current status is -----------------> correct = {correct} and wrong = {wrong}")
-
-        """# Multiple GPT Instance, but with just one step each"""
-
-        initial_prompt_temp = f"""
-        Let's approach this systematically:
-
-        Imagine you are solving a math problem step by step. At each step, propose a single next step involving a single arithmetic operation. Choose the most relevant and important step if multiple options are available.
-
-        Use the following format:
-        Input: XXXX
-        Steps taken so far: YYYY
-        Output: ZZZZ; Solving = AAAA
-
-        NOTE: Provide one possible next step only; avoid giving the direct answer and solving the entire problem at once. Ensure not to predict any step that is already in the "Steps taken so far" array.
-
-        Example 1:
-        Input: "Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that costs half the price of the cheddar cheese, and a pack of cold cuts that costs twice the price of the cheddar cheese. How much does he spend on the ingredients?"
-
-        Steps taken so far: [Calculate the price of cheddar cheese, which is $10 (given)]
-
-        Output: Next possible step:
-        Calculate the price of cold cuts; Solving = 2 * 10 = $20.
-
-        Example 2:
-        Input: "Weng earns $12 an hour for babysitting. Yesterday, she babysat for 50 minutes. How much did she earn?"
-
-        Steps taken so far: [None]
-
-        Output: Possible next step:
-        Convert the minutes of babysitting to hours; Solving = 50 / 60 = 0.833
-
-        Example 3:
-        Input: "James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?"
-
-        Steps taken so far: [Step 1: Number of letters written to 1 friend in a week = 2 (he writes twice a week), Step 2: Number of letters written to 2 friends in a week; Solving = 2 * 2 = 4 letters a week, Step 3: Number of letters written to both friends in a year; Solving = 4 * 52 = 208 letters.]
-
-        Output: Possible next step:
-        Calculate the number of pages written to both friends in a year. This is our final solution; Solving = 208 * 3 = 624 pages.
-
-        Now, provide the possible single next step for the following question, ensuring you do not directly give the final answer:
-        Input:
-
-        """
-
-        output_string = " \n Output: Possible independent step:"
-
-        summary_question_prompt = """
-        Given the question, try to give the final goal of the question in less than 10 words
-        Question:
-
-        """
-
-        predict_prompt = """
-        Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. Use only the knowledge provided in the steps below.
-        The output should simply be the float value of the answer, no unit, no currency.
-        Question Summary -
-
-        """
-
-        reflection_prompt = """
-        Do you think the below given proposed answer is a correct step for the above question, in terms of mathematical calulcation and logically correct? Answer only in YES or NO. Chosen step -
-        """
 
         def cluster(sentences):
             sentences = [s.lower() for s in sentences]
@@ -1067,81 +730,78 @@ class Brain:
 
 
 
-        for questions_number in range(num_questions_to_solve):
-            status = ["None"]
+        status = ["None"]
 
-            question = dataset["train"][questions_number:questions_number+1]["question"][0]
-            true_answer = float(dataset["train"][questions_number:questions_number+1]["answer"][0].split("####")[-1].strip())
+        
 
+        for i in range(max_steps):
+            store_question.append(self.cache["inst/question"])
+            store_true.append(self.cache["inst/gold_answer"])
+            layer_options = []
+            print("*****************NEW STEP*****************")
+            print(f"The status array is {status} \n\n")
+            initial_promp = initial_prompt_temp + str(question) + str("\n Steps taken so far:") + str(status) + output_string
+            out = generate_text_phi(initial_promp,k)
 
-            for i in range(max_steps):
-                store_question.append(question)
-                store_true.append(true_answer)
-                layer_options = []
-                print("*****************NEW STEP*****************")
-                print(f"The status array is {status} \n\n")
-                initial_promp = initial_prompt_temp + str(question) + str("\n Steps taken so far:") + str(status) + output_string
-                out = generate_text_phi(initial_promp,k)
+            for j in range(k):
+                print(f"######## This is the thought from instance number {j} ##########")
+                outputs = parse_output_options(out[j])
+                print(f"The parsed output is {outputs}")
+                a = [one_option for one_option in outputs]
+                layer_options.extend(a)
 
-                for j in range(k):
-                    print(f"######## This is the thought from instance number {j} ##########")
-                    outputs = parse_output_options(out[j])
-                    print(f"The parsed output is {outputs}")
-                    a = [one_option for one_option in outputs]
-                    layer_options.extend(a)
+            store_gpt0.append(layer_options[0])
+            store_gpt1.append(layer_options[1])
+            store_gpt2.append(layer_options[2])
 
-                store_gpt0.append(layer_options[0])
-                store_gpt1.append(layer_options[1])
-                store_gpt2.append(layer_options[2])
-
-                chosen_option = ranking(layer_options,question,status)
-                layer_entropy = cluster(layer_options)
-                layer_entropy = list(layer_entropy.values())
+            chosen_option = ranking(layer_options,question,status)
+            layer_entropy = cluster(layer_options)
+            layer_entropy = list(layer_entropy.values())
 
 
-                for clus in range(len(layer_entropy)):
-                    print(f"Chosen option is {chosen_option[0].lower()} and the layer_entropy is {layer_entropy[clus]}")
-                if(eval(chosen_option[0]).lower() in layer_entropy[clus]):
-                    entropy = (len(layer_entropy[clus])/10.0)
-                    print(f"THE ENTROPY IS {entropy}")
+            for clus in range(len(layer_entropy)):
+                print(f"Chosen option is {chosen_option[0].lower()} and the layer_entropy is {layer_entropy[clus]}")
+            if(eval(chosen_option[0]).lower() in layer_entropy[clus]):
+                entropy = (len(layer_entropy[clus])/10.0)
+                print(f"THE ENTROPY IS {entropy}")
 
-                store_chosen.append(chosen_option)
-                store_chosen_cache.append(list(set(re.findall(r'\d+(?:\.\d+)?', chosen_option[0]))))
+            store_chosen.append(chosen_option)
+            store_chosen_cache.append(list(set(re.findall(r'\d+(?:\.\d+)?', chosen_option[0]))))
 
-                if("None") in status:
-                    status = [chosen_option]
-                else:
-                    status.append(chosen_option)
-                print(f"The option chosen as the best choice is {chosen_option}")
-                print("\n\n\n")
-
-
-            question_summary = generate_text_phi(summary_question_prompt + str(question),1)
-            predict_prompt_full = predict_prompt + str(question_summary) + str("Based on the current status - ") + str(status) + str("\n Just give the final answer in number nothing else no text, no calculations")
-
-            answer = generate_text_phi(predict_prompt_full ,1)
-
-            pred.append([answer[0]]*max_steps)
-            true.append([true_answer]*max_steps)
+            if("None") in status:
+                status = [chosen_option]
+            else:
+                status.append(chosen_option)
+            print(f"The option chosen as the best choice is {chosen_option}")
+            print("\n\n\n")
 
 
-            try:
-                if(float(answer[0])==true_answer):
-                    correct +=1
+        question_summary = generate_text_phi(summary_question_prompt + str(question),1)
+        predict_prompt_full = predict_prompt + str(question_summary) + str("Based on the current status - ") + str(status) + str("\n Just give the final answer in number nothing else no text, no calculations")
 
-                    store_answer.append(["C"]*max_steps)
+        answer = generate_text_phi(predict_prompt_full ,1)
 
-                else:
-                    wrong+=1
-                    store_answer.append(["W"]*max_steps)
-                total+=1
-            except:
-                store_answer.append(["Error"]*max_steps)
-                continue
+        pred.append([answer[0]]*max_steps)
+        true.append([true_answer]*max_steps)
 
-            questions_big.append(question)
-            status_big.append(status)
-            print(f"Current status is -----------------> correct = {correct} and wrong = {wrong}")
+
+        try:
+            if(float(answer[0])==true_answer):
+                correct +=1
+
+                store_answer.append(["C"]*max_steps)
+
+            else:
+                wrong+=1
+                store_answer.append(["W"]*max_steps)
+            total+=1
+        except:
+            store_answer.append(["Error"]*max_steps)
+            continue
+
+        questions_big.append(question)
+        status_big.append(status)
+        print(f"Current status is -----------------> correct = {correct} and wrong = {wrong}")
 
 
     @staticmethod
