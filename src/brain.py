@@ -51,8 +51,8 @@ from IPython.core.inputtransformer2 import ESC_HELP
 #from openai.error import Error  # Add this line to import the Error class
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def phi2_completion(prompt,status, output_string, temperature, k=1, stop=None):
-    completion_input = prompt[0]["content"] + "\n" + prompt[1]["content"] + str(status) + output_string
+def phi2_completion(prompt, temperature, k=1, stop=None):
+    completion_input = prompt[0]["content"] + "\n" + prompt[1]["content"] 
     torch.set_default_device("cuda")
     # Adjust batch size here (default is 1)
     model = AutoModelForCausalLM.from_pretrained(
@@ -95,8 +95,8 @@ def phi2_completion(prompt,status, output_string, temperature, k=1, stop=None):
 
 
 # Modified function to handle phi-2 completions
-def openai_phi2_handler(prompt, status, output_string, temperature, k=1, stop=None):
-    completions = phi2_completion(prompt, status, output_string, temperature, k, stop)
+def openai_phi2_handler(prompt, temperature, k=1, stop=None):
+    completions = phi2_completion(prompt, temperature, k, stop)
     return completions
 
 def openai_choice2text_handler(choice):
@@ -105,15 +105,15 @@ def openai_choice2text_handler(choice):
     text = choice.text.strip()
     return text
 
-def generate_text_phi(prompt, status, output_string, k):
+def generate_text_phi(prompt, k):
     #response = openai_phi2_handler(prompt, 0.9, k)
     #thoughts = [openai_choice2text_handler(completion) for completion in response]
     #return thoughts
-    response = openai_phi2_handler(prompt, status, output_string, 0.9, k)
+    response = openai_phi2_handler(prompt, 0.9, k)
     thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
     return thoughts
 
-def ranking(prompt,status, output_string,question,past):
+def ranking(prompt,question,past):
 
 
     comparison_prompt = f"""
@@ -129,7 +129,7 @@ def ranking(prompt,status, output_string,question,past):
 
     DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
     """
-    a = generate_text_phi(comparison_prompt,status, output_string,1)
+    a = generate_text_phi(comparison_prompt,1)
     return a
 
 def parse_output_options(output):
@@ -635,13 +635,13 @@ class Brain:
         for i in range(max_steps):
             print("*****************NEW STEP*****************")
             print(f"The status array is {status}")
-            #initial_promp = chat_input 
+            initial_promp = chat_input + str(status) + output_string
             #out = generate_text_phi(initial_promp, status, output_string, k)[0]
-            out = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
+            out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
 
             outputs = parse_output_options(out)
             print(f"The parsed output is {outputs}")
-            option = ranking(outputs,status, output_string, question,status)
+            option = ranking(outputs,question,status)
 
             if("None") in status:
                 status = [option]
