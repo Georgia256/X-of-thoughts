@@ -627,7 +627,7 @@ class Brain:
         
         output_string = " \n Output: Possible independent steps:"
 
-        #question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
+        question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
 
         for i in range(max_steps):
             print("*****************NEW STEP*****************")
