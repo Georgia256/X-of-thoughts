@@ -339,6 +339,8 @@ total = 0
 dataset = load_dataset("gsm8k","main")
 
 
+max_sequence_length = 512  # Limit the maximum sequence length
+
 for questions_number in range(num_questions_to_solve):
   status = ["None"]
 
@@ -350,20 +352,24 @@ for questions_number in range(num_questions_to_solve):
     print("*****************NEW STEP*****************")
     print(f"The status array is {status} \n\n")
     initial_promp = initial_promp_temp + str(question) + str("\n Steps taken so far:") + str(status) + output_string
-    out = generate_text_phi(initial_promp,k)
+    
+    # Limit the maximum sequence length
+    initial_prompt_truncated = initial_promp[:max_sequence_length]
+
+    out = generate_text_phi(initial_prompt_truncated, k)
 
     for j in range(k):
-      print(f"######## This is the thought from instance number {j} ##########")
-      outputs = parse_output_options(out[j])
-      print(f"The parsed output is {outputs}")
-      a = [one_option[3:] for one_option in outputs]
-      layer_options.extend(a)
+        print(f"######## This is the thought from instance number {j} ##########")
+        outputs = parse_output_options(out[j])
+        print(f"The parsed output is {outputs}")
+        a = [one_option[3:] for one_option in outputs]
+        layer_options.extend(a)
 
-    chosen_option = ranking(layer_options,question,status)
-    if("None") in status:
-      status = [chosen_option]
+    chosen_option = ranking(layer_options, question, status)
+    if "None" in status:
+        status = [chosen_option]
     else:
-      status.append(chosen_option)
+        status.append(chosen_option)
     print(f"The option chosen as the best choice is {chosen_option}")
     print("\n\n\n")
 
