@@ -28,6 +28,11 @@ from IPython.core.inputtransformer2 import ESC_HELP
 
 data_path = "data/gsm8k/test.jsonl"
 
+def process_output(input, output):
+    output = output[len(input) :]
+    output = output.split("<END>", 1)
+    return output[0].strip()
+
 def myload_dataset(data_path):
     instances = []
     with open(data_path, "r+", encoding="utf8") as f:
@@ -39,6 +44,7 @@ def myload_dataset(data_path):
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def phi2_completion(prompt, temperature, k=1, stop=None):
+    completion_input = prompt[0]["content"] + "\n" + prompt[1]["content"]
     torch.set_default_device("cuda")
     # Adjust batch size here (default is 1)
     model = AutoModelForCausalLM.from_pretrained(
@@ -64,10 +70,17 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
         **({"do_sample": True, "top_k": 50, "top_p": 0.95} if stop is None else {"early_stopping": True, "max_length": stop})
     )
 
-    # Decode the generated sequences
-    completions = [tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
+    text = tokenizer.decode(
+        outputs.sequences[0], skip_special_tokens=True
+    )  # , skip_special_tokens=True
+    # print("Text: ", text)
+    final_text = process_output(completion_input, text)
+    # print("Final text: ", final_text)
+    del model  # Delete the model to free up memory
+    torch.cuda.empty_cache()
+    print(final_text)
+    return final_text
 
-    return completions
 
 # Modified function to handle phi-2 completions
 def openai_phi2_handler(prompt, temperature, k=1, stop=None):
