@@ -110,9 +110,9 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
     )
     inputs = tokenizer(prompt, return_tensors="pt")
     input_ids = inputs.input_ids.to(model.device)
-    n_examples = len(prompt.split("<END>")) - 1
+    #n_examples = len(prompt.split("<END>")) - 1
 
-    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+    max_len = 1024#math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
 
     # Generate completion
     outputs = model.generate(
@@ -500,8 +500,77 @@ store_chosen_cache = []
 
 dataset = myload_dataset(data_path)#("data/gsm8k/test.jsonl")
 
+for questions_number in range(num_questions_to_solve):
+    status = ["None"]
 
+    question = dataset["train"][questions_number:questions_number+1]["input"][0]
+    true_answer = dataset["train"][questions_number:questions_number+1]["target"][0]
 
+    for i in range(max_steps):
+        store_question.append(question)
+        store_true.append(true_answer)
+        layer_options = []
+        print("*****************NEW STEP*****************")
+        print(f"The status array is {status} \n\n")
+        initial_prompt = initial_prompt_temp + str(question) + str("\n Steps taken so far:") + str(status) + output_string
+        out = generate_text_phi(initial_prompt, k)
+
+        for j in range(k):
+            print(f"######## This is the thought from instance number {j} ##########")
+            outputs = parse_output_options(out[j])
+            print(f"The parsed output is {outputs}")
+            a = [one_option for one_option in outputs]
+            layer_options.extend(a)
+
+        store_gpt0.append(layer_options[0])
+        store_gpt1.append(layer_options[1])
+        store_gpt2.append(layer_options[2])
+
+        chosen_option = ranking(layer_options, question, status)
+        layer_entropy = cluster(layer_options)
+        layer_entropy = list(layer_entropy.values())
+
+        for clus in range(len(layer_entropy)):
+            print(f"Chosen option is {chosen_option[0].lower()} and the layer_entropy is {layer_entropy[clus]}")
+            if eval(chosen_option[0]).lower() in layer_entropy[clus]:
+                entropy = (len(layer_entropy[clus]) / 10.0)
+                print(f"THE ENTROPY IS {entropy}")
+
+        store_chosen.append(chosen_option)
+        store_chosen_cache.append(list(set(re.findall(r'\d+(?:\.\d+)?', chosen_option[0]))))
+
+        if "None" in status:
+            status = [chosen_option]
+        else:
+            status.append(chosen_option)
+        print(f"The option chosen as the best choice is {chosen_option}")
+        print("\n\n\n")
+
+    question_summary = generate_text_phi(summary_question_prompt + str(question), 1)
+    predict_prompt_full = predict_prompt + str(question_summary) + str("Based on the current status - ") + str(status) + str("\n Just give the final answer in number nothing else no text, no calculations")
+
+    answer = generate_text_phi(predict_prompt_full, 1)
+
+    pred.append([answer[0]] * max_steps)
+    true.append([true_answer] * max_steps)
+
+    try:
+        if float(answer[0]) == true_answer:
+            correct += 1
+            store_answer.append(["C"] * max_steps)
+        else:
+            wrong += 1
+            store_answer.append(["W"] * max_steps)
+        total += 1
+    except:
+        store_answer.append(["Error"] * max_steps)
+        continue
+
+    questions_big.append(question)
+    status_big.append(status)
+    print(f"Current status is -----------------> correct = {correct} and wrong = {wrong}")
+
+'''
 for questions_number in range(num_questions_to_solve):
   status = ["None"]
 
@@ -577,3 +646,4 @@ for questions_number in range(num_questions_to_solve):
   questions_big.append(question)
   status_big.append(status)
   print(f"Current status is -----------------> correct = {correct} and wrong = {wrong}")
+'''
