@@ -114,6 +114,11 @@ def generate_text_phi(prompt, status, output_string, k):
     return thoughts
 
 def ranking(prompt,question,past):
+
+    status = ["None"]
+        
+    output_string = " \n Output: Possible independent steps:"
+
     comparison_prompt = f"""
     To achieve the following goal: '{question}', and based on the current steps taken towards solving the problem {past}
     pessimistically value the below mentioned step and choose one of the follwing options that will be the best option towards the goal.
@@ -127,7 +132,7 @@ def ranking(prompt,question,past):
 
     DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
     """
-    a = generate_text_phi(comparison_prompt,1)
+    a = generate_text_phi(comparison_prompt,status, output_string,1)
     return a
 
 def parse_output_options(output):
@@ -624,9 +629,9 @@ class Brain:
 
         max_steps = 3
         k=1
-        status = ["None"]
+        #status = ["None"]
         
-        output_string = " \n Output: Possible independent steps:"
+        #output_string = " \n Output: Possible independent steps:"
 
         #question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
 
