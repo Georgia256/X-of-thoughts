@@ -21,6 +21,7 @@ from prompts.plan import PLAN_SYSTEM, PLAN
 from prompts.cot_complex import COT_SYSTEM, COT
 from prompts.pot import POT_SYSTEM, POT
 from prompts.eot import EOT_SYSTEM, EOT
+from prompts.tot import TOT_SYSTEM, TOT
 from prompts.peano import PEANO_SYSTEM, PEANO
 from prompts.check import ASSERT_SYSTEM, ASSERT_PROMPT
 from prompts.self_refine import REFINE_SYSTEM, REFINE
@@ -36,12 +37,24 @@ KEY_GROUP = {"a": ["YOUR_API_KEY"]}
 
 api_model="phi-2"
 
+
+def load_dataset(data_path):
+    instances = []
+    with open(data_path, "r+", encoding="utf8") as f:
+        for inst in jsonlines.Reader(f):
+            instances.append(inst)
+
+    print(f"Load {len(instances)} data from {data_path}.")
+    return instances
+
 from IPython.core.inputtransformer2 import ESC_HELP
 #from openai.error import Error  # Add this line to import the Error class
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def phi2_completion(prompt, temperature, k=1, stop=None):
+    completion_input = prompt[0]["content"] + "\n" + prompt[1]["content"]
     torch.set_default_device("cuda")
+    # Adjust batch size here (default is 1)
     model = AutoModelForCausalLM.from_pretrained(
         "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
     )
@@ -57,44 +70,50 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
     # Generate completion
     outputs = model.generate(
         input_ids=input_ids,
-        max_length=max_len,
-        temperature=temperature,
-        num_return_sequences=k,
-        pad_token_id=tokenizer.eos_token_id,
-        eos_token_id=tokenizer.eos_token_id,
-        **({"do_sample": True, "top_k": 50, "top_p": 0.95} if stop is None else {"early_stopping": True, "max_length": stop})
+        # attention_mask=attention_mask,
+        do_sample=True,
+        top_p=0.35,
+        top_k=50,
+        temperature=0.9,
+        max_length=max_len,  # Adjust max_length as needed
+        eos_token_id=tokenizer.eos_token_id,  # End of sequence token
+        pad_token_id=tokenizer.eos_token_id,  # Pad token
+        # no_repeat_ngram_size=10,
+        return_dict_in_generate=True,
+        output_scores=True,
     )
+    text = tokenizer.decode(
+        outputs.sequences[0], skip_special_tokens=True
+    )  # , skip_special_tokens=True
+    # print("Text: ", text)
+    final_text = process_output(completion_input, text)
+    # print("Final text: ", final_text)
+    del model  # Delete the model to free up memory
+    torch.cuda.empty_cache()
+    print(final_text)
+    return final_text
 
-    # Decode the generated sequences
-    completions = [tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
 
-    return completions
-
-
-def load_dataset(data_path):
-    instances = []
-    with open(data_path, "r+", encoding="utf8") as f:
-        for inst in jsonlines.Reader(f):
-            instances.append(inst)
-
-    print(f"Load {len(instances)} data from {data_path}.")
-    return instances
-
+# Modified function to handle phi-2 completions
 def openai_phi2_handler(prompt, temperature, k=1, stop=None):
     completions = phi2_completion(prompt, temperature, k, stop)
     return completions
 
-def openai_choice2text_handler(completion):
-    text = completion.strip()
+def openai_choice2text_handler(choice):
+    #text = completion.strip()
+    #return text
+    text = choice.text.strip()
     return text
 
 def generate_text_phi(prompt, k):
+    #response = openai_phi2_handler(prompt, 0.9, k)
+    #thoughts = [openai_choice2text_handler(completion) for completion in response]
+    #return thoughts
     response = openai_phi2_handler(prompt, 0.9, k)
-    thoughts = [openai_choice2text_handler(completion) for completion in response]
+    thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
     return thoughts
+
 def ranking(prompt,question,past):
-    # ranks = []
-    # for i in range(len(prompt)):
     comparison_prompt = f"""
     To achieve the following goal: '{question}', and based on the current steps taken towards solving the problem {past}
     pessimistically value the below mentioned step and choose one of the follwing options that will be the best option towards the goal.
@@ -112,8 +131,6 @@ def ranking(prompt,question,past):
     return a
 
 def parse_output_options(output):
-    # output = output.split("Output")[1:]
-    # output = " ".join(output).strip()
     output = output.split("\n")
     return output
 
@@ -580,83 +597,6 @@ class Brain:
             print(f"ori_score: {self.cache['reason/pot/score']}")
             print(f"refine_score: {score}")
 
-    """
-    def think_refine_eot(self):
-        #Self-refine on PAL
-        question = self.cache["inst/question"]
-        code = self.cache['reason/pot']
-        chat_input = self.build_chat_input(REFINE_EOT_SYSTEM, REFINE_EOT.format(question=question, code=code))
-        response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
-        self.cache[f'reason/eot'] = response
-
-        # execute
-        equations = extract_equations(response)
-        try:
-            solutions = safe_solve_equation_system(equations)
-            pred = floatify_ans(solutions['ans'])
-            score = 1.0 if abs(pred - self.cache['inst/gold_answer']) < 1e-3 else 0.0
-        except Exception as e:
-            if self.debug:
-                print(e)
-
-            pred = None
-            score = 0.0
-
-        self.cache['reason/eot/equations'] = equations
-        self.cache['reason/eot/ans'] = pred
-        self.cache['reason/eot/score'] = score
-        self.metrics['eot/correct'] += score
-
-        if self.debug:
-            print(f"=== inst i: {self.id} ===")
-            print(f"chat_input: {chat_input}")
-            print(f"response: {response}")
-            print(f"equations: {equations}")
-            print(f"score: {score}")
-
-    
-    def reflection_reason_php(self, method='cot'):
-        # Iterative-refinement module for cot, prompts from php
-        question = self.cache["inst/question"]
-        hint_ans = self.cache[f'reason/{method}/ans']
-        self.cache[f'inst/hint_ans'] = self.cache[f'reason/{method}/ans']
-        self.cache[f'inst/hint_score'] = self.cache[f'reason/{method}/score']
-
-        chat_input = self.build_chat_input(PHP_SYSTEM, PHP.format(question=question,
-                                                                  answer=hint_ans))
-        response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
-        self.cache['reason/cot'] = response
-
-        # execute
-        answer_format_flag = 'The answer is' in response
-        pred_str = response.split('The answer is')[-1].strip('.').replace(',', '').strip()
-        # print(f"pred: {pred_str}")
-        try:
-            all_digit = re.findall(r"[-+]?\d*\.?\d+|\d+", pred_str)
-            if answer_format_flag:
-                pred = all_digit[0]
-            else:
-                pred = all_digit[-1]
-            pred = floatify_ans(pred)
-            if pred is not None and '%' in pred_str:
-                pred = pred / 100
-        except Exception as e:
-            print(e)
-            print(pred_str)
-            pred = None
-        score = 0.0
-        if pred is not None:
-            score = 1.0 if abs(pred - self.cache['inst/gold_answer']) < 1e-3 else 0.0
-        self.cache['reason/cot/ans'] = pred
-        self.cache['reason/cot/score'] = score
-        self.metrics['cot/correct'] += score
-
-        if self.debug:
-            print(f"=== inst i: {self.id} ===")
-            print(f"chat_input: {chat_input}")
-            print(f"response: {response}")
-            print(f"score: {score}")
-    """
 
     def save_cache(self):
         with open(self.result_path, "a") as out_f:
@@ -678,130 +618,35 @@ class Brain:
         return self.metrics
     
     def reason_tot(self):
+        question = self.cache["inst/question"]
+        chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question))
 
-        def cluster(sentences):
-            sentences = [s.lower() for s in sentences]
-
-            model = SentenceTransformer('all-mpnet-base-v2')
-
-            embeddings = model.encode(sentences, convert_to_tensor=True)
-
-            num_clusters = 2
-            kmeans = KMeans(n_clusters=num_clusters, random_state=0)
-            cluster_indices = kmeans.fit_predict(np.array(embeddings).tolist())
-
-            clusters = {}
-            for i, cluster_id in enumerate(cluster_indices):
-                if cluster_id not in clusters:
-                    clusters[cluster_id] = []
-                clusters[cluster_id].append(sentences[i].lower())
-
-            # for cluster_id, sentences_in_cluster in clusters.items():
-            #     print(f"Cluster {cluster_id + 1}:\n")
-            #     for sentence in sentences_in_cluster:
-            #         print(sentence)
-            #     print("\n")
-            return clusters
-
-        #Parameters
-        questions_big = []
-        status_big = []
-
-
-        max_steps = 5
-        k=10
-        pred = []
-        true = []
-        num_questions_to_solve = 2
-        correct = 0
-        wrong = 0
-        total = 0
-        store_question = []
-        store_gpt0 = []
-        store_gpt1 = []
-        store_gpt2 = []
-        store_true = []
-        store_chosen = []
-        store_answer = []
-        store_chosen_cache = []
-
-
-        dataset = load_dataset("data/gsm8k/test.jsonl")
-
-
-
+        max_steps = 3
+        k=1
         status = ["None"]
-
         
+        output_string = " \n Output: Possible independent steps:"
+
+        question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
 
         for i in range(max_steps):
-            store_question.append(self.cache["inst/question"])
-            store_true.append(self.cache["inst/gold_answer"])
-            layer_options = []
             print("*****************NEW STEP*****************")
-            print(f"The status array is {status} \n\n")
-            initial_promp = initial_prompt_temp + str(question) + str("\n Steps taken so far:") + str(status) + output_string
-            out = generate_text_phi(initial_promp,k)
-
-            for j in range(k):
-                print(f"######## This is the thought from instance number {j} ##########")
-                outputs = parse_output_options(out[j])
-                print(f"The parsed output is {outputs}")
-                a = [one_option for one_option in outputs]
-                layer_options.extend(a)
-
-            store_gpt0.append(layer_options[0])
-            store_gpt1.append(layer_options[1])
-            store_gpt2.append(layer_options[2])
-
-            chosen_option = ranking(layer_options,question,status)
-            layer_entropy = cluster(layer_options)
-            layer_entropy = list(layer_entropy.values())
-
-
-            for clus in range(len(layer_entropy)):
-                print(f"Chosen option is {chosen_option[0].lower()} and the layer_entropy is {layer_entropy[clus]}")
-            if(eval(chosen_option[0]).lower() in layer_entropy[clus]):
-                entropy = (len(layer_entropy[clus])/10.0)
-                print(f"THE ENTROPY IS {entropy}")
-
-            store_chosen.append(chosen_option)
-            store_chosen_cache.append(list(set(re.findall(r'\d+(?:\.\d+)?', chosen_option[0]))))
+            print(f"The status array is {status}")
+            initial_promp = chat_input + str(status) + output_string
+            out = generate_text_phi(initial_promp,k)[0]
+            outputs = parse_output_options(out)
+            print(f"The parsed output is {outputs}")
+            option = ranking(outputs,question,status)
 
             if("None") in status:
-                status = [chosen_option]
+                status = [option]
             else:
-                status.append(chosen_option)
-            print(f"The option chosen as the best choice is {chosen_option}")
+                status.append(option)
+            print(f"The option chosen as the best choice is {option}")
             print("\n\n\n")
 
-
-        question_summary = generate_text_phi(summary_question_prompt + str(question),1)
-        predict_prompt_full = predict_prompt + str(question_summary) + str("Based on the current status - ") + str(status) + str("\n Just give the final answer in number nothing else no text, no calculations")
-
-        answer = generate_text_phi(predict_prompt_full ,1)
-
-        pred.append([answer[0]]*max_steps)
-        true.append([true_answer]*max_steps)
-
-
-        try:
-            if(float(answer[0])==true_answer):
-                correct +=1
-
-                store_answer.append(["C"]*max_steps)
-
-            else:
-                wrong+=1
-                store_answer.append(["W"]*max_steps)
-            total+=1
-        except:
-            store_answer.append(["Error"]*max_steps)
-            continue
-
-        questions_big.append(question)
-        status_big.append(status)
-        print(f"Current status is -----------------> correct = {correct} and wrong = {wrong}")
+        
+        
 
 
     @staticmethod

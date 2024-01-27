@@ -28,6 +28,7 @@ def load_dataset(data_path):
 
     print(f"Load {len(instances)} data from {data_path}.")
     return instances
+    
 
 
 if __name__ == "__main__":
