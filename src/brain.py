@@ -113,11 +113,8 @@ def generate_text_phi(prompt, status, output_string, k):
     thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
     return thoughts
 
-def ranking(prompt,question,past):
+def ranking(prompt,status, output_string,question,past):
 
-    status = ["None"]
-        
-    output_string = " \n Output: Possible independent steps:"
 
     comparison_prompt = f"""
     To achieve the following goal: '{question}', and based on the current steps taken towards solving the problem {past}
@@ -629,9 +626,9 @@ class Brain:
 
         max_steps = 3
         k=1
-        #status = ["None"]
+        status = ["None"]
         
-        #output_string = " \n Output: Possible independent steps:"
+        output_string = " \n Output: Possible independent steps:"
 
         #question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
 
@@ -644,7 +641,7 @@ class Brain:
 
             outputs = parse_output_options(out)
             print(f"The parsed output is {outputs}")
-            option = ranking(outputs,question,status)
+            option = ranking(outputs,status, output_string, question,status)
 
             if("None") in status:
                 status = [option]
