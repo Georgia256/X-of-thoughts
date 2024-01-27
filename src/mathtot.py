@@ -326,7 +326,7 @@ status_big = []
 
 
 max_steps = 5
-k=2
+k=1
 pred = []
 true = []
 num_questions_to_solve = 5
