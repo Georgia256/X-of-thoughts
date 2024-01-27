@@ -632,7 +632,7 @@ class Brain:
         for i in range(max_steps):
             print("*****************NEW STEP*****************")
             print(f"The status array is {status}")
-            initial_promp = chat_input + [str(status)] + [output_string]
+            initial_promp = chat_input #+ [str(status)] + [output_string]
             out = generate_text_phi(initial_promp,k)[0]
             outputs = parse_output_options(out)
             print(f"The parsed output is {outputs}")
@@ -646,9 +646,6 @@ class Brain:
             print("\n\n\n")
 
         
-        
-
-
     @staticmethod
     def build_chat_input(instruction, user_input):
         return [
