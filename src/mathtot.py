@@ -3,9 +3,7 @@ from tenacity import (
     retry,
     stop_after_attempt,
     wait_random_exponential,
-)  # for exponential backoff'''
-#import datasets
-
+)
 import re
 import time
 from sentence_transformers import SentenceTransformer
@@ -27,7 +25,6 @@ KEY_GROUP = {"a": ["YOUR_API_KEY"]}
 api_model="phi-2"
 
 from IPython.core.inputtransformer2 import ESC_HELP
-#from openai.error import Error  # Add this line to import the Error class
 
 data_path = "data/gsm8k/test.jsonl"
 
@@ -43,6 +40,8 @@ def myload_dataset(data_path):
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def phi2_completion(prompt, temperature, k=1, stop=None):
     torch.set_default_device("cuda")
+    # Adjust batch size here (default is 1)
+    batch_size = 1
     model = AutoModelForCausalLM.from_pretrained(
         "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
     )
@@ -57,7 +56,7 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
 
     # Generate completion
     outputs = model.generate(
-        input_ids=input_ids,
+        input_ids=input_ids.repeat(batch_size, 1),
         max_length=max_len,
         temperature=temperature,
         num_return_sequences=k,
@@ -85,34 +84,26 @@ def generate_text_phi(prompt, k):
     thoughts = [openai_choice2text_handler(completion) for completion in response]
     return thoughts
 
-
-
 def ranking(prompt,question,past):
-  # ranks = []
-  # for i in range(len(prompt)):
-  comparison_prompt = f"""
-  To achieve the following goal: '{question}', and based on the current steps taken towards solving the problem {past}
-  pessimistically value the below mentioned step and choose one of the follwing options that will be the best option towards the goal.
-  Return the exact same chosen option, dont change or format it.
-  The options to choose from \n
-  {prompt}\n
+    comparison_prompt = f"""
+    To achieve the following goal: '{question}', and based on the current steps taken towards solving the problem {past}
+    pessimistically value the below mentioned step and choose one of the follwing options that will be the best option towards the goal.
+    Return the exact same chosen option, dont change or format it.
+    The options to choose from \n
+    {prompt}\n
 
-  NOTE:
-  1) Evaluate all the options and choose the option which is the best direction for the next step to move based on the past solution we have found till now. Dont choose the output that jumps to the result directly.
-  2)MAKE SURE YOU DONT CHOOSE THE OPTION THAT HAS A SIMILAR MEANING (STEP) TO WHAT IS ALREADY THERE IN THE PAST SOLUTION ARRAY.
+    NOTE:
+    1) Evaluate all the options and choose the option which is the best direction for the next step to move based on the past solution we have found till now. Dont choose the output that jumps to the result directly.
+    2)MAKE SURE YOU DONT CHOOSE THE OPTION THAT HAS A SIMILAR MEANING (STEP) TO WHAT IS ALREADY THERE IN THE PAST SOLUTION ARRAY.
 
-  DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
-  """
-  a = generate_text_phi(comparison_prompt,1)
-  return a
+    DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
+    """
+    a = generate_text_phi(comparison_prompt,1)
+    return a
 
 def parse_output_options(output):
-  # output = output.split("Output")[1:]
-  # output = " ".join(output).strip()
-  output = output.split("\n")
-  return output
-
-"""# Single phi Instance with multiple thoughts"""
+    output = output.split("\n")
+    return output
 
 initial_promp_temp = f"""
 Imagine you are trying to solve a math problem with a step-by-step approach. At each step, you should propose a single next step to solve the problem involving a single arithmetic option. If there are multiple options for how to proceed, you should generate up to 3 options.
@@ -164,36 +155,24 @@ Steps taken so far:
 
 output_string = " \n Output: Possible independent steps:"
 
-
 question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
-
-#Parameters
 
 max_steps = 3
 k=1
 status = ["None"]
 
 for i in range(max_steps):
-  print("*****************NEW STEP*****************")
-  print(f"The status array is {status}")
-  initial_promp = initial_promp_temp + str(status) + output_string
-  out = generate_text_phi(initial_promp,k)[0]
-  # print(f"The output from the GPT is {out}")
-  outputs = parse_output_options(out)
-  print(f"The parsed output is {outputs}")
-  option = ranking(outputs,question,status)
+    print("*****************NEW STEP*****************")
+    print(f"The status array is {status}")
+    initial_promp = initial_promp_temp + str(status) + output_string
+    out = generate_text_phi(initial_promp,k)[0]
+    outputs = parse_output_options(out)
+    print(f"The parsed output is {outputs}")
+    option = ranking(outputs,question,status)
 
-# Call reason_tot to get the reason for the chosen option
-  #reason = reason_tot(initial_prompt, option)
-
-# Display the reason
-  #print(f"The reason for the chosen option is:\n{reason}")
-
-
-  if("None") in status:
-    status = [option]
-  else:
-    status.append(option)
-  print(f"The option chosen as the best choice is {option}")
-  print("\n\n\n")
-
+    if("None") in status:
+        status = [option]
+    else:
+        status.append(option)
+    print(f"The option chosen as the best choice is {option}")
+    print("\n\n\n")
