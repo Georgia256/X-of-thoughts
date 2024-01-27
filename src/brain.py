@@ -620,7 +620,19 @@ class Brain:
     def reason_tot(self):
         question = self.cache["inst/question"]
         chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question))
+        response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
+        self.cache["reason/tot"] = response
+        outputs = parse_output_options(response)
+        print(f"The parsed output is {outputs}")
+        option = ranking(outputs,question,status)
 
+        if("None") in status:
+            status = [option]
+        else:
+            status.append(option)
+        print(f"The option chosen as the best choice is {option}")
+        print("\n\n\n")
+        '''
         max_steps = 3
         k=1
         status = ["None"]
@@ -632,7 +644,7 @@ class Brain:
         for i in range(max_steps):
             print("*****************NEW STEP*****************")
             print(f"The status array is {status}")
-            initial_promp = chat_input #+ [str(status)] + [output_string]
+            initial_promp = chat_input + [str(status)] + [output_string]
             out = generate_text_phi(initial_promp,k)[0]
             outputs = parse_output_options(out)
             print(f"The parsed output is {outputs}")
@@ -644,6 +656,7 @@ class Brain:
                 status.append(option)
             print(f"The option chosen as the best choice is {option}")
             print("\n\n\n")
+            '''
 
         
     @staticmethod
