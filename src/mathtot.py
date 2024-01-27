@@ -40,8 +40,10 @@ def myload_dataset(data_path):
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def phi2_completion(prompt, temperature, k=1, stop=None):
     torch.set_default_device("cuda")
-    # Adjust batch size here (default is 1)
+    # Adjust batch size and maximum sequence length
     batch_size = 1
+    max_length = 512  # Adjust as needed
+
     model = AutoModelForCausalLM.from_pretrained(
         "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
     )
@@ -52,7 +54,7 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
     input_ids = inputs.input_ids.to(model.device)
     n_examples = len(prompt.split("<END>")) - 1
 
-    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+    max_len = min(max_length, math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1))))
 
     # Generate completion
     outputs = model.generate(
