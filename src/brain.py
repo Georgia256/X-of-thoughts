@@ -618,6 +618,7 @@ class Brain:
         return self.metrics
     
     def reason_tot(self):
+        status = ["None"]
         question = self.cache["inst/question"]
         chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question))
         response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
