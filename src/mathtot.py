@@ -40,10 +40,7 @@ def myload_dataset(data_path):
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def phi2_completion(prompt, temperature, k=1, stop=None):
     torch.set_default_device("cuda")
-    # Adjust batch size and maximum sequence length
-    batch_size = 1
-    max_length = 512  # Adjust as needed
-
+    # Adjust batch size here (default is 1)
     model = AutoModelForCausalLM.from_pretrained(
         "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
     )
@@ -54,11 +51,11 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
     input_ids = inputs.input_ids.to(model.device)
     n_examples = len(prompt.split("<END>")) - 1
 
-    max_len = min(max_length, math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1))))
+    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
 
     # Generate completion
     outputs = model.generate(
-        input_ids=input_ids.repeat(batch_size, 1),
+        input_ids=input_ids,
         max_length=max_len,
         temperature=temperature,
         num_return_sequences=k,
@@ -159,22 +156,24 @@ output_string = " \n Output: Possible independent steps:"
 
 question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
 
-max_steps = 3
-k=1
-status = ["None"]
+if __name__ == "__main__":
 
-for i in range(max_steps):
-    print("*****************NEW STEP*****************")
-    print(f"The status array is {status}")
-    initial_promp = initial_promp_temp + str(status) + output_string
-    out = generate_text_phi(initial_promp,k)[0]
-    outputs = parse_output_options(out)
-    print(f"The parsed output is {outputs}")
-    option = ranking(outputs,question,status)
+  max_steps = 3
+  k=1
+  status = ["None"]
 
-    if("None") in status:
-        status = [option]
-    else:
-        status.append(option)
-    print(f"The option chosen as the best choice is {option}")
-    print("\n\n\n")
+  for i in range(max_steps):
+      print("*****************NEW STEP*****************")
+      print(f"The status array is {status}")
+      initial_promp = initial_promp_temp + str(status) + output_string
+      out = generate_text_phi(initial_promp,k)[0]
+      outputs = parse_output_options(out)
+      print(f"The parsed output is {outputs}")
+      option = ranking(outputs,question,status)
+
+      if("None") in status:
+          status = [option]
+      else:
+          status.append(option)
+      print(f"The option chosen as the best choice is {option}")
+      print("\n\n\n")
