@@ -74,13 +74,18 @@ def openai_phi2_handler(prompt, temperature, k=1, stop=None):
     completions = phi2_completion(prompt, temperature, k, stop)
     return completions
 
-def openai_choice2text_handler(completion):
-    text = completion.strip()
+def openai_choice2text_handler(choice):
+    #text = completion.strip()
+    #return text
+    text = choice.text.strip()
     return text
 
 def generate_text_phi(prompt, k):
+    #response = openai_phi2_handler(prompt, 0.9, k)
+    #thoughts = [openai_choice2text_handler(completion) for completion in response]
+    #return thoughts
     response = openai_phi2_handler(prompt, 0.9, k)
-    thoughts = [openai_choice2text_handler(completion) for completion in response]
+    thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
     return thoughts
 
 def ranking(prompt,question,past):
