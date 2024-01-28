@@ -634,8 +634,8 @@ class Brain:
 
         status = ["None"]
 
-        chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question, status=status))
-        print("chat_input:",chat_input)
+        #chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question, status=status))
+        #print("chat_input:",chat_input)
 
         max_steps = 3
         k=1
@@ -646,6 +646,8 @@ class Brain:
         for i in range(max_steps):
             print("*****************NEW STEP*****************")
             print(f"The status array is {status}")
+            chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question, status=status))
+            print("chat_input:",chat_input)
             initial_promp = chat_input + [str(status)] + [output_string]
             out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
             #out = generate_text_phi(initial_promp,k)[0]
