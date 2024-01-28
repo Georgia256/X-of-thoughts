@@ -105,9 +105,9 @@ def openai_choice2text_handler(choice):
     return text
 
 def parse_output_options(output):
-    #output = output.split("\n")
-    output = output.split("Output")[1:]
-    output = " ".join(output).strip()
+    output = output.split("\n")
+    #output = output.split("Output")[1:]
+    #output = " ".join(output).strip()
     return output
     
 
