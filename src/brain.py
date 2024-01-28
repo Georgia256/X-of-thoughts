@@ -637,7 +637,7 @@ class Brain:
         DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
         """
 
-        comp_prompt = self.build_chat_input(comparison_prompt)
+        comp_prompt = self.build_chat_input_rank(comparison_prompt)
         a = generate_text_phi(comp_prompt,1)
         return a
     
@@ -679,4 +679,9 @@ class Brain:
         return [
             {"role": "system", "content": instruction},
             {"role": "user", "content": user_input},
+        ]
+    @staticmethod
+    def build_chat_input_rank(instruction):
+        return [
+            {"role": "system", "content": instruction},
         ]
