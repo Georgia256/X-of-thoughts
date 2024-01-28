@@ -615,13 +615,20 @@ class Brain:
         """
 
         input_string = f"""
+        Input: "Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?"
+
+        Steps take so far: [Calculate the price of cheddar cheese which is $10 (given)]
 
         The options to choose from:
-        1) Calculate the number of eggs she has left to sell = 16-3-4 = 9 eggs.
-        2) Calculate the amount of money she makes per day = 9*2 = $18.
+        1) Calculate the price of cold cuts which is 2*10 = $20.
+        2) Calculate the price of cream cheese which is 10/2 = $5 per pound. 
         #The best option:
-        Calculate the number of eggs she has left to sell = 16-3-4 = 9 eggs. <END>
+        Calculate the price of cream cheese which is 10/2 = $5 per pound. <END>
         
+
+        Input: {question}
+
+        Steps taken so far: {past}
 
         The options to choose from:
         {prompt}
