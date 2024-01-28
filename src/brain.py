@@ -644,6 +644,7 @@ class Brain:
             out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
             #out = generate_text_phi(initial_promp,k)[0]
             outputs = parse_output_options(out)
+            print(f"The unparsed output is {out}")
             print(f"The parsed output is {outputs}")
             
             option = self.ranking(outputs,question,status)
