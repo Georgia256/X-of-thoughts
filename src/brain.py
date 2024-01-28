@@ -106,8 +106,6 @@ def openai_choice2text_handler(choice):
 
 def parse_output_options(output):
     output = output.split("\n")
-    #output = output.split("Output")[1:]
-    #output = " ".join(output).strip()
     return output
     
 
@@ -618,9 +616,9 @@ class Brain:
         DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
         """
 
-        comp_prompt = self.build_chat_input_rank(comparison_prompt)
+        #comp_prompt = self.build_chat_input_rank(comparison_prompt)
         #a = generate_text_phi(comp_prompt,1)
-        a=self.generate_text_phi(comp_prompt)
+        a=self.generate_text_phi(comparison_prompt)
         return a
     
     def reason_tot(self):
@@ -644,7 +642,7 @@ class Brain:
             out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
             #out = generate_text_phi(initial_promp,k)[0]
             outputs = parse_output_options(out)
-            print(f"The unparsed output is {out}")
+            #print(f"The unparsed output is {out}")
             print(f"The parsed output is {outputs}")
             
             option = self.ranking(outputs,question,status)
