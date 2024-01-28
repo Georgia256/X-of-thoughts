@@ -632,14 +632,12 @@ class Brain:
         
         output_string = " \n Output: Possible independent steps:"
 
-        initial_promp = chat_input + [str(status)] + [output_string]
-        out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
 
         for i in range(max_steps):
             print("*****************NEW STEP*****************")
             print(f"The status array is {status}")
-            #initial_promp = chat_input + [str(status)] + [output_string]
-            out = generate_text_phi(out, k)[0]
+            initial_promp = chat_input + [str(status)] + [output_string]
+            out = generate_text_phi(initial_promp, k)[0]
             #out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
 
             outputs = parse_output_options(out)
