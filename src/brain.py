@@ -595,7 +595,7 @@ class Brain:
         #thoughts = [openai_choice2text_handler(completion) for completion in response]
         #return thoughts
         response = get_chat_response_rank(self.args, prompt, self.api_key, self.ORG_ID)
-        print("from generate text:", response)
+        #print("from generate text:", response)
         #thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
         return response
 
@@ -620,6 +620,7 @@ class Brain:
         print("comp_prompt is:",comp_prompt)
         #a = generate_text_phi(comp_prompt,1)
         a=self.generate_text_phi(comp_prompt)
+        print("ranking result", a)
         return a
     
     def reason_tot(self):
