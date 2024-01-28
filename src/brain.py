@@ -50,11 +50,53 @@ def load_dataset(data_path):
 from IPython.core.inputtransformer2 import ESC_HELP
 #from openai.error import Error  # Add this line to import the Error class
 
+'''
+    def phi2_completion(prompt, temperature, k=1, stop=None):
+        completion_input = prompt[0]["content"] + "\n" + prompt[1]["content"] 
+        torch.set_default_device("cuda")
+        # Adjust batch size here (default is 1)
+        model = AutoModelForCausalLM.from_pretrained(
+            "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
+        )
+        tokenizer = AutoTokenizer.from_pretrained(
+            "microsoft/phi-2", trust_remote_code=True
+        )
+        inputs = tokenizer(prompt, return_tensors="pt")
+        input_ids = inputs.input_ids.to(model.device)
+        n_examples = len(prompt.split("<END>")) - 1
+
+        max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
+
+        # Generate completion
+        outputs = model.generate(
+            input_ids=input_ids,
+            # attention_mask=attention_mask,
+            do_sample=True,
+            top_p=0.35,
+            top_k=50,
+            temperature=0.9,
+            max_length=max_len,  # Adjust max_length as needed
+            eos_token_id=tokenizer.eos_token_id,  # End of sequence token
+            pad_token_id=tokenizer.eos_token_id,  # Pad token
+            # no_repeat_ngram_size=10,
+            return_dict_in_generate=True,
+            output_scores=True,
+        )
+        text = tokenizer.decode(
+            outputs.sequences[0], skip_special_tokens=True
+        )  # , skip_special_tokens=True
+        # print("Text: ", text)
+        final_text = process_output(completion_input, text)
+        # print("Final text: ", final_text)
+        del model  # Delete the model to free up memory
+        torch.cuda.empty_cache()
+        print(final_text)
+        return final_text
+    '''
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
+
 def phi2_completion(prompt, temperature, k=1, stop=None):
-    completion_input = prompt[0]["content"] + "\n" + prompt[1]["content"] 
     torch.set_default_device("cuda")
-    # Adjust batch size here (default is 1)
     model = AutoModelForCausalLM.from_pretrained(
         "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
     )
@@ -70,29 +112,18 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
     # Generate completion
     outputs = model.generate(
         input_ids=input_ids,
-        # attention_mask=attention_mask,
-        do_sample=True,
-        top_p=0.35,
-        top_k=50,
-        temperature=0.9,
-        max_length=max_len,  # Adjust max_length as needed
-        eos_token_id=tokenizer.eos_token_id,  # End of sequence token
-        pad_token_id=tokenizer.eos_token_id,  # Pad token
-        # no_repeat_ngram_size=10,
-        return_dict_in_generate=True,
-        output_scores=True,
+        max_length=max_len,
+        temperature=temperature,
+        num_return_sequences=k,
+        pad_token_id=tokenizer.eos_token_id,
+        eos_token_id=tokenizer.eos_token_id,
+        **({"do_sample": True, "top_k": 50, "top_p": 0.95} if stop is None else {"early_stopping": True, "max_length": stop})
     )
-    text = tokenizer.decode(
-        outputs.sequences[0], skip_special_tokens=True
-    )  # , skip_special_tokens=True
-    # print("Text: ", text)
-    final_text = process_output(completion_input, text)
-    # print("Final text: ", final_text)
-    del model  # Delete the model to free up memory
-    torch.cuda.empty_cache()
-    print(final_text)
-    return final_text
 
+    # Decode the generated sequences
+    completions = [tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
+
+    return completions
 
 # Modified function to handle phi-2 completions
 def openai_phi2_handler(prompt, temperature, k=1, stop=None):
@@ -637,8 +668,8 @@ class Brain:
             print("*****************NEW STEP*****************")
             print(f"The status array is {status}")
             initial_promp = chat_input + [str(status)] + [output_string]
-            out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
-
+            #out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
+            out = generate_text_phi(initial_promp,k)[0]
             outputs = parse_output_options(out)
             print(f"The parsed output is {outputs}")
             option = ranking(outputs,question,status)
