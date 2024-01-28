@@ -112,7 +112,7 @@ def generate_text_phi(prompt, k):
     thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
     return thoughts
 
-def ranking(prompt,question,past, args, api_key, ORG_ID):
+def ranking(prompt,question,past):
 
 
     comparison_prompt = f"""
@@ -128,8 +128,7 @@ def ranking(prompt,question,past, args, api_key, ORG_ID):
 
     DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
     """
-    #a = generate_text_phi(comparison_prompt,1)
-    a = get_chat_response(args, comparison_prompt, api_key, ORG_ID)
+    a = generate_text_phi(comparison_prompt,1)
     return a
 
 def parse_output_options(output):
@@ -641,7 +640,7 @@ class Brain:
             #out = generate_text_phi(initial_promp,k)[0]
             outputs = parse_output_options(out)
             print(f"The parsed output is {outputs}")
-            option = ranking(outputs,question,status,self.args, self.api_key, self.ORG_ID)
+            option = ranking(outputs,question,status)
 
             if("None") in status:
                 status = [option]
