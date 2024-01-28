@@ -703,9 +703,9 @@ class Brain_new:
         predict_prompt_full = self.build_chat_input(predict_prompt,question_info)
         answer = get_chat_response(self.args, predict_prompt_full, self.api_key, self.ORG_ID)
 
-        pred = re.findall(r'[\d.]+', answer)
+        pred = re.findall(r'[\d,.]+', answer)
         if pred:
-            pred = float(pred[-1])  # Considering only the last numeric match
+            pred = float(pred[-1].replace(',', ''))  # Considering only the last numeric match
         else:
             pred = None
                 
