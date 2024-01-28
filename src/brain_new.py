@@ -679,9 +679,21 @@ class Brain_new:
 
         max_steps = 4
         k=1
+        pred = []
         
         output_string = " \n Output: Possible independent steps:"
 
+        summary_question_prompt = """
+        Given the question, try to give the final goal of the question in less than 10 words
+        Question:
+
+        """
+
+        predict_prompt = """
+        Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. Use only the knowledge provided in the steps below.
+        Question Summary -
+
+        """
 
         for i in range(max_steps):
             print("*****************NEW STEP*****************")
@@ -702,6 +714,13 @@ class Brain_new:
                 status.append(option)
             print(f"The option chosen as the best choice is {option}")
             print("\n\n\n")
+
+        question_summary = get_chat_response(self.args, summary_question_prompt + question, self.api_key, self.ORG_ID)
+        predict_prompt_full = predict_prompt + str(question_summary) + str("Based on the current status - ") + str(status) + str("\n Just give the answer in number nothing else no text")
+
+        answer = get_chat_response(self.args, predict_prompt_full, self.api_key, self.ORG_ID)
+
+        pred.append(answer[0])
 
         
     @staticmethod
