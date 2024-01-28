@@ -755,8 +755,8 @@ class Brain_new:
         predict_prompt_full = self.build_chat_input(predict_prompt,question_info)
         answer = get_chat_response(self.args, predict_prompt_full, self.api_key, self.ORG_ID)
 
-        pred.append(answer[0])
-        print("final answer: ", pred)
+        pred.append(answer)
+        print("final answer: ", answer)
 
         
     @staticmethod
