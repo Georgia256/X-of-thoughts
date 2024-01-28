@@ -31,6 +31,9 @@ from sentence_transformers import SentenceTransformer
 from sklearn.cluster import KMeans
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
 
+from IPython.core.inputtransformer2 import ESC_HELP
+#from openai.error import Error  # Add this line to import the Error class
+
 from utils import *
 
 KEY_GROUP = {"a": ["YOUR_API_KEY"]}
@@ -47,63 +50,6 @@ def load_dataset(data_path):
     print(f"Load {len(instances)} data from {data_path}.")
     return instances
 
-from IPython.core.inputtransformer2 import ESC_HELP
-#from openai.error import Error  # Add this line to import the Error class
-'''
-@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def phi2_completion(prompt, temperature, k=1, stop=None):
-    completion_input = prompt[0]["content"]
-    torch.set_default_device("cuda")
-    # Adjust batch size here (default is 1)
-    model = AutoModelForCausalLM.from_pretrained(
-        "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
-    )
-    tokenizer = AutoTokenizer.from_pretrained(
-        "microsoft/phi-2", trust_remote_code=True
-    )
-    inputs = tokenizer(prompt, return_tensors="pt")
-    input_ids = inputs.input_ids.to(model.device)
-    n_examples = len(prompt.split("<END>")) - 1
-
-    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
-
-    # Generate completion
-    outputs = model.generate(
-        input_ids=input_ids,
-        # attention_mask=attention_mask,
-        do_sample=True,
-        top_p=0.35,
-        top_k=50,
-        temperature=0.9,
-        max_length=max_len,  # Adjust max_length as needed
-        eos_token_id=tokenizer.eos_token_id,  # End of sequence token
-        pad_token_id=tokenizer.eos_token_id,  # Pad token
-        # no_repeat_ngram_size=10,
-        return_dict_in_generate=True,
-        output_scores=True,
-    )
-    text = tokenizer.decode(
-        outputs.sequences[0], skip_special_tokens=True
-    )  # , skip_special_tokens=True
-    # print("Text: ", text)
-    final_text = process_output(completion_input, text)
-    # print("Final text: ", final_text)
-    del model  # Delete the model to free up memory
-    torch.cuda.empty_cache()
-    print(final_text)
-    return final_text
-
-# Modified function to handle phi-2 completions
-def openai_phi2_handler(prompt, temperature, k=1, stop=None):
-    completions = phi2_completion(prompt, temperature, k, stop)
-    return completions
-
-def openai_choice2text_handler(choice):
-    #text = completion.strip()
-    #return text
-    text = choice.text.strip()
-    return text
-'''
 
 def parse_output_options(output):
     output = output.split("\n")
@@ -721,6 +667,8 @@ class Brain_new:
             print(f"The option chosen as the best choice is {option}")
             print("\n\n\n")
 
+        self.cache["reason/tot"] = status
+
         summary = self.build_chat_input(summary_question_prompt,question_in)
         question_summary = get_chat_response(self.args, summary, self.api_key, self.ORG_ID)
 
@@ -755,8 +703,16 @@ class Brain_new:
         predict_prompt_full = self.build_chat_input(predict_prompt,question_info)
         answer = get_chat_response(self.args, predict_prompt_full, self.api_key, self.ORG_ID)
 
-        pred.append(answer)
-        print("final answer: ", answer)
+        pred = answer
+        pred = floatify_ans(pred)
+        print("final answer: ", pred)
+
+        if pred is not None:
+            score = 1.0 if abs(pred - self.cache["inst/gold_answer"]) < 1e-3 else 0.0
+        self.cache["reason/tot/ans"] = pred
+        self.cache["reason/tot/score"] = score
+        self.metrics["tot/correct"] += score
+
 
         
     @staticmethod
