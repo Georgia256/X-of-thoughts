@@ -426,6 +426,7 @@ def get_chat_response_rank(args, input, key, org_id, n=1):
                 return_dict_in_generate=True,
                 output_scores=True,
             )
+            print("outputs:",outputs)
             text = tokenizer.decode(
                 outputs.sequences[0], skip_special_tokens=True
             )  # , skip_special_tokens=True
