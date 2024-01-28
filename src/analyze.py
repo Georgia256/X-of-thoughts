@@ -17,6 +17,7 @@ if __name__ == "__main__":
     parser.add_argument("--cot", default='', type=str)
     parser.add_argument("--pot", default='', type=str)
     parser.add_argument("--eot", default='', type=str)
+    parser.add_argument("--tot", default='', type=str)
     parser.add_argument("--pot_assertion", default='', type=str)
     parser.add_argument("--eot_assertion", default='', type=str)
     #parser.add_argument("--metacognitive_eval", default='', type=str)
@@ -81,6 +82,7 @@ if __name__ == "__main__":
     cot_data = load_result(args.cot)
     pot_data = load_result(args.pot)
     eot_data = load_result(args.eot)
+    tot_data = load_result(args.tot)
     pot_assertion_data = load_result(args.pot_assertion)
     eot_assertion_data = load_result(args.eot_assertion)
     #meta_eval_data = load_result(args.metacognitive_eval)
@@ -91,37 +93,43 @@ if __name__ == "__main__":
 
     data_len = len(cot_data)
     logger.info(f"Data length: {data_len}")
-    assert data_len == len(pot_data) == len(eot_data) == len(pot_assertion_data), \
+    assert data_len == len(pot_data) == len(eot_data) == len(tot_data) == len(pot_assertion_data), \
         f"Data length mismatch: {data_len} vs {len(pot_data)} vs {len(eot_data)} vs {len(pot_assertion_data)}"
 
     # ===== XoT performance =====
     cot_acc = total_acc(cot_data)
     pot_acc = total_acc(pot_data)
     eot_acc = total_acc(eot_data)
+    tot_acc = total_acc(tot_data)
 
     logger.info(f"===== Single performance =====")
     logger.info(f"cot: {cot_acc}")
     logger.info(f"pot: {pot_acc}")
     logger.info(f"eot: {eot_acc}")
+    logger.info(f"tot: {tot_acc}")
 
     # ===== XoT is good at =====
     pot_good = []
     cot_good = []
     eot_good = []
+    tot_good = []
 
     for i in range(data_len):
-        pot, cot, eot = pot_data[i], cot_data[i], eot_data[i]
-        if pot['reason/pot/score'] == 1 and cot['reason/cot/score'] == 0 and eot['reason/eot/score'] == 0:
+        pot, cot, eot, tot = pot_data[i], cot_data[i], eot_data[i], tot_data[i]
+        if pot['reason/pot/score'] == 1 and cot['reason/cot/score'] == 0 and eot['reason/eot/score'] == 0 and tot['reason/eot/score'] == 0:
             pot_good.append(i)
-        if pot['reason/pot/score'] == 0 and cot['reason/cot/score'] == 1 and eot['reason/eot/score'] == 0:
+        if pot['reason/pot/score'] == 0 and cot['reason/cot/score'] == 1 and eot['reason/eot/score'] == 0 and tot['reason/eot/score'] == 0:
             cot_good.append(i)
-        if pot['reason/pot/score'] == 0 and cot['reason/cot/score'] == 0 and eot['reason/eot/score'] == 1:
+        if pot['reason/pot/score'] == 0 and cot['reason/cot/score'] == 0 and eot['reason/eot/score'] == 1 and tot['reason/eot/score'] == 0:
+            eot_good.append(i)
+        if pot['reason/pot/score'] == 0 and cot['reason/cot/score'] == 0 and eot['reason/eot/score'] == 0 and tot['reason/eot/score'] == 1:
             eot_good.append(i)
 
     logger.info(f"===== XoT is good at =====")
     logger.info(f"cot: {len(cot_good)}")
     logger.info(f"pot: {len(pot_good)}")
     logger.info(f"eot: {len(eot_good)}")
+    logger.info(f"tot: {len(tot_good)}")
 
     # ===== OR =====
     pot_or_eot = 0
