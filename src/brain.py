@@ -103,37 +103,6 @@ def openai_choice2text_handler(choice):
     #return text
     text = choice.text.strip()
     return text
-'''
-def generate_text_phi(prompt, k):
-    #response = openai_phi2_handler(prompt, 0.9, k)
-    #thoughts = [openai_choice2text_handler(completion) for completion in response]
-    #return thoughts
-    response = openai_phi2_handler(prompt, 0.9, k)
-    thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
-    return thoughts
-'''
-'''
-def ranking(self, prompt,question,past):
-
-
-    comparison_prompt = f"""
-    To achieve the following goal: '{question}', and based on the current steps taken towards solving the problem {past}
-    pessimistically value the below mentioned step and choose one of the follwing options that will be the best option towards the goal.
-    Return the exact same chosen option, dont change or format it.
-    The options to choose from \n
-    {prompt}\n
-
-    NOTE:
-    1) Evaluate all the options and choose the option which is the best direction for the next step to move based on the past solution we have found till now. Dont choose the output that jumps to the result directly.
-    2)MAKE SURE YOU DONT CHOOSE THE OPTION THAT HAS A SIMILAR MEANING (STEP) TO WHAT IS ALREADY THERE IN THE PAST SOLUTION ARRAY.
-
-    DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
-    """
-
-    comp_prompt = self.build_chat_input(comparison_prompt)
-    a = generate_text_phi(comp_prompt,1)
-    return a
-'''
 
 def parse_output_options(output):
     output = output.split("\n")
@@ -626,6 +595,7 @@ class Brain:
         #thoughts = [openai_choice2text_handler(completion) for completion in response]
         #return thoughts
         response = get_chat_response_rank(self.args, prompt, self.api_key, self.ORG_ID)
+        print("from generate text:", response)
         thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
         return thoughts
 
