@@ -103,7 +103,7 @@ def openai_choice2text_handler(choice):
     #return text
     text = choice.text.strip()
     return text
-
+'''
 def generate_text_phi(prompt, k):
     #response = openai_phi2_handler(prompt, 0.9, k)
     #thoughts = [openai_choice2text_handler(completion) for completion in response]
@@ -111,6 +111,7 @@ def generate_text_phi(prompt, k):
     response = openai_phi2_handler(prompt, 0.9, k)
     thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
     return thoughts
+'''
 '''
 def ranking(self, prompt,question,past):
 
@@ -620,6 +621,14 @@ class Brain:
         self.metrics["total"] = len(self.data)
         return self.metrics
     
+    def generate_text_phi(self, prompt):
+        #response = openai_phi2_handler(prompt, 0.9, k)
+        #thoughts = [openai_choice2text_handler(completion) for completion in response]
+        #return thoughts
+        response = get_chat_response_rank(self.args, prompt, self.api_key, self.ORG_ID)
+        thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
+        return thoughts
+
     def ranking(self, prompt,question,past):
 
 
@@ -639,7 +648,7 @@ class Brain:
 
         comp_prompt = self.build_chat_input_rank(comparison_prompt)
         #a = generate_text_phi(comp_prompt,1)
-        a=get_chat_response_rank(self.args, comp_prompt, self.api_key, self.ORG_ID)
+        a=self.generate_text_phi(self, comp_prompt)
         return a
     
     def reason_tot(self):
