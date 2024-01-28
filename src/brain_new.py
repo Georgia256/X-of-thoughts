@@ -703,8 +703,12 @@ class Brain_new:
         predict_prompt_full = self.build_chat_input(predict_prompt,question_info)
         answer = get_chat_response(self.args, predict_prompt_full, self.api_key, self.ORG_ID)
 
-        pred = answer
-        pred = float(pred) if pred is not None else None
+        pred = re.findall(r'[\d.]+', answer)
+        if pred:
+            pred = float(pred[0])  # Considering only the first numeric match
+        else:
+            pred = None
+                
         print("final answer: ", pred)
 
         if pred is not None:
