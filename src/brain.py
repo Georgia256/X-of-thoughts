@@ -614,12 +614,10 @@ class Brain:
         DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE 
         """
 
-        input = ( """
+        input = f"""
         The options to choose from \n
         {prompt}\n
-        """.strip()
-            + "\n"
-        )
+        """
         comp_prompt = self.build_chat_input(comparison_prompt,input.format(prompt=prompt))
         print("comp_prompt is:",comp_prompt)
         #a = generate_text_phi(comp_prompt,1)
