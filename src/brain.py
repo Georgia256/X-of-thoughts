@@ -632,12 +632,13 @@ class Brain:
         question = self.cache["inst/question"]
         #question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
 
+        status = ["None"]
+
         chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question, status=status))
         print("chat_input:",chat_input)
 
         max_steps = 3
         k=1
-        status = ["None"]
         
         output_string = " \n Output: Possible independent steps:"
 
