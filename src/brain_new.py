@@ -704,7 +704,7 @@ class Brain_new:
         answer = get_chat_response(self.args, predict_prompt_full, self.api_key, self.ORG_ID)
 
         pred = re.findall(r'[\d,.]+', answer)
-        if pred:
+        if pred and any(char.isdigit() for char in pred[-1]):
             pred = float(pred[-1].replace(',', ''))  # Considering only the last numeric match
         else:
             pred = None
