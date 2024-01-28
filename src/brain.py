@@ -638,7 +638,7 @@ class Brain:
         """
 
         comp_prompt = self.build_chat_input_rank(comparison_prompt)
-        a = generate_text_phi(comp_prompt,1)
+        #a = generate_text_phi(comp_prompt,1)
         a=get_chat_response(self.args, comp_prompt, self.api_key, self.ORG_ID)
         return a
     
