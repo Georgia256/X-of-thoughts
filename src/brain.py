@@ -624,7 +624,27 @@ class Brain:
         2) Calculate the price of cream cheese which is 10/2 = $5 per pound. 
         #The best option:
         Calculate the price of cream cheese which is 10/2 = $5 per pound. <END>
-        
+
+        Input: "Weng earns $12 an hour for babysitting. Yesterday, she just did 50 minutes of babysitting. How much did she earn?"
+
+        Steps taken so far: [None]
+
+        Output: Possible next steps:
+        1) Convert the minutes of babysitting to hours.
+        2) Convert the wage per hour to wage per minute. 
+        #The best option:
+        Convert the wage per hour to wage per minute. <END>
+
+        Input: "James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?"
+
+        Steps taken so far: [Number of letter written to 1 friend in a week = 2 as he writes twice a week]
+
+        Output: Possible next steps:
+        1) Number of letter written to 2 friends in a week = 2*2 = 4 letters a week.
+        2) Calculate the number of pages written to 1 friend in a week = 2*3 = 6 pages. 
+        #The best option:
+        Number of letter written to 2 friends in a week = 2*2 = 4 letters a week. <END>
+                
 
         Input: {question}
 
@@ -664,7 +684,7 @@ class Brain:
             print("*****************NEW STEP*****************")
             print(f"The status array is {status}")
             chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question, status=status))
-            print("chat_input:",chat_input)
+            #print("chat_input:",chat_input)
             initial_promp = chat_input + [str(status)] + [output_string]
             out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
             #out = generate_text_phi(initial_promp,k)[0]
