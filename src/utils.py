@@ -390,7 +390,7 @@ def get_chat_response_rank(args, input, key, org_id, n=1):
         elif args.model in ["phi-1_5", "phi-2"]:
             
             completion_input = input[0]["content"]
-            print("Completion input: ", completion_input)
+            #print("Completion input: ", completion_input)
             torch.set_default_device("cuda")
             if args.model == "phi-1_5":
                 model = AutoModelForCausalLM.from_pretrained(
@@ -430,12 +430,12 @@ def get_chat_response_rank(args, input, key, org_id, n=1):
                 outputs.sequences[0], skip_special_tokens=True
             )  # , skip_special_tokens=True
             #print("Text: ", text)
-            #final_text = process_output(completion_input, text)
-            #print("Final text: ", final_text)
+            final_text = process_output(completion_input, text)
+            print("Final text: ", final_text)
             del model  # Delete the model to free up memory
             torch.cuda.empty_cache()
             #print(final_text)
-            return text #final_text
+            return final_text
 
         else:
             completion_input = input[0]["content"] + "\n" + input[1]["content"]
