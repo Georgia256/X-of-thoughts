@@ -5,22 +5,40 @@ import json
 import time
 import backoff
 from time import sleep
-
+import torch
+import math
 import jsonlines
+
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_random_exponential,
+)  # for exponential backoff
+from tenacity import retry, stop_after_attempt, wait_random_exponential
+
 
 from prompts.plan import PLAN_SYSTEM, PLAN
 from prompts.cot_complex import COT_SYSTEM, COT
 from prompts.pot import POT_SYSTEM, POT
 from prompts.eot import EOT_SYSTEM, EOT
+from prompts.tot import TOT_SYSTEM, TOT
 from prompts.peano import PEANO_SYSTEM, PEANO
 from prompts.check import ASSERT_SYSTEM, ASSERT_PROMPT
 from prompts.self_refine import REFINE_SYSTEM, REFINE
 from prompts.metacognitive_eval_deepseek import META_EVAL_SYSTEM, META_EVAL
 
+from sentence_transformers import SentenceTransformer
+from sklearn.cluster import KMeans
+from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
+
+from IPython.core.inputtransformer2 import ESC_HELP
+#from openai.error import Error  # Add this line to import the Error class
 
 from utils import *
 
 KEY_GROUP = {"a": ["YOUR_API_KEY"]}
+
+api_model="phi-2"
 
 
 def load_dataset(data_path):
@@ -33,7 +51,12 @@ def load_dataset(data_path):
     return instances
 
 
-class Brain:
+def parse_output_options(output):
+    output = output.split("\n")
+    return output
+    
+
+class Brain_new:
     def __init__(self, args):
         self.args = args
         self.data = load_dataset(args.data_path)
@@ -62,6 +85,7 @@ class Brain:
             "cot/correct": 0.0,
             "pot/correct": 0.0,
             "eot/correct": 0.0,
+            "tot/correct": 0.0,
             "peano/correct": 0.0,
             "refine/correct": 0.0,
         }
@@ -494,83 +518,6 @@ class Brain:
             print(f"ori_score: {self.cache['reason/pot/score']}")
             print(f"refine_score: {score}")
 
-    """
-    def think_refine_eot(self):
-        #Self-refine on PAL
-        question = self.cache["inst/question"]
-        code = self.cache['reason/pot']
-        chat_input = self.build_chat_input(REFINE_EOT_SYSTEM, REFINE_EOT.format(question=question, code=code))
-        response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
-        self.cache[f'reason/eot'] = response
-
-        # execute
-        equations = extract_equations(response)
-        try:
-            solutions = safe_solve_equation_system(equations)
-            pred = floatify_ans(solutions['ans'])
-            score = 1.0 if abs(pred - self.cache['inst/gold_answer']) < 1e-3 else 0.0
-        except Exception as e:
-            if self.debug:
-                print(e)
-
-            pred = None
-            score = 0.0
-
-        self.cache['reason/eot/equations'] = equations
-        self.cache['reason/eot/ans'] = pred
-        self.cache['reason/eot/score'] = score
-        self.metrics['eot/correct'] += score
-
-        if self.debug:
-            print(f"=== inst i: {self.id} ===")
-            print(f"chat_input: {chat_input}")
-            print(f"response: {response}")
-            print(f"equations: {equations}")
-            print(f"score: {score}")
-
-    
-    def reflection_reason_php(self, method='cot'):
-        # Iterative-refinement module for cot, prompts from php
-        question = self.cache["inst/question"]
-        hint_ans = self.cache[f'reason/{method}/ans']
-        self.cache[f'inst/hint_ans'] = self.cache[f'reason/{method}/ans']
-        self.cache[f'inst/hint_score'] = self.cache[f'reason/{method}/score']
-
-        chat_input = self.build_chat_input(PHP_SYSTEM, PHP.format(question=question,
-                                                                  answer=hint_ans))
-        response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
-        self.cache['reason/cot'] = response
-
-        # execute
-        answer_format_flag = 'The answer is' in response
-        pred_str = response.split('The answer is')[-1].strip('.').replace(',', '').strip()
-        # print(f"pred: {pred_str}")
-        try:
-            all_digit = re.findall(r"[-+]?\d*\.?\d+|\d+", pred_str)
-            if answer_format_flag:
-                pred = all_digit[0]
-            else:
-                pred = all_digit[-1]
-            pred = floatify_ans(pred)
-            if pred is not None and '%' in pred_str:
-                pred = pred / 100
-        except Exception as e:
-            print(e)
-            print(pred_str)
-            pred = None
-        score = 0.0
-        if pred is not None:
-            score = 1.0 if abs(pred - self.cache['inst/gold_answer']) < 1e-3 else 0.0
-        self.cache['reason/cot/ans'] = pred
-        self.cache['reason/cot/score'] = score
-        self.metrics['cot/correct'] += score
-
-        if self.debug:
-            print(f"=== inst i: {self.id} ===")
-            print(f"chat_input: {chat_input}")
-            print(f"response: {response}")
-            print(f"score: {score}")
-    """
 
     def save_cache(self):
         with open(self.result_path, "a") as out_f:
@@ -585,12 +532,189 @@ class Brain:
         self.metrics["cot/acc"] = self.metrics["cot/correct"] / len(self.data)
         self.metrics["pot/acc"] = self.metrics["pot/correct"] / len(self.data)
         self.metrics["eot/acc"] = self.metrics["eot/correct"] / len(self.data)
+        self.metrics["tot/acc"] = self.metrics["tot/correct"] / len(self.data)
         self.metrics["peano/acc"] = self.metrics["peano/correct"] / len(self.data)
         self.metrics["refine/acc"] = self.metrics["refine/correct"] / len(self.data)
 
         self.metrics["total"] = len(self.data)
         return self.metrics
+    
+    def generate_text_phi(self, prompt):
+        #response = openai_phi2_handler(prompt, 0.9, k)
+        #thoughts = [openai_choice2text_handler(completion) for completion in response]
+        #return thoughts
+        response = get_chat_response(self.args, prompt, self.api_key, self.ORG_ID)
+        #print("from generate text:", response)
+        #thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
+        return response
 
+    def ranking(self, prompt,question,past):
+
+
+        comparison_prompt = f"""
+        To achieve the following goal: '{question}', and based on the current steps taken towards solving the problem {past}
+        pessimistically value the below mentioned step and choose one of the following options that will be the best option towards the goal.
+        Return the exact same chosen option, dont change or format it.
+
+        NOTE:
+        1) Evaluate all the options and choose the option which is the best direction for the next step to move based on the past solution we have found till now. Dont choose the output that jumps to the result directly.
+        2)MAKE SURE YOU DONT CHOOSE THE OPTION THAT HAS A SIMILAR MEANING (STEP) TO WHAT IS ALREADY THERE IN THE PAST SOLUTION ARRAY.
+
+        DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE 
+        """
+
+        input_string = f"""
+        Input: "Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?"
+
+        Steps take so far: [Calculate the price of cheddar cheese which is $10 (given)]
+
+        The options to choose from:
+        1) Calculate the price of cold cuts which is 2*10 = $20.
+        2) Calculate the price of cream cheese which is 10/2 = $5 per pound. 
+        #The best option:
+        Calculate the price of cream cheese which is 10/2 = $5 per pound. <END>
+
+        Input: "Weng earns $12 an hour for babysitting. Yesterday, she just did 50 minutes of babysitting. How much did she earn?"
+
+        Steps taken so far: [None]
+
+        Output: Possible next steps:
+        1) Convert the minutes of babysitting to hours.
+        2) Convert the wage per hour to wage per minute. 
+        #The best option:
+        Convert the wage per hour to wage per minute. <END>
+
+        Input: "James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?"
+
+        Steps taken so far: [Number of letter written to 1 friend in a week = 2 as he writes twice a week]
+
+        Output: Possible next steps:
+        1) Number of letter written to 2 friends in a week = 2*2 = 4 letters a week.
+        2) Calculate the number of pages written to 1 friend in a week = 2*3 = 6 pages. 
+        #The best option:
+        Calculate the number of pages written to 1 friend in a week = 2*3 = 6 pages. <END>
+                
+
+        Input: {question}
+
+        Steps taken so far: {past}
+
+        The options to choose from:
+        {prompt}
+        #The best option:
+        """.strip()
+
+        comp_prompt = self.build_chat_input(comparison_prompt,input_string)
+        print("comp_prompt is:",comp_prompt)
+        #a = generate_text_phi(comp_prompt,1)
+        #a=self.generate_text_phi(comp_prompt)
+        #print("ranking result", a)
+        #return a
+        response = get_chat_response(self.args, comp_prompt, self.api_key, self.ORG_ID)
+        print("response from rank ", response)
+        return response
+    
+    def reason_tot(self):
+        question = self.cache["inst/question"]
+        #question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
+
+        status = ["None"]
+
+        #chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question, status=status))
+        #print("chat_input:",chat_input)
+
+        max_steps = 4
+        k=1
+        pred = []
+
+        output_string = " \n Output: Possible independent steps:"
+
+        summary_question_prompt = """
+        Given the question, try to give the final goal of the question in less than 10 words
+        """
+        question_in = """
+        Question: "Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?"
+        Summary: Calculate total spending on dinner party ingredients. <END>
+
+        Question: "Weng earns $12 an hour for babysitting. Yesterday, she just did 50 minutes of babysitting. How much did she earn?"
+        Summary: Calculate Weng's earnings for 50 minutes of babysitting. <END>
+
+        Question: "James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?"
+        Summary: Calculate yearly pages written by James. <END>
+
+        Question: {question}
+        Summary: 
+        """.strip()
+
+
+        for i in range(max_steps):
+            print("*****************NEW STEP*****************")
+            print(f"The status array is {status}")
+            chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question, status=status))
+            #print("chat_input:",chat_input)
+            initial_promp = chat_input + [str(status)] + [output_string]
+            out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
+            #out = generate_text_phi(initial_promp,k)[0]
+            outputs = parse_output_options(out)
+            print(f"The parsed output is {outputs}")
+            
+            option = self.ranking(outputs,question,status)
+
+            if("None") in status:
+                status = [option]
+            else:
+                status.append(option)
+            print(f"The option chosen as the best choice is {option}")
+            print("\n\n\n")
+
+        self.cache["reason/tot"] = status
+
+        summary = self.build_chat_input(summary_question_prompt,question_in)
+        question_summary = get_chat_response(self.args, summary, self.api_key, self.ORG_ID)
+
+        predict_prompt = """
+        Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. Use only the knowledge provided in the steps below.
+        """
+
+        question_info = f"""
+        Question: "Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?"
+        Summary: Calculate total spending on dinner party ingredients.
+        Based on the current status ['Calculate the price of cheddar cheese which is $10 (given).', 'Calculate the price of cream cheese which is 10/2 = $5 per pound.', 'Calculate the price of cold cuts which is 2*10 = $20.', 'Calculate total spending on dinner party ingredients which is 10+5+20 = $35.']
+        Just give the answer in number nothing else no text: 35 <END>
+
+        Question: "Weng earns $12 an hour for babysitting. Yesterday, she just did 50 minutes of babysitting. How much did she earn?"
+        Summary: Calculate Weng's earnings for 50 minutes of babysitting.
+        Based on the current status ['Convert the wage per hour to wage per minute which is 12/60 = 0.2.', 'Find out the minutes she did babysitting which is 50 (given).', 'Calculate Weng's earnings for 50 minutes of babysitting which is 0.2*50 = $10.']
+        Just give the answer in number nothing else no text: 10 <END>
+
+        Question: "James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?"
+        Summary: Calculate yearly pages written by James.
+        Based on the current status ['Number of letter written to 1 friend in a week = 2 as he writes twice a week.', 'Calculate the number of pages written to 1 friend in a week = 2*3 = 6 pages.', 'Calculate the number of pages written to 2 friends in a week = 6*2 = 12 pages.', 'He writes 12*52 = 624 pages a year.']
+        Just give the answer in number nothing else no text: 624 <END>
+
+        Question: {question}
+        Summary: {question_summary}
+        Based on the current status {status}
+        Just give the answer in number nothing else no text: 
+        """.strip()
+
+        #predict_prompt_full = predict_prompt + str(question_summary) + str("Based on the current status - ") + str(status) + str("\n Just give the answer in number nothing else no text")
+
+        predict_prompt_full = self.build_chat_input(predict_prompt,question_info)
+        answer = get_chat_response(self.args, predict_prompt_full, self.api_key, self.ORG_ID)
+
+        pred = answer
+        pred = floatify_ans(pred)
+        print("final answer: ", pred)
+
+        if pred is not None:
+            score = 1.0 if abs(pred - self.cache["inst/gold_answer"]) < 1e-3 else 0.0
+        self.cache["reason/tot/ans"] = pred
+        self.cache["reason/tot/score"] = score
+        self.metrics["tot/correct"] += score
+
+
+        
     @staticmethod
     def build_chat_input(instruction, user_input):
         return [

@@ -14,7 +14,7 @@ from collections import Counter
 from dataclasses import asdict
 from tqdm import tqdm
 from utils import get_var_assign
-from brain import Brain
+from brain_new import Brain_new
 
 os.environ["WANDB_START_METHOD"] = "thread"
 os.environ["WANDB_MODE"] = "offline"
@@ -28,6 +28,7 @@ def load_dataset(data_path):
 
     print(f"Load {len(instances)} data from {data_path}.")
     return instances
+    
 
 
 if __name__ == "__main__":
@@ -39,7 +40,7 @@ if __name__ == "__main__":
         "--mode",
         required=True,
         type=str,
-        help="cot, pot, eot, peano, check_pot, check_eot, refine_pot, metacognitive_eval_cot",
+        help="cot, pot, eot, peano, check_pot, check_eot, refine_pot, metacognitive_eval_cot, tot",
     )
     parser.add_argument("--range_start", default="0", type=str)
     parser.add_argument("--range_end", default="end", type=str)
@@ -99,7 +100,7 @@ if __name__ == "__main__":
         print(os.getcwd())
         wandb.run.log_code("./src")
 
-    brain = Brain(args)
+    brain = Brain_new(args)
 
     # metrics
     correct = 0
@@ -159,6 +160,8 @@ if __name__ == "__main__":
                 brain.reason_eot()
             elif method == "peano":
                 brain.reason_peano()
+            elif method == "tot":
+                brain.reason_tot()
 
         brain.save_cache()
 
