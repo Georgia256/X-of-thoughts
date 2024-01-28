@@ -49,8 +49,8 @@ def load_dataset(data_path):
 
 from IPython.core.inputtransformer2 import ESC_HELP
 #from openai.error import Error  # Add this line to import the Error class
+'''
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-
 def phi2_completion(prompt, temperature, k=1, stop=None):
     completion_input = prompt[0]["content"]
     torch.set_default_device("cuda")
@@ -103,13 +103,14 @@ def openai_choice2text_handler(choice):
     #return text
     text = choice.text.strip()
     return text
+'''
 
 def parse_output_options(output):
     output = output.split("\n")
     return output
     
 
-class Brain:
+class Brain_new:
     def __init__(self, args):
         self.args = args
         self.data = load_dataset(args.data_path)
@@ -138,6 +139,7 @@ class Brain:
             "cot/correct": 0.0,
             "pot/correct": 0.0,
             "eot/correct": 0.0,
+            "tot/correct": 0.0,
             "peano/correct": 0.0,
             "refine/correct": 0.0,
         }
@@ -584,6 +586,7 @@ class Brain:
         self.metrics["cot/acc"] = self.metrics["cot/correct"] / len(self.data)
         self.metrics["pot/acc"] = self.metrics["pot/correct"] / len(self.data)
         self.metrics["eot/acc"] = self.metrics["eot/correct"] / len(self.data)
+        self.metrics["tot/acc"] = self.metrics["tot/correct"] / len(self.data)
         self.metrics["peano/acc"] = self.metrics["peano/correct"] / len(self.data)
         self.metrics["refine/acc"] = self.metrics["refine/correct"] / len(self.data)
 
@@ -674,7 +677,7 @@ class Brain:
         #chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question, status=status))
         #print("chat_input:",chat_input)
 
-        max_steps = 6
+        max_steps = 4
         k=1
         
         output_string = " \n Output: Possible independent steps:"

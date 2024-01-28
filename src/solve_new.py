@@ -14,7 +14,7 @@ from collections import Counter
 from dataclasses import asdict
 from tqdm import tqdm
 from utils import get_var_assign
-from brain import Brain
+from brain_new import Brain_new
 
 os.environ["WANDB_START_METHOD"] = "thread"
 os.environ["WANDB_MODE"] = "offline"
@@ -100,7 +100,7 @@ if __name__ == "__main__":
         print(os.getcwd())
         wandb.run.log_code("./src")
 
-    brain = Brain(args)
+    brain = Brain_new(args)
 
     # metrics
     correct = 0
