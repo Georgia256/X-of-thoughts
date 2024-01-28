@@ -596,8 +596,8 @@ class Brain:
         #return thoughts
         response = get_chat_response_rank(self.args, prompt, self.api_key, self.ORG_ID)
         print("from generate text:", response)
-        thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
-        return thoughts
+        #thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
+        return response
 
     def ranking(self, prompt,question,past):
 
