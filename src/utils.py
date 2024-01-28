@@ -388,9 +388,9 @@ def get_chat_response_rank(args, input, key, org_id, n=1):
                 if prediction[0] != "" and prediction[0] != None:
                     return prediction
         elif args.model in ["phi-1_5", "phi-2"]:
-            print("in get_chat_response_rank",input)
+            
             completion_input = input[0]["content"]
-            # print("Completion input: ", completion_input)
+            print("Completion input: ", completion_input)
             torch.set_default_device("cuda")
             if args.model == "phi-1_5":
                 model = AutoModelForCausalLM.from_pretrained(
