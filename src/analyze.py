@@ -17,7 +17,6 @@ if __name__ == "__main__":
     parser.add_argument("--cot", default='', type=str)
     parser.add_argument("--pot", default='', type=str)
     parser.add_argument("--eot", default='', type=str)
-    parser.add_argument("--tot", default='', type=str)
     parser.add_argument("--pot_assertion", default='', type=str)
     parser.add_argument("--eot_assertion", default='', type=str)
     #parser.add_argument("--metacognitive_eval", default='', type=str)

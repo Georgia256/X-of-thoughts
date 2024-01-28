@@ -253,7 +253,7 @@ Question:
 """
 
 predict_prompt = """
-Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. Use only the knowledge provided in the steps below.
+Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. Use only the knowledge provided in the steps below. If in the provided knowledge there is no arithmetic result, return "None".
 Question Summary -
 
 """
