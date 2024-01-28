@@ -604,7 +604,7 @@ class Brain:
 
         comparison_prompt = f"""
         To achieve the following goal: '{question}', and based on the current steps taken towards solving the problem {past}
-        pessimistically value the below mentioned step and choose one of the follwing options that will be the best option towards the goal.
+        pessimistically value the below mentioned step and choose one of the following options that will be the best option towards the goal.
         Return the exact same chosen option, dont change or format it.
 
         NOTE:
@@ -615,10 +615,19 @@ class Brain:
         """
 
         input_string = f"""
+
+        The options to choose from:
+        1) Calculate the number of eggs she has left to sell = 16-3-4 = 9 eggs.
+        2) Calculate the amount of money she makes per day = 9*2 = $18.
+        #The best option:
+        Calculate the number of eggs she has left to sell = 16-3-4 = 9 eggs. <END>
+        
+
         The options to choose from:
         {prompt}
+        #The best option:
         """.strip()
-        
+
         comp_prompt = self.build_chat_input(comparison_prompt,input_string)
         print("comp_prompt is:",comp_prompt)
         #a = generate_text_phi(comp_prompt,1)
