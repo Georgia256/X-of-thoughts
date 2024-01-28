@@ -92,37 +92,6 @@ def phi2_completion(prompt, temperature, k=1, stop=None):
     torch.cuda.empty_cache()
     print(final_text)
     return final_text
-'''
-def phi2_completion(prompt, temperature, k=1, stop=None):
-    torch.set_default_device("cuda")
-    model = AutoModelForCausalLM.from_pretrained(
-        "microsoft/phi-2", torch_dtype="auto", trust_remote_code=True
-    )
-    tokenizer = AutoTokenizer.from_pretrained(
-        "microsoft/phi-2", trust_remote_code=True
-    )
-    inputs = tokenizer(prompt, return_tensors="pt")
-    input_ids = inputs.input_ids.to(model.device)
-    n_examples = len(prompt.split("<END>")) - 1
-
-    max_len = math.ceil(input_ids.shape[1] * (1 + 1 / (n_examples - 1)))
-
-    # Generate completion
-    outputs = model.generate(
-        input_ids=input_ids,
-        max_length=max_len,
-        temperature=temperature,
-        num_return_sequences=k,
-        pad_token_id=tokenizer.eos_token_id,
-        eos_token_id=tokenizer.eos_token_id,
-        **({"do_sample": True, "top_k": 50, "top_p": 0.95} if stop is None else {"early_stopping": True, "max_length": stop})
-    )
-
-    # Decode the generated sequences
-    completions = [tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
-
-    return completions
-'''
 
 # Modified function to handle phi-2 completions
 def openai_phi2_handler(prompt, temperature, k=1, stop=None):
@@ -143,7 +112,7 @@ def generate_text_phi(prompt, k):
     thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
     return thoughts
 
-def ranking(prompt,question,past):
+def ranking(prompt,question,past, args, api_key, ORG_ID):
 
 
     comparison_prompt = f"""
@@ -159,7 +128,8 @@ def ranking(prompt,question,past):
 
     DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE
     """
-    a = generate_text_phi(comparison_prompt,1)
+    #a = generate_text_phi(comparison_prompt,1)
+    a = get_chat_response(args, comparison_prompt, api_key, ORG_ID)
     return a
 
 def parse_output_options(output):
@@ -671,7 +641,7 @@ class Brain:
             #out = generate_text_phi(initial_promp,k)[0]
             outputs = parse_output_options(out)
             print(f"The parsed output is {outputs}")
-            option = ranking(outputs,question,status)
+            option = ranking(outputs,question,status,self.args, self.api_key, self.ORG_ID)
 
             if("None") in status:
                 status = [option]
