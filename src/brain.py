@@ -654,7 +654,7 @@ class Brain:
         #chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question, status=status))
         #print("chat_input:",chat_input)
 
-        max_steps = 3
+        max_steps = 6
         k=1
         
         output_string = " \n Output: Possible independent steps:"
