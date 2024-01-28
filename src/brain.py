@@ -683,5 +683,5 @@ class Brain:
     @staticmethod
     def build_chat_input_rank(instruction):
         return [
-            {"role": "system", "content": instruction},
+            {"role": "system", "content": instruction}
         ]
