@@ -637,8 +637,8 @@ class Brain:
             print("*****************NEW STEP*****************")
             print(f"The status array is {status}")
             initial_promp = chat_input + [str(status)] + [output_string]
-            out = generate_text_phi(initial_promp, k)[0]
-            #out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
+            #out = generate_text_phi(initial_promp, status, output_string, k)[0]
+            out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
 
             outputs = parse_output_options(out)
             print(f"The parsed output is {outputs}")
