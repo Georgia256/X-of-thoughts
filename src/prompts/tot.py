@@ -39,7 +39,7 @@ Output: Possible next steps:
 2) Calculate the number of pages written to 1 friend in a week = 2*3 = 6 pages. <END>
 
 Input: {question}
-Steps taken so far:
+Steps taken so far: {status}
 Output: Possible next steps: 
 """.strip()
     + "\n"
