@@ -625,7 +625,7 @@ class Brain:
         #print("ranking result", a)
         #return a
         response = get_chat_response(self.args, comp_prompt, self.api_key, self.ORG_ID)
-    
+        print("response from rank ", response)
         return response
     
     def reason_tot(self):
