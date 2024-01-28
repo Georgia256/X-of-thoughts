@@ -704,7 +704,7 @@ class Brain_new:
         answer = get_chat_response(self.args, predict_prompt_full, self.api_key, self.ORG_ID)
 
         pred = answer
-        pred = floatify_ans(pred)
+        pred = float(pred) if pred is not None else None
         print("final answer: ", pred)
 
         if pred is not None:
