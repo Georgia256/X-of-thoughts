@@ -646,7 +646,7 @@ class Brain_new:
         1) Number of letter written to 2 friends in a week = 2*2 = 4 letters a week.
         2) Calculate the number of pages written to 1 friend in a week = 2*3 = 6 pages. 
         #The best option:
-        Number of letter written to 2 friends in a week = 2*2 = 4 letters a week. <END>
+        Calculate the number of pages written to 1 friend in a week = 2*3 = 6 pages. <END>
                 
 
         Input: {question}
@@ -680,20 +680,26 @@ class Brain_new:
         max_steps = 4
         k=1
         pred = []
-        
+
         output_string = " \n Output: Possible independent steps:"
 
         summary_question_prompt = """
         Given the question, try to give the final goal of the question in less than 10 words
-        Question:
-
         """
+        question_in = """
+        Question: "Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?"
+        Summary: Calculate total spending on dinner party ingredients. <END>
 
-        predict_prompt = """
-        Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. Use only the knowledge provided in the steps below.
-        Question Summary -
+        Question: "Weng earns $12 an hour for babysitting. Yesterday, she just did 50 minutes of babysitting. How much did she earn?"
+        Summary: Calculate Weng's earnings for 50 minutes of babysitting. <END>
 
-        """
+        Question: "James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?"
+        Summary: Calculate yearly pages written by James. <END>
+
+        Question: {question}
+        Summary: 
+        """.strip()
+
 
         for i in range(max_steps):
             print("*****************NEW STEP*****************")
@@ -715,12 +721,42 @@ class Brain_new:
             print(f"The option chosen as the best choice is {option}")
             print("\n\n\n")
 
-        question_summary = get_chat_response(self.args, summary_question_prompt + question, self.api_key, self.ORG_ID)
-        predict_prompt_full = predict_prompt + str(question_summary) + str("Based on the current status - ") + str(status) + str("\n Just give the answer in number nothing else no text")
+        summary = self.build_chat_input(summary_question_prompt,question_in)
+        question_summary = get_chat_response(self.args, summary, self.api_key, self.ORG_ID)
 
+        predict_prompt = """
+        Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. Use only the knowledge provided in the steps below.
+        """
+
+        question_info = f"""
+        Question: "Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?"
+        Summary: Calculate total spending on dinner party ingredients.
+        Based on the current status ['Calculate the price of cheddar cheese which is $10 (given).', 'Calculate the price of cream cheese which is 10/2 = $5 per pound.', 'Calculate the price of cold cuts which is 2*10 = $20.', 'Calculate total spending on dinner party ingredients which is 10+5+20 = $35.']
+        Just give the answer in number nothing else no text: 35 <END>
+
+        Question: "Weng earns $12 an hour for babysitting. Yesterday, she just did 50 minutes of babysitting. How much did she earn?"
+        Summary: Calculate Weng's earnings for 50 minutes of babysitting.
+        Based on the current status ['Convert the wage per hour to wage per minute which is 12/60 = 0.2.', 'Find out the minutes she did babysitting which is 50 (given).', 'Calculate Weng's earnings for 50 minutes of babysitting which is 0.2*50 = $10.']
+        Just give the answer in number nothing else no text: 10 <END>
+
+        Question: "James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?"
+        Summary: Calculate yearly pages written by James.
+        Based on the current status ['Number of letter written to 1 friend in a week = 2 as he writes twice a week.', 'Calculate the number of pages written to 1 friend in a week = 2*3 = 6 pages.', 'Calculate the number of pages written to 2 friends in a week = 6*2 = 12 pages.', 'He writes 12*52 = 624 pages a year.']
+        Just give the answer in number nothing else no text: 624 <END>
+
+        Question: {question}
+        Summary: {question_summary}
+        Based on the current status {status}
+        Just give the answer in number nothing else no text: 
+        """.strip()
+
+        #predict_prompt_full = predict_prompt + str(question_summary) + str("Based on the current status - ") + str(status) + str("\n Just give the answer in number nothing else no text")
+
+        predict_prompt_full = self.build_chat_input(predict_prompt,question_info)
         answer = get_chat_response(self.args, predict_prompt_full, self.api_key, self.ORG_ID)
 
         pred.append(answer[0])
+        print("final answer: ", pred)
 
         
     @staticmethod
