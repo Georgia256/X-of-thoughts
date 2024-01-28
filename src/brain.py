@@ -617,7 +617,7 @@ class Brain:
         input_string = f"""
         The options to choose from:
         {prompt}
-        """
+        """.strip()
         comp_prompt = self.build_chat_input(comparison_prompt,input_string)
         print("comp_prompt is:",comp_prompt)
         #a = generate_text_phi(comp_prompt,1)
@@ -644,6 +644,7 @@ class Brain:
 
 
         for i in range(max_steps):
+            layer_options = []
             print("*****************NEW STEP*****************")
             print(f"The status array is {status}")
             chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question, status=status))
@@ -651,6 +652,7 @@ class Brain:
             initial_promp = chat_input + [str(status)] + [output_string]
             out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
             #out = generate_text_phi(initial_promp,k)[0]
+            '''
             outputs = parse_output_options(out)
             #print(f"The unparsed output is {out}")
             print(f"The parsed output is {outputs}")
@@ -663,6 +665,22 @@ class Brain:
                 status.append(option)
             print(f"The option chosen as the best choice is {option}")
             print("\n\n\n")
+            '''
+            for j in range(k):
+                print(f"######## This is the thought from instance number {j} ##########")
+                outputs = parse_output_options(out[j])
+                print(f"The parsed output is {outputs}")
+                a = [one_option[3:] for one_option in outputs]
+                layer_options.extend(a)
+
+                chosen_option = self.ranking(layer_options,question,status)
+                if("None") in status:
+                    status = [chosen_option]
+                else:
+                    status.append(chosen_option)
+                print(f"The option chosen as the best choice is {chosen_option}")
+                print("\n\n\n")
+
 
         
     @staticmethod
