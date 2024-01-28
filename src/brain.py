@@ -619,7 +619,7 @@ class Brain:
         comp_prompt = self.build_chat_input_rank(comparison_prompt)
         print("comp_prompt is:",comp_prompt)
         #a = generate_text_phi(comp_prompt,1)
-        a=self.generate_text_phi(comp_prompt)
+        a=self.generate_text_phi(self,comp_prompt)
         return a
     
     def reason_tot(self):
