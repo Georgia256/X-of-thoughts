@@ -594,7 +594,7 @@ class Brain:
         #response = openai_phi2_handler(prompt, 0.9, k)
         #thoughts = [openai_choice2text_handler(completion) for completion in response]
         #return thoughts
-        response = get_chat_response_rank(self.args, prompt, self.api_key, self.ORG_ID)
+        response = get_chat_response(self.args, prompt, self.api_key, self.ORG_ID)
         #print("from generate text:", response)
         #thoughts = [openai_choice2text_handler(choice) for choice in response.choices]
         return response
@@ -606,22 +606,29 @@ class Brain:
         To achieve the following goal: '{question}', and based on the current steps taken towards solving the problem {past}
         pessimistically value the below mentioned step and choose one of the follwing options that will be the best option towards the goal.
         Return the exact same chosen option, dont change or format it.
-        The options to choose from \n
-        {prompt}\n
 
         NOTE:
         1) Evaluate all the options and choose the option which is the best direction for the next step to move based on the past solution we have found till now. Dont choose the output that jumps to the result directly.
         2)MAKE SURE YOU DONT CHOOSE THE OPTION THAT HAS A SIMILAR MEANING (STEP) TO WHAT IS ALREADY THERE IN THE PAST SOLUTION ARRAY.
 
-        DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE <END>
+        DO NOT RETURN ANYTHING ELSE JUST THE OPTION THAT IS THE BEST NEXT STEP, NO EXPLANATION FOR THE CHOICE 
         """
 
-        comp_prompt = self.build_chat_input_rank(comparison_prompt)
+        input = ( """
+        The options to choose from \n
+        {prompt}\n
+        """.strip()
+            + "\n"
+        )
+        comp_prompt = self.build_chat_input(comparison_prompt,input.format(prompt=prompt))
         print("comp_prompt is:",comp_prompt)
         #a = generate_text_phi(comp_prompt,1)
-        a=self.generate_text_phi(comp_prompt)
-        print("ranking result", a)
-        return a
+        #a=self.generate_text_phi(comp_prompt)
+        #print("ranking result", a)
+        #return a
+        response = get_chat_response_rank(self.args, comp_prompt, self.api_key, self.ORG_ID)
+    
+        return response
     
     def reason_tot(self):
         question = self.cache["inst/question"]
@@ -643,7 +650,6 @@ class Brain:
             initial_promp = chat_input + [str(status)] + [output_string]
             out = get_chat_response(self.args, initial_promp, self.api_key, self.ORG_ID)
             #out = generate_text_phi(initial_promp,k)[0]
-            print("inside loop ", out)
             outputs = parse_output_options(out)
             #print(f"The unparsed output is {out}")
             print(f"The parsed output is {outputs}")
