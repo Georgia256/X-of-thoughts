@@ -42,6 +42,5 @@ Input: {question}
 Steps taken so far: {status}
 Output: Possible next steps: 
 """.strip()
-    + "\n"
 )
 
