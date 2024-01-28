@@ -705,7 +705,7 @@ class Brain_new:
 
         pred = re.findall(r'[\d.]+', answer)
         if pred:
-            pred = float(pred[0])  # Considering only the first numeric match
+            pred = float(pred[-1])  # Considering only the last numeric match
         else:
             pred = None
                 
