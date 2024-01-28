@@ -624,7 +624,7 @@ class Brain:
         #a=self.generate_text_phi(comp_prompt)
         #print("ranking result", a)
         #return a
-        response = get_chat_response(self.args, comp_prompt, self.api_key, self.ORG_ID)
+        response = get_chat_response_rank(self.args, comp_prompt, self.api_key, self.ORG_ID)
         print("response from rank ", response)
         return response
     
