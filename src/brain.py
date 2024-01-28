@@ -52,7 +52,7 @@ from IPython.core.inputtransformer2 import ESC_HELP
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 
 def phi2_completion(prompt, temperature, k=1, stop=None):
-    completion_input = prompt[0]["content"] + "\n" 
+    completion_input = prompt[0]["content"]
     torch.set_default_device("cuda")
     # Adjust batch size here (default is 1)
     model = AutoModelForCausalLM.from_pretrained(
