@@ -620,8 +620,8 @@ class Brain:
         return self.metrics
     
     def reason_tot(self):
-        #question = self.cache["inst/question"]
-        question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
+        question = self.cache["inst/question"]
+        #question = """Albert is wondering how much pizza he can eat in one day. He buys 2 large pizzas and 2 small pizzas. A large pizza has 16 slices and a small pizza has 8 slices. If he eats it all, how many pieces does he eat that day?"""
 
         chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question))
         print("chat_input:",chat_input)
