@@ -274,7 +274,7 @@ def get_chat_response(args, input, key, org_id, n=1):
             #print("Final text: ", final_text)
             del model  # Delete the model to free up memory
             torch.cuda.empty_cache()
-            print(final_text)
+            print("final text from model: "final_text)
             return final_text
 
         else:
