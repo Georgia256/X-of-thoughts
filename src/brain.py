@@ -648,7 +648,7 @@ class Brain:
 
         comp_prompt = self.build_chat_input_rank(comparison_prompt)
         #a = generate_text_phi(comp_prompt,1)
-        a=self.generate_text_phi(self, comp_prompt)[0]
+        a=self.generate_text_phi(comp_prompt)[0]
         return a
     
     def reason_tot(self):
@@ -674,7 +674,7 @@ class Brain:
             outputs = parse_output_options(out)
             print(f"The parsed output is {outputs}")
             
-            option = self.ranking(self,outputs,question,status)
+            option = self.ranking(outputs,question,status)
 
             if("None") in status:
                 status = [option]
