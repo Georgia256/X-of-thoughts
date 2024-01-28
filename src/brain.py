@@ -674,7 +674,7 @@ class Brain:
             outputs = parse_output_options(out)
             print(f"The parsed output is {outputs}")
             
-            option = self.ranking(outputs,question,status)
+            option = self.ranking(self,outputs,question,status)
 
             if("None") in status:
                 status = [option]
