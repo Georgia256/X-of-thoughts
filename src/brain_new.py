@@ -710,7 +710,7 @@ class Brain_new:
             pred = None
         '''
         ans = (
-            answer.strip(".").replace(",", "").strip()
+            answer[-1].strip(".").replace(",", "").strip()
         )
 
         try:
