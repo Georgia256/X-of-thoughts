@@ -702,12 +702,26 @@ class Brain_new:
 
         predict_prompt_full = self.build_chat_input(predict_prompt,question_info)
         answer = get_chat_response(self.args, predict_prompt_full, self.api_key, self.ORG_ID)
-
+        '''
         pred = re.findall(r'[\d,.]+', answer)
         if pred and any(char.isdigit() for char in pred[-1]):
             pred = float(pred[-1].replace(',', ''))  # Considering only the last numeric match
         else:
             pred = None
+        '''
+        ans = (
+            answer.strip(".").replace(",", "").strip()
+        )
+
+        try:
+            all_digit = re.findall(r"[-+]?\d*\.?\d+|\d+", ans)
+            pred = all_digit[-1]
+            pred = floatify_ans(pred)
+        except Exception as e:
+            print(e)
+            print(answer)
+            pred = None
+        score = 0.0 
                 
         print("final answer: ", pred)
 
