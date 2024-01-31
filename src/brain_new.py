@@ -715,7 +715,7 @@ class Brain_new:
 
         try:
             all_digit = re.findall(r"[-+]?\d*\.?\d+|\d+", answer)
-            pred = all_digit[-1].replace(',', '')
+            pred = all_digit.replace(',', '')
             pred = floatify_ans(pred)
         except Exception as e:
             print(e)
