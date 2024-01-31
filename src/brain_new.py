@@ -709,17 +709,17 @@ class Brain_new:
         else:
             pred = None
         '''
-        #ans = (
-        #    answer[-1].strip(".").replace(",", "").strip()
-        #)
+        ans = (
+            answer.strip(".").replace(",", "").strip()
+        )
 
         try:
-            all_digit = re.findall(r"[-+]?\d*\.?\d+|\d+", answer)
-            pred = all_digit.replace(',', '')
+            all_digit = re.findall(r"[-+]?\d*\.?\d+|\d+", ans)
+            pred = all_digit[-1]
             pred = floatify_ans(pred)
         except Exception as e:
             print(e)
-            print(answer)
+            print(ans)
             pred = None
         score = 0.0 
                 
