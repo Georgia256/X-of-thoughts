@@ -22,7 +22,8 @@ def extract_number(filename):
 jsonl_files = [
     f
     for f in os.listdir(input_directory)
-    if f.startswith("minibatch") and f.endswith(".jsonl")
+    if "rating" in f and f.endswith(".jsonl")
+    #if f.startswith("minibatch") and f.endswith(".jsonl")
 ]
 
 # Sort files based on the extracted number
