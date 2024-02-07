@@ -611,7 +611,7 @@ if __name__ == "__main__":
         logger.info(f"===== Metacognitive evaluation results =====")
     
         logger.info(f"TP: {tp}, FP: {fp}, FN: {fn}, TN: {tn}")
-        logger.info(f"Evalution Accuracy: {evalution_accuracy}")
+        logger.info(f"Evaluation Accuracy: {evalution_accuracy}")
         logger.info(f"Numeric result accuracy: {result_accuracy / data_len}")
         logger.info(f"Corrected instances: {corrected_instances}")
 

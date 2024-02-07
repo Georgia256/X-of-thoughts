@@ -92,4 +92,4 @@ TP: 409, FP: 462, FN: 66, TN: 382
 Evaluation Accuracy: 0.599696739954511
 Numeric result accuracy: 0.3593631539044731
 Corrected instances: 65
-Save results at outputs/logs/gsm_analysis_0207-131428.log
+Save results at outputs/logs/gsm_analysis_0207-134641.log
