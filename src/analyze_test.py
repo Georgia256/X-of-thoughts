@@ -498,9 +498,9 @@ if __name__ == "__main__":
             system_of_linear_equations_rating = float(system_of_linear_equations_rating.group(1)) if system_of_linear_equations_rating else 0.0
             chain_of_thought_rating = float(chain_of_thought_rating.group(1)) if chain_of_thought_rating else 0.0
 
-            python_program_rating *= 0.431
-            system_of_linear_equations_rating *= 0.255
-            chain_of_thought_rating *= 0.314
+            python_program_rating *= pot_acc/data_len #0.431
+            system_of_linear_equations_rating *= eot_acc/data_len #0.255
+            chain_of_thought_rating *= cot_acc/data_len #0.314
             # Create a list of tuples with method names and ratings
             ratings_list = [
                 ("Python_Program", python_program_rating),
