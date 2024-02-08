@@ -1,6 +1,6 @@
 RANGE_START=$1
 RANGE_END=$2
-#TAG=$3
+TAG=$3
 
 python src/analyze_test.py \
   --plan outputs/gsm/plan/deepseek_plan_rating_${RANGE_START}_${RANGE_END}.jsonl \
