@@ -599,6 +599,7 @@ if __name__ == "__main__":
                 else:
                     tn += 1
                     if meta_eval_data[i]['metacognitive_eval/cot/score'] == 1:
+                        print(i)
                         result_accuracy += 1
                         corrected_instances += 1            
             else:
