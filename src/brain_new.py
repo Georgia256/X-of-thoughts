@@ -674,7 +674,7 @@ class Brain_new:
         question_summary = get_chat_response(self.args, summary, self.api_key, self.ORG_ID)
 
         predict_prompt = """
-        Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. Use only the knowledge provided in the steps below.
+        Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. If there is no number in the steps, return None. Use only the knowledge provided in the steps below. 
         """
 
         question_info = f"""
