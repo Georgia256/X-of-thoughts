@@ -677,7 +677,7 @@ class Brain_new:
         Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. Use only the knowledge provided in the steps below.
         """
 
-        question_info = f"""
+        question_info = """
         Question: "Jasper will serve charcuterie at his dinner party. He buys 2 pounds of cheddar cheese for $10, a pound of cream cheese that cost half the price of the cheddar cheese, and a pack of cold cuts that cost twice the price of the cheddar cheese. How much does he spend on the ingredients?"
         Summary: Calculate total spending on dinner party ingredients.
         Based on the current status ['Calculate the price of cheddar cheese which is $10 (given).', 'Calculate the price of cream cheese which is 10/2 = $5 per pound.', 'Calculate the price of cold cuts which is 2*10 = $20.', 'Calculate total spending on dinner party ingredients which is 10+5+20 = $35.']
