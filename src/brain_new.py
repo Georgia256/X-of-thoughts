@@ -657,7 +657,7 @@ class Brain_new:
             #out = generate_text_phi(initial_promp,k)[0]
             outputs = parse_output_options(out)
             options = outputs[:3]
-            print(f"The parsed output is {outputs}")
+            print(f"The parsed output is {options}")
             
             option = self.ranking(options,question,status)
 
