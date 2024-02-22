@@ -642,6 +642,10 @@ class Brain_new:
         Question: "James writes a 3-page letter to 2 different friends twice a week. How many pages does he write a year?"
         Summary: Calculate yearly pages written by James. <END>
 
+        Question: "Each purple book has 230 pages. Each orange book contains 510 pages. Mirella read 5 purple books and 4 orange books. How many more orange pages did she read than purple pages?"
+        Summary: Calculate the difference between the total number of orange pages and purple pages Mirella read. <END>
+
+
         Question: {question}
         Summary: 
         """.strip()
@@ -674,7 +678,7 @@ class Brain_new:
         question_summary = get_chat_response(self.args, summary, self.api_key, self.ORG_ID)
 
         predict_prompt = """
-        Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. If there is no number in the steps, return None. Use only the knowledge provided in the steps below. 
+        Using only the steps provided below and the summary of the question, try to predict the final answer for the question and output just the final answer number, dont output any text. Use only the knowledge provided in the steps below. 
         """
 
         question_info = f"""
@@ -692,6 +696,12 @@ class Brain_new:
         Summary: Calculate yearly pages written by James.
         Based on the current status ['Number of letter written to 1 friend in a week = 2 as he writes twice a week.', 'Calculate the number of pages written to 1 friend in a week = 2*3 = 6 pages.', 'Calculate the number of pages written to 2 friends in a week = 6*2 = 12 pages.', 'He writes 12*52 = 624 pages a year.']
         Just give the answer in number nothing else no text: 624 <END>
+
+        Question: "Each purple book has 230 pages. Each orange book contains 510 pages. Mirella read 5 purple books and 4 orange books. How many more orange pages did she read than purple pages?"
+        Summary: Calculate the difference between the total number of orange pages and purple pages Mirella read. 
+        Based on the current status ['Calculate the total number of purple pages Mirella read.', 'Calculate the total number of orange pages Mirella read.', 'Calculate the total number of purple pages Mirella read.', 'Calculate the total number of orange pages Mirella read.']
+        Just give the answer in number nothing else no text:  <END>
+
 
         Question: {question}
         Summary: {question_summary}
