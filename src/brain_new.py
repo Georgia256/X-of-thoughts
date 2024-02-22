@@ -623,7 +623,7 @@ class Brain_new:
         #chat_input = self.build_chat_input(TOT_SYSTEM, TOT.format(question=question, status=status))
         #print("chat_input:",chat_input)
 
-        max_steps = 5
+        max_steps = 4
         k=1
         pred = []
 
