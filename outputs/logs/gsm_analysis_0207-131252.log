@@ -1,0 +1,95 @@
+Loaded 1319 instances from outputs/gsm/cot/phi_cot_0_end.jsonl
+Loaded 1319 instances from outputs/gsm/pot/phi_pot_0_end.jsonl
+Loaded 1319 instances from outputs/gsm/eot/phi_eot_0_end.jsonl
+Loaded 1319 instances from outputs/gsm/check_pot/phi_check_pot_0_end.jsonl
+Loaded 1319 instances from outputs/gsm/check_eot/phi_check_eot_0_end.jsonl
+Loaded 1319 instances from outputs/gsm/metacognitive_eval_cot/deepseek_metacognitive_eval_cot_0_end.jsonl
+Loaded 1319 instances from outputs/gsm/plan/deepseek_plan_rating_0_end.jsonl
+Data length: 1319
+===== Single performance =====
+cot: 0.3601213040181956
+pot: 0.6565579984836998
+eot: 0.44806671721000757
+===== XoT is good at =====
+cot: 39
+pot: 224
+eot: 58
+===== OR =====
+pot or eot: 949, 0.7194844579226687
+pot or cot: 930, 0.7050796057619408
+cot or eot: 764, 0.579226686884003
+all or: 988, 0.7490523123578469
+===== Assertion confusion matrix: pot =====
+score1_check1: 629
+score1_check0: 237
+score0_check1: 158
+score0_check0: 295
+Confusion Matrix:
+|   Predicted 0 |   Predicted 1 |
+|--------------:|--------------:|
+|           295 |           158 |
+|           237 |           629 |
+Accuracy: 0.7005307050796058
+False Positive Rate: 0.3487858719646799
+False Negative Rate: 0.27367205542725176
+===== Assertion confusion matrix: eot =====
+score1_check1: 291
+score1_check0: 300
+score0_check1: 143
+score0_check0: 585
+Confusion Matrix:
+|   Predicted 0 |   Predicted 1 |
+|--------------:|--------------:|
+|           585 |           143 |
+|           300 |           291 |
+Accuracy: 0.6641394996209249
+False Positive Rate: 0.19642857142857142
+False Negative Rate: 0.5076142131979695
+===== Passive confusion matrix: pot =====
+Confusion Matrix:
+|   Predicted 0 |   Predicted 1 |
+|--------------:|--------------:|
+|           102 |           351 |
+|             0 |           866 |
+Accuracy: 0.7338893100833965
+False Positive Rate: 0.7748344370860927
+False Negative Rate: 0.0
+===== Passive confusion matrix: eot =====
+Confusion Matrix:
+|   Predicted 0 |   Predicted 1 |
+|--------------:|--------------:|
+|           382 |           346 |
+|             0 |           591 |
+Accuracy: 0.7376800606520091
+False Positive Rate: 0.47527472527472525
+False Negative Rate: 0.0
+===== Assert pot & eot =====
+0.6004548900682335
+===== Assert pot & cot =====
+0.5678544351781653
+===== Assert eot & pot =====
+0.6345716451857468
+===== Assert eot & cot =====
+0.4404852160727824
+===== Passive pot & cot =====
+0.6641394996209249
+===== Passive eot & cot =====
+0.5193328278999242
+===== Assert eot & pot & cot =====
+0.5602729340409401
+===== Assert pot & eot & cot =====
+0.5883244882486732
+===== Majority Vote =====
+0.5883244882486732
+===== XoT main results =====
+0.5602729340409401
+Avg Steps: 1.6633813495072025
+Unknown plan method: 0
+===== PEC ratio =====
+PoT: 590,0.4473085670962851, EoT: 206, 0.1561789234268385,CoT: 523,0.39651250947687644
+===== Metacognitive evaluation results =====
+TP: 409, FP: 462, FN: 66, TN: 382
+Evaluation Accuracy: 0.599696739954511
+Numeric result accuracy: 0.3593631539044731
+Corrected instances: 65
+Save results at outputs/logs/gsm_analysis_0207-131428.log
