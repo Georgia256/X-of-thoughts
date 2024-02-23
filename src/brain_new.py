@@ -730,7 +730,6 @@ class Brain_new:
             pred = floatify_ans(pred)
         except Exception as e:
             print(e)
-            print("---------------------HELLO----------------")
             print(ans)
             pred = None
         score = 0.0 
