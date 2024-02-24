@@ -24,4 +24,4 @@ TAG=$3
 #python src/solve_new.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode tot
 
 #meta_eval_tot
-python src/solve.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode metacognitive_eval_tot --data_path outputs/gsm/tot/minibatches/${TAG}_tot_${RANGE_START}_${RANGE_END}.jsonl
+python src/solve_new.py --tag ${TAG} --range_start ${RANGE_START} --range_end ${RANGE_END} --dataset ${DATASET} --model ${MODEL} --mode metacognitive_eval_tot --data_path outputs/gsm/tot/minibatches/${TAG}_tot_${RANGE_START}_${RANGE_END}.jsonl
