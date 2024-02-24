@@ -11,16 +11,18 @@ def split_jsonl_file(file_path, batch_size=10, offset=210, method="tot"):
     with open(file_path, "r") as file:
         lines = file.readlines()
 
-    prefix = "/Users/olga/Desktop/Pattern Recognition/Project/X-of-thoughts/outputs/gsm/tot/minibatches/"
+    prefix = "/Users/olga/Desktop/Pattern Recognition/Project/X-of-thoughts/outputs/gsm/tot/minibatches2/"
     total_batches = len(lines) // batch_size + (1 if len(lines) % batch_size else 0)
     for i in range(total_batches):
-        start_idx = i * batch_size + offset
-        end_idx = (i + 1) * batch_size + offset
+        start_idx = i * batch_size  #+ offset
+        end_idx = (i + 1) * batch_size #+ offset
         batch_lines = lines[start_idx:end_idx]
         name_idx = (i + 1) + offset/batch_size
         name_idx = int(name_idx)
+        start_idx_name = start_idx + offset
+        start_idx_name = end_idx + offset
         batch_file_name = (
-            f"{prefix}minibatch_{name_idx}_{method}_{start_idx}_{end_idx}.jsonl"
+            f"{prefix}minibatch_{name_idx}_{method}_{start_idx_name}_{start_idx_name}.jsonl"
         )
 
         with open(batch_file_name, 'w') as batch_file:
