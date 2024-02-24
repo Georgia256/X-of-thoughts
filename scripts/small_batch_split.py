@@ -20,9 +20,9 @@ def split_jsonl_file(file_path, batch_size=10, offset=210, method="tot"):
         name_idx = (i + 1) + offset/batch_size
         name_idx = int(name_idx)
         start_idx_name = start_idx + offset
-        start_idx_name = end_idx + offset
+        end_idx_name = end_idx + offset
         batch_file_name = (
-            f"{prefix}minibatch_{name_idx}_{method}_{start_idx_name}_{start_idx_name}.jsonl"
+            f"{prefix}minibatch_{name_idx}_{method}_{start_idx_name}_{end_idx_name}.jsonl"
         )
 
         with open(batch_file_name, 'w') as batch_file:
