@@ -416,7 +416,7 @@ class Brain_new:
             print(f"score: {self.cache.get(f'reason/{method}/score', 'N/A')}")
 
     def think_meta_eval_deepseek(self, method="cot"):
-        if method not in ["cot", "pot", "eot"]:
+        if method not in ["cot", "tot"]:
             raise ValueError(f"Invalid method '{method}' passed to think_meta_eval")
 
         question = self.cache["inst/question"]
@@ -424,6 +424,8 @@ class Brain_new:
         # if pred_init is None:
         #     raise ValueError(f"Prediction for method '{method}' not found in cache")
         answer = self.cache[f"reason/{method}"]
+        if method == "tot":
+            answer = " ".join(answer)
         chat_input = self.build_chat_input(
             META_EVAL_SYSTEM,
             META_EVAL.format(question=question, answer=answer),
