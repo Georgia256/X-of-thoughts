@@ -1,7 +1,7 @@
 import json
 
 
-def split_jsonl_file(file_path, batch_size=10, offset=210, method="tot"):
+def split_jsonl_file(file_path, batch_size=10, offset=610, method="tot"):
     """
     Split a JSONL file into multiple files, each containing a specified number of lines.
 
@@ -11,7 +11,7 @@ def split_jsonl_file(file_path, batch_size=10, offset=210, method="tot"):
     with open(file_path, "r") as file:
         lines = file.readlines()
 
-    prefix = "/Users/olga/Desktop/Pattern Recognition/Project/X-of-thoughts/outputs/gsm/tot/minibatches2/"
+    prefix = "/Users/olga/Desktop/Pattern Recognition/Project/X-of-thoughts/outputs/gsm/tot/minibatches/"
     total_batches = len(lines) // batch_size + (1 if len(lines) % batch_size else 0)
     for i in range(total_batches):
         start_idx = i * batch_size  #+ offset
@@ -36,5 +36,5 @@ def split_jsonl_file(file_path, batch_size=10, offset=210, method="tot"):
 
 # Replace 'your_file.jsonl' with the path to your JSONL file
 split_jsonl_file(
-    "/Users/olga/Desktop/Pattern Recognition/Project/X-of-thoughts/outputs/gsm/tot/phi2_tot_210_606.jsonl"
+    "/Users/olga/Desktop/Pattern Recognition/Project/X-of-thoughts/outputs/gsm/tot/phi2_tot_610_710.jsonl"
 )
