@@ -425,6 +425,7 @@ class Brain_new:
         #     raise ValueError(f"Prediction for method '{method}' not found in cache")
         answer = self.cache[f"reason/{method}"]
         print(type(answer))
+        print(answer)
         if method == "tot":
             answer = " ".join(answer)
         chat_input = self.build_chat_input(
