@@ -426,9 +426,9 @@ class Brain_new:
         answer = self.cache[f"reason/{method}"]
         # print(type(answer))
         # print(answer)
-        if method == "tot":
-            temp = " ".join(answer)
-            answer = temp
+        # if method == "tot":
+        #     temp = " ".join(answer)
+        #     answer = temp
         chat_input = self.build_chat_input(
             META_EVAL_SYSTEM,
             META_EVAL.format(question=question, answer=answer),
