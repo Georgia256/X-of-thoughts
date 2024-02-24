@@ -1,7 +1,7 @@
 import json
 
 
-def split_jsonl_file(file_path, batch_size=10, method="tot"):
+def split_jsonl_file(file_path, batch_size=10, offset=210, method="tot"):
     """
     Split a JSONL file into multiple files, each containing a specified number of lines.
 
@@ -14,11 +14,13 @@ def split_jsonl_file(file_path, batch_size=10, method="tot"):
     prefix = "/Users/olga/Desktop/Pattern Recognition/Project/X-of-thoughts/outputs/gsm/tot/minibatches/"
     total_batches = len(lines) // batch_size + (1 if len(lines) % batch_size else 0)
     for i in range(total_batches):
-        start_idx = i * batch_size
-        end_idx = (i + 1) * batch_size
+        start_idx = i * batch_size + offset
+        end_idx = (i + 1) * batch_size + offset
         batch_lines = lines[start_idx:end_idx]
+        name_idx = (i + 1) + offset/batch_size
+        name_idx = int(name_idx)
         batch_file_name = (
-            f"{prefix}minibatch_{i+1}_{method}_{start_idx}_{end_idx}.jsonl"
+            f"{prefix}minibatch_{name_idx}_{method}_{start_idx}_{end_idx}.jsonl"
         )
 
         with open(batch_file_name, 'w') as batch_file:
@@ -32,5 +34,5 @@ def split_jsonl_file(file_path, batch_size=10, method="tot"):
 
 # Replace 'your_file.jsonl' with the path to your JSONL file
 split_jsonl_file(
-    "/Users/olga/Desktop/Pattern Recognition/Project/X-of-thoughts/outputs/gsm/tot/batch_3_tot_202_303.jsonl"
+    "/Users/olga/Desktop/Pattern Recognition/Project/X-of-thoughts/outputs/gsm/tot/phi2_tot_210_606.jsonl"
 )
