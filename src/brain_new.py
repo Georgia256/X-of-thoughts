@@ -424,11 +424,13 @@ class Brain_new:
         # if pred_init is None:
         #     raise ValueError(f"Prediction for method '{method}' not found in cache")
         answer = self.cache[f"reason/{method}"]
-        # print(type(answer))
-        # print(answer)
-        # if method == "tot":
-        #     temp = " ".join(answer)
-        #     answer = temp
+        print(type(answer))
+        print(answer)
+        if method == "tot" and answer is not None:
+            print("Here")
+            temp = " ".join(answer)
+            answer = temp
+            print(answer)
         chat_input = self.build_chat_input(
             META_EVAL_SYSTEM,
             META_EVAL.format(question=question, answer=answer),
