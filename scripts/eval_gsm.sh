@@ -24,7 +24,7 @@ RANGE_END=$2
   
 python src/analyze_extension2.py \
   --plan outputs/gsm/plan/deepseek_plan_rating_${RANGE_START}_${RANGE_END}.jsonl \
-  --cot outputs/gsm/tot/phi_tot_${RANGE_START}_${RANGE_END}.jsonl \
+  --tot outputs/gsm/tot/phi_tot_${RANGE_START}_${RANGE_END}.jsonl \
   --pot outputs/gsm/pot/phi_pot_${RANGE_START}_${RANGE_END}.jsonl \
   --eot outputs/gsm/eot/phi_eot_${RANGE_START}_${RANGE_END}.jsonl \
   --pot_assertion outputs/gsm/check_pot/phi_check_pot_${RANGE_START}_${RANGE_END}.jsonl \
