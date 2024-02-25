@@ -8,8 +8,8 @@ import sys
 #     print("Usage: script.py <input_folder> <output_file>")
 #     sys.exit(1)
 
-input_directory = "folder"
-output_file = "output.jsonl"
+input_directory = "/Users/olga/Desktop/Pattern Recognition/Project/X-of-thoughts/outputs/gsm/metacognitive_eval_tot"
+output_file = "/Users/olga/Desktop/Pattern Recognition/Project/X-of-thoughts/outputs/gsm/metacognitive_eval_tot/deepseek_metacognitive_eval_tot_0_end.jsonl"
 
 
 # Function to extract number from filename
@@ -22,8 +22,8 @@ def extract_number(filename):
 jsonl_files = [
     f
     for f in os.listdir(input_directory)
-    if "rating" in f and f.endswith(".jsonl")
-    #if f.startswith("minibatch") and f.endswith(".jsonl")
+    #if "rating" in f and f.endswith(".jsonl")
+    if f.startswith("minibatch") and f.endswith(".jsonl")
 ]
 
 # Sort files based on the extracted number
