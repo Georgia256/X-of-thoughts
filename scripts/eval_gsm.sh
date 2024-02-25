@@ -18,5 +18,5 @@ python src/analyze_test.py \
   --eot outputs/gsm/eot/phi_eot_${RANGE_START}_${RANGE_END}.jsonl \
   --pot_assertion outputs/gsm/check_pot/phi_check_pot_${RANGE_START}_${RANGE_END}.jsonl \
   --eot_assertion outputs/gsm/check_eot/phi_check_eot_${RANGE_START}_${RANGE_END}.jsonl \
-  --metacognitive_eval outputs/gsm/metacognitive_eval_cot/deepseek_metacognitive_eval_cot_${RANGE_START}_${RANGE_END}.jsonl \
+  --metacognitive_eval outputs/gsm/metacognitive_eval_tot/deepseek_metacognitive_eval_tot_${RANGE_START}_${RANGE_END}.jsonl \
   --tag gsm_analysis
