@@ -23,3 +23,5 @@ gsm_analysis_0121-205938.log -> batch_1 with 3 plan methods & metacognitive_eval
 gsm_analysis_0122-134307.log -> batch_1 with 3 plan methods with weighted ratings & metacognitive_eval scores v2
 
 gsm_analysis_0207-134641.log -> final total results (with metacognitive eval and 3 method weighted ratings plan)
+
+gsm_analysis_0225-230839.log -> extension 2 results
