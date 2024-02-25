@@ -1,0 +1,38 @@
+\begin{thebibliography}{6}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Cobbe et~al.(2021)Cobbe, Kosaraju, Bavarian, Chen, Jun, Kaiser, Plappert, Tworek, Hilton, Nakano, Hesse, and Schulman]{cobbe2021training}
+Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano, Christopher Hesse, and John Schulman.
+\newblock {Training Verifiers to Solve Math Word Problems}, 2021.
+\newblock arXiv:2110.14168 [cs.LG].
+
+\bibitem[DeepSeek-AI et~al.(2024)DeepSeek-AI, Bi, Chen, Chen, Chen, Dai, Deng, Ding, Dong, Du, Fu, Gao, Gao, Gao, Ge, Guan, Guo, Guo, Hao, Hao, He, Hu, Huang, Li, Li, Li, Li, Li, Liang, Lin, Liu, Liu, Liu, Liu, Liu, Liu, Lu, Lu, Luo, Ma, Nie, Pei, Piao, Qiu, Qu, Ren, Ren, Ruan, Sha, Shao, Song, Su, Sun, Sun, Tang, Wang, Wang, Wang, Wang, Wang, Wu, Wu, Xie, Xie, Xie, Xiong, Xu, Xu, Xu, Yang, You, Yu, Yu, Zhang, Zhang, Zhang, Zhang, Zhang, Zhang, Zhang, Zhang, Zhao, Zhao, Zhou, Zhou, Zhu, and Zou]{deepseekai2024deepseek}
+DeepSeek-AI, Xiao Bi, Deli Chen, Guanting Chen, Shanhuang Chen, Damai Dai, Chengqi Deng, Honghui Ding, Kai Dong, Qiushi Du, Zhe Fu, Huazuo Gao, Kaige Gao, Wenjun Gao, Ruiqi Ge, Kang Guan, Daya Guo, Jianzhong Guo, Guangbo Hao, Zhewen Hao, Ying He, Wenjie Hu, Panpan Huang, Erhang Li, Guowei Li, Jiashi Li, Yao Li, Y.~K. Li, Wenfeng Liang, Fangyun Lin, A.~X. Liu, Bo~Liu, Wen Liu, Xiaodong Liu, Xin Liu, Yiyuan Liu, Haoyu Lu, Shanghao Lu, Fuli Luo, Shirong Ma, Xiaotao Nie, Tian Pei, Yishi Piao, Junjie Qiu, Hui Qu, Tongzheng Ren, Zehui Ren, Chong Ruan, Zhangli Sha, Zhihong Shao, Junxiao Song, Xuecheng Su, Jingxiang Sun, Yaofeng Sun, Minghui Tang, Bingxuan Wang, Peiyi Wang, Shiyu Wang, Yaohui Wang, Yongji Wang, Tong Wu, Y.~Wu, Xin Xie, Zhenda Xie, Ziwei Xie, Yiliang Xiong, Hanwei Xu, R.~X. Xu, Yanhong Xu, Dejian Yang, Yuxiang You, Shuiping Yu, Xingkai Yu, B.~Zhang, Haowei Zhang, Lecong Zhang, Liyue Zhang, Mingchuan Zhang, Minghua Zhang, Wentao Zhang, Yichao Zhang, Chenggang Zhao, Yao Zhao, Shangyan Zhou, Shunfeng Zhou, Qihao Zhu, and Yuheng Zou.
+\newblock {DeepSeek LLM: Scaling Open-Source Language Models with Longtermism}, 2024.
+\newblock arXiv:2401.02954 [cs.CL].
+
+\bibitem[Liu et~al.(2023)Liu, Guo, Yang, Hu, Zhang, Qiu, and Zhang]{liu2023plan}
+Tengxiao Liu, Qipeng Guo, Yuqing Yang, Xiangkun Hu, Yue Zhang, Xipeng Qiu, and Zheng Zhang.
+\newblock {Plan, Verify and Switch: Integrated Reasoning with Diverse X-of-Thoughts}, 2023.
+\newblock arXiv:2310.14628 [cs.CL].
+
+\bibitem[Microsoft et~al.(2023)Microsoft, Javaheripi, and Bubeck]{microsoft2023phi2}
+Microsoft, Mojan Javaheripi, and Sébastien Bubeck.
+\newblock {Phi-2: The Surprising Power of Small Language Models}, 2023.
+\newblock URL: \url{https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/}.
+
+\bibitem[{Queen's University Canada}()]{queensu_metacognition}
+{Queen's University Canada}.
+\newblock Metacognition.
+\newblock URL: \url{https://www.queensu.ca/teachingandlearning/modules/students/24_metacognition.html}.
+
+\bibitem[Wang \& Zhao(2023)Wang and Zhao]{wang2023metacognitive}
+Yuqing Wang and Yun Zhao.
+\newblock Metacognitive prompting improves understanding in large language models.
+\newblock \emph{arXiv preprint arXiv:2308.05342}, 2023.
+
+\end{thebibliography}
