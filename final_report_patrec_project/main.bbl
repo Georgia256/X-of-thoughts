@@ -1,4 +1,4 @@
-\begin{thebibliography}{7}
+\begin{thebibliography}{8}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -52,6 +52,12 @@ Microsoft, Mojan Javaheripi, and Sébastien Bubeck.
 \newblock {Phi-2: The Surprising Power of Small Language Models}, 2023.
 \newblock URL:
   \url{https://www.microsoft.com/en-us/research/blog/phi-2-the-surprising-power-of-small-language-models/}.
+
+\bibitem[Pandit(2023)]{pandit2023tree}
+Shrey Pandit.
+\newblock {Tree of Thought on GSM8K}.
+\newblock URL: \url{https://github.com/ShreyPandit/Tree-of-thought-on-GSM8K},
+  2023.
 
 \bibitem[{Queen's University Canada}()]{queensu_metacognition}
 {Queen's University Canada}.
