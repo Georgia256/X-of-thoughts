@@ -71,7 +71,7 @@
 In the paper under review, the `X-of-Thoughts' method is introduced. This is a prompting approach in which the most effective technique among CoT (Chain of Thought), PoT (Program of Thought), and EoT (Equation of Thought) is selected, implemented, and validated in an iterative process until an accurate solution is found. 
 The objective is to significantly enhance the capability of Large Language Models (LLMs) in solving mathematical problems, addressing a key aspect of human intelligence. The issue of LLM's limited proficiency in mathematics has been a prominent focus within the research community. However, most studies have concentrated on developing a single method, such as CoT, zero-shot prompting, or ToT. This singular focus is ripe for improvement, as each method has its limitations: CoT underperforms in computation, PoT struggles with effectively handling problems involving unknown variables, and so on. 
 An existing research strategy involves selecting the most appropriate method between CoT and PoT. However, this approach lacks the flexibility for dynamic method switching and lacks rigorous validation. The `X-of-Thoughts' method seeks to bridge this gap, offering a more versatile and robust solution for mathematical problem-solving using LLMs. 
-Our work aims to address both the reproduction of the original paper using Phi-2 and its extension.
+Our work aims to address both the reproduction of the original paper using Phi-2 and its extensions.
 
 
 % \subsection{Retrieval of style files}
@@ -271,18 +271,18 @@ Regarding the extension with the ToT prompting technique, the results without me
   Passive EoT \& ToT                        &0.5246                         &0.8143\\
   Assert EoT \& PoT \& ToT                  &0.5603                         &0.8302\\
   Assert PoT \& EoT \& ToT                  &\textbf{0.5883}                &0.8294\\
-  Plan \& PoT \& EoT                        &...                         &0.7293\\
-  Plan \& PoT \& ToT                        &...                         &0.7983\\
-  Plan Assert PE                            &\textbf{...}                &0.7991\\
-  Plan Passive XoT                          &...                         &0.8112\\
-  XoT main results                          &\underline{...}             &\underline{0.8362}\\
+  Plan \& PoT \& EoT                        &0.5246                         &0.7293\\
+  Plan \& PoT \& ToT                        &0.4625                         &0.7983\\
+  Plan Assert PE                            &\textbf{0.6255}                &0.7991\\
+  Plan Passive XoT                          &0.6310                         &0.8112\\
+  XoT main results                          &\underline{0.5739}             &\underline{0.8362}\\
   Majority Vote                             &\textbf{0.5762}                &0.8241\\
   \end{tabular}
   \end{center}
   \end{table}
 
 \begin{table}[t]
-  \caption{Results replacing CoT with ToT prompting technique, with ToT metacognitive evaluation.}
+  \caption{Results replacing CoT with ToT prompting technique, with ToT metacognitive evaluation and updated plan module.}
   \label{extension2-results-with-meta}
   \begin{center}
   \begin{tabular}{ll}
@@ -304,7 +304,8 @@ Regarding the extension with the ToT prompting technique, the results without me
       \label{fig:cm-metacognitive-tot}
     \end{figure}
 
-
+Compared to the original results with the Phi-2 model, the accuracy of the XoT framework is essentially the same, while the accuracy of some of the fixed orders of methods are slightly increased.
+When using the updated plan module and metacognitive evaluation, the results with ToT are significantly worse than those with CoT, mainly because of the noticeable discrepancy in the metacognitive evaluation accuracy. This shows that smaller LLMs don't have sufficient accuracy for more complex tasks such as metacognition. 
 
 \section{Discussion}
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.5.16)  26 FEB 2024 13:34
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.5.16)  26 FEB 2024 14:16
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -438,7 +438,16 @@ Package pdftex.def Info: graphs/cm_metacognitive_tot.png  used on input line 301
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[6 <./graphs/cm_merged.png>] [7 <./graphs/cm_metacognitive_cot.png>] [8 <./graphs/cm_metacognitive_tot.png>] (./main.bbl
+
+Underfull \vbox (badness 3612) has occurred while \output is active []
+
+ [6 <./graphs/cm_merged.png>]
+Underfull \vbox (badness 3148) has occurred while \output is active []
+
+ [7 <./graphs/cm_metacognitive_cot.png>]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [8 <./graphs/cm_metacognitive_tot.png>] (./main.bbl
 Underfull \hbox (badness 10000) in paragraph at lines 51--55
 []\T1/lmr/m/n/10 Microsoft, Mo-jan Java-heripi, and Sébastien Bubeck.  Phi-2: The Sur-pris-ing Power of
  []
@@ -449,22 +458,19 @@ Underfull \hbox (badness 10000) in paragraph at lines 51--55
  []
 
 ) [9] [10] [11] [12] [13] [14] (./main.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 3C5976582D1E989252A98D9DFB768583;2816.
  ) 
 Here is how much of TeX's memory you used:
  11117 strings out of 478268
  166810 string characters out of 5846347
- 498505 words of memory out of 5000000
+ 502115 words of memory out of 5000000
  29083 multiletter control sequences out of 15000+600000
  524312 words of font info for 66 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  61i,13n,75p,1328b,396s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}</usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmri10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmssbx10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on main.pdf (14 pages, 699892 bytes).
+Output written on main.pdf (14 pages, 700270 bytes).
 PDF statistics:
  258 PDF objects out of 1000 (max. 8388607)
  217 compressed objects within 3 object streams
