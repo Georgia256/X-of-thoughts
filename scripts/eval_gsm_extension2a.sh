@@ -1,5 +1,5 @@
-RANGE_START=$1
-RANGE_END=$2
+RANGE_START=0
+RANGE_END='end'
 TAG='phi'
 
 
