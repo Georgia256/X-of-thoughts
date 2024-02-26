@@ -8,7 +8,7 @@ from time import sleep
 
 import jsonlines
 
-from prompts.plan import PLAN_SYSTEM, PLAN
+from prompts.plan import PLAN_SYSTEM, PLAN, PLAN_SYSTEM_v2, PLAN_v2
 from prompts.cot_complex import COT_SYSTEM, COT
 from prompts.pot import POT_SYSTEM, POT
 from prompts.eot import EOT_SYSTEM, EOT
@@ -92,6 +92,20 @@ class Brain:
         """
         question = self.cache["inst/question"]
         chat_input = self.build_chat_input(PLAN_SYSTEM, PLAN.format(question=question))
+        response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
+        self.cache["plan"] = response
+
+        if self.debug:
+            print(f"=== inst i: {self.id} ===")
+            print(f"chat_input: {chat_input}")
+            print(f"response: {response}")
+    
+    def plan_v2(self):
+        """
+        Plan the reasoning method.
+        """
+        question = self.cache["inst/question"]
+        chat_input = self.build_chat_input(PLAN_SYSTEM_v2, PLAN_v2.format(question=question))
         response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
         self.cache["plan"] = response
 

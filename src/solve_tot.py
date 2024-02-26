@@ -14,7 +14,7 @@ from collections import Counter
 from dataclasses import asdict
 from tqdm import tqdm
 from utils import get_var_assign
-from brain_new import Brain_new
+from brain_tot import Brain_new
 
 os.environ["WANDB_START_METHOD"] = "thread"
 os.environ["WANDB_MODE"] = "offline"

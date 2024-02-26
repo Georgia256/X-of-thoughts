@@ -151,6 +151,8 @@ if __name__ == "__main__":
             brain.set_instance(inst_i)
             if method == "plan":
                 brain.plan()
+            elif method == "plan_v2":
+                brain.plan_v2()
             elif method == "cot":
                 brain.reason_cot()
             elif method == "pot":
