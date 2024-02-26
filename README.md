@@ -29,7 +29,7 @@ Run the following command to additionally generate the results for the metacogni
 bash scripts/run_extensions_gsm.sh 0 end
 ```
 
-This will produce 2 files in the `outputs/gsm` folder.
+This will produce 4 files in the `outputs/gsm` folder.
 
 
 ### Evaluate and Analyze
