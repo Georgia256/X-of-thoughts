@@ -174,7 +174,7 @@ In order to evaluate the extensions, additionally to the metrics mentioned in Se
 \begin{itemize}  
   \item \textbf{Metacognitive evaluation accuracy}: this metric shows the accuracy of the metacognitive evaluation module correctly classifying the solution as correct or incorrect.
   \item \textbf{Numeric results accuracy}: this metric shows the accuracy of the numeric results that the module gives as the correct solution to the problem.  
-  \item \textbf{Valid correction instances}: this metric shows, in the form of a fraction, the number of problem instances for which the LLM correctly gave the label `incorrect' and also gave the correct final numeric result.
+  \item \textbf{Valid correction instances}: this metric shows, in the form of a fraction, the number of problem instances for which the LLM correctly gave the label `incorrect' and also gave the correct final numeric result, over the total number of problems that the ToT module solved incorrectly.
 \end{itemize}
 
 The metrics for the extensions can be obtained by running the \texttt{eval\_gsm\_extension1.sh}, \texttt{eval\_gsm\_extension2a.sh} and \texttt{eval\_gsm\_extension2b.sh} scripts.
