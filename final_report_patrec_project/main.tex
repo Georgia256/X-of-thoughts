@@ -143,10 +143,12 @@ We used the free resources provided in Google Colab for this reproduction, and s
 
 Regarding the extension with metacognitive evaluation of the CoT method, and the updated plan module which contains rating all of the three methods for their suitability to be used for each specific problem, the calculations with the DeepSeek model were more computationally expensive. The free resources of Google Colab (T4 GPU) were also used for the extension. The code for the metacognitive evaluation was executed in `minibatches' of 10 samples. The metacognitive evaluation module needed 17 minutes for each minibatch. The updated plan module was executed in batches of 100 samples, where each batch needed approximately 1 hour. Therefore, the code for the extension needed 50.56 hours in total to be executed.
 
-Regarding the extension with testing the Tree-of-Thoughts prompting technique in the XoT framework, the running time for generating the ToT results was around 6 hours for each batch of 100 samples. Additionally, the metacognitive evaluation of the ToT results was around 17 minutes, using T4 GPU, for each minibatch, of 10 samples. We also used RTX-4090 GPU for 50 of these batches, to speed up the running process, which resulted in 5 minutes running time for each minibatch. Consequently, the code for the second extension needed around 105.4 hours in total to be executed.
+Regarding the extension with testing the Tree-of-Thoughts prompting technique in the XoT framework, the running time for generating the ToT results was around 6 hours for each batch of 100 samples. Additionally, the metacognitive evaluation of the ToT results was around 17 minutes, using T4 GPU, for each minibatch of 10 samples. We also used RTX-4090 GPU for 50 of these minibatches, in order to speed up the running process. This faster GPU cost \$0.47 per hour and led to 6 minutes running time for each minibatch. Consequently, the code for the second extension needed around 105.7 hours in total to be executed, and cost \$2.32.
 
 \section{Extensions}
 Considering the constraints and future research directions highlighted, we proceeded to expand upon the original publication. Specifically, inspired by the work of \citet{wang2023metacognitive}, which introduces the concept of metacognitive prompting, we integrated the methodology of metacognitive evaluation to appraise the generated outputs, and we incorporated the CoT method into the plan module, as in the original paper, the plan module is called upon to choose between the PoT and EoT methods, resulting in it never initiating with CoT.
+
+Furthermore, we explored whether the addition of another prompting method would improve the efficacy of the XoT framework. Specifically, in the work of \citet{yao2023tree}, it is concluded that the Tree-of-Thoughts prompting method gives in better results than CoT for math related tasks, even when using LLMs weaker than GPT-4. Consequently, we tested the accuracy of the framework when the CoT prompting method is substituted by ToT.
 
 \subsection{Metacognitive evaluation}
 Before proceeding to analyze this specific idea, we provide—for the sake of completeness—the definition of metacognition: Metacognition is the process of thinking about one's own thinking and learning \citep{queensu_metacognition}.
@@ -160,6 +162,10 @@ With this extension, we aim to utilize a method that will be more effective prim
 We incorporated the CoT method into the plan module, as in the original paper, the plan module is called upon to choose between the PoT and EoT methods, resulting in it never initiating with CoT. Given that with the use of Phi-2, among the methods CoT, PoT, EoT, the CoT method ranks second in accuracy (as shown in the `Results' section below), the ability to choose CoT in the plan module will likely increase the accuracy of XoT.
 
 We specifically instructed the LLM to rate the suitability of each method for solving each specific problem, with a number between 1 and 5. Then, the plan module multiplies these ratings with weights that correspond to the proportion of the different methods that the XoT framework chooses (as shown in the Figure \ref{fig:proportion}), taking into account both the overall success of each method and the LLM's judgment for each specific case. This guides the XoT framework to try to solve the given problem, with the order that is specified in the updated plan module. The specific prompt that was used can be found in the Appendix in Section \ref{appen}.
+
+\subsection{Incorporation of ToT into the XoT framework}
+
+Text here
 
 \section{Results}
 The Phi-2 model gives significantly different results than the ones presented in the paper, which were produced with the GPT-3.5 model.
@@ -219,7 +225,7 @@ The analytical results are shown in the Table \ref{original-results}, in the Fig
 
 
 \subsection{Results beyond the original paper}
-The results with implementing the additional experiment with the metacognitive evaluation and the updated plan module are shown in the table \ref{extension-results} and the Figure \ref{fig:cm-metacognitive}.
+The results with implementing the additional experiment with the metacognitive evaluation and the updated plan module are shown in the Table \ref{extension-results} and the Figure \ref{fig:cm-metacognitive}.
 
 \begin{table}[t]
   \caption{Results with adding the metacognitive evaluation and extending the plan module for all of the prompting methods.}
@@ -238,7 +244,7 @@ The results with implementing the additional experiment with the metacognitive e
 
   \begin{figure}[h]
     \begin{center}
-      \includegraphics[height=9cm]{graphs/cm_metacognitive.png}
+      \includegraphics[height=9cm]{graphs/cm_metacognitive_cot.png}
       \end{center}
       \caption{Confusion matrix for metacognitive evaluation of CoT reasoning.}
       \label{fig:cm-metacognitive}
@@ -247,6 +253,58 @@ The results with implementing the additional experiment with the metacognitive e
 Overall, a slight decrease in the accuracy is observed compared to the previous results. This further confirms the point that the plan module is not as effective when a smaller LLM, compared to the GPT-3.5 model, is used. If the plan module had more accurate results, given that the CoT method has the second higher accuracy score compared to the other prompting methods, the overall accuracy would have been increased. 
 
 Also, from the confusion matrices regarding the metacognitive evaluation for the CoT method, the LLM has many false positive instances compared to the active evaluation of the PoT and EoT methods, which contributes to the reduced efficiency of the overall framework.
+
+Regarding the extension with the ToT prompting technique, the results without metacognitive evaluation can be seen in Table \ref{extension2-results-without-meta}, and the results with metacognitive evaluation can be seen in the Table \ref{extension2-results-with-meta} and the Figure \ref{fig:cm-metacognitive-tot}.
+
+\begin{table}[t]
+  \caption{Results replacing CoT with ToT prompting technique, without ToT metacognitive evaluation.}
+  \label{extension2-results-without-meta}
+  \begin{center}
+  \begin{tabular}{lll}
+  \multicolumn{1}{c}{\bf ACCURACY METRICS}  &\multicolumn{1}{c}{\bf Phi-2}  &\multicolumn{1}{c}{\bf GPT-3.5-turbo}
+  \\ \hline \\
+  Assert PoT \& EoT                         &\textbf{0.6005}                &0.7794\\
+  Assert PoT \& ToT                         &0.5701                         &0.8180\\
+  Assert EoT \& PoT                         &\textbf{0.6346}                &0.8105\\
+  Assert EoT \& ToT                         &0.4390                         &0.8279\\
+  Passive PoT \& ToT                        &0.6657                         &0.7862\\
+  Passive EoT \& ToT                        &0.5246                         &0.8143\\
+  Assert EoT \& PoT \& ToT                  &0.5603                         &0.8302\\
+  Assert PoT \& EoT \& ToT                  &\textbf{0.5883}                &0.8294\\
+  Plan \& PoT \& EoT                        &...                         &0.7293\\
+  Plan \& PoT \& ToT                        &...                         &0.7983\\
+  Plan Assert PE                            &\textbf{...}                &0.7991\\
+  Plan Passive XoT                          &...                         &0.8112\\
+  XoT main results                          &\underline{...}             &\underline{0.8362}\\
+  Majority Vote                             &\textbf{0.5762}                &0.8241\\
+  \end{tabular}
+  \end{center}
+  \end{table}
+
+\begin{table}[t]
+  \caption{Results replacing CoT with ToT prompting technique, with ToT metacognitive evaluation.}
+  \label{extension2-results-with-meta}
+  \begin{center}
+  \begin{tabular}{ll}
+  \multicolumn{1}{c}{\bf EXTENSIONS METRICS}  &\multicolumn{1}{c}{\bf Phi-2 \& DeepSeek}
+  \\ \hline \\
+  Metacognitive evaluation accuracy        &0.5580\\
+  Numeric results accuracy                 &0.3632\\
+  Valid correction instances               &$67/838$\\
+  XoT main results                         &\underline{0.5572}\\
+  \end{tabular}
+  \end{center}
+  \end{table}
+
+  \begin{figure}[h]
+    \begin{center}
+      \includegraphics[height=9cm]{graphs/cm_metacognitive_tot.png}
+      \end{center}
+      \caption{Confusion matrix for metacognitive evaluation of ToT reasoning.}
+      \label{fig:cm-metacognitive-tot}
+    \end{figure}
+
+
 
 \section{Discussion}
 

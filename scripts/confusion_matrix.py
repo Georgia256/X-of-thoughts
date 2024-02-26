@@ -3,7 +3,8 @@ import seaborn as sns
 import numpy as np
 
 # True Positive, False Positive, True Negative, False Negative counts
-TP, FP, TN, FN = 409, 462, 382, 66
+# TP, FP, TN, FN = 409, 462, 382, 66
+TP, FP, TN, FN = 412, 514, 324, 69
 
 # Construct the confusion matrix
 confusion_mat = np.array([[TP, FP], [FN, TN]])
@@ -19,7 +20,8 @@ for i in range(2):
         plt.text(j+0.5, i+0.6, f'{percentages[i, j]:.2f}%', 
                  ha='center', va='center', color='black')
 
-plt.title('Confusion Matrix for metacognitive evaluation')
+# plt.title('Confusion Matrix for metacognitive evaluation for CoT')
+plt.title('Confusion Matrix for metacognitive evaluation for ToT')
 plt.ylabel('Actual label')
 plt.xlabel('Predicted label')
 plt.show()

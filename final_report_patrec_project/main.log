@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.5.16)  25 FEB 2024 23:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (TeX Live 2022) (preloaded format=pdflatex 2022.5.16)  26 FEB 2024 13:27
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -372,63 +372,47 @@ File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 126.
  (/usr/local/texlive/2022/texmf-dist/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [2] [3]
-LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 183.
+) [2] [3] [4]
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 189.
  (/usr/local/texlive/2022/texmf-dist/tex/latex/lm/ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 183.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 189.
  (/usr/local/texlive/2022/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 183.
+LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 189.
  (/usr/local/texlive/2022/texmf-dist/tex/latex/lm/omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
-LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 183.
+LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 189.
  (/usr/local/texlive/2022/texmf-dist/tex/latex/lm/omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 183.
+(Font)              <10> on input line 189.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 183.
+(Font)              <7> on input line 189.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 183.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 183.
+(Font)              <5> on input line 189.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 189.
  (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 183.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 189.
  (/usr/local/texlive/2022/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<graphs/graph1.png, id=116, 709.65125pt x 307.1475pt>
+<graphs/graph1.png, id=130, 709.65125pt x 307.1475pt>
 File: graphs/graph1.png Graphic file (type png)
 <use graphs/graph1.png>
-Package pdftex.def Info: graphs/graph1.png  used on input line 206.
+Package pdftex.def Info: graphs/graph1.png  used on input line 212.
 (pdftex.def)             Requested size: 460.17418pt x 199.16928pt.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<graphs/cm_merged.png, id=118, 1663.21375pt x 644.4075pt>
+<graphs/cm_merged.png, id=132, 1663.21375pt x 644.4075pt>
 File: graphs/cm_merged.png Graphic file (type png)
 <use graphs/cm_merged.png>
-Package pdftex.def Info: graphs/cm_merged.png  used on input line 214.
+Package pdftex.def Info: graphs/cm_merged.png  used on input line 220.
 (pdftex.def)             Requested size: 469.45271pt x 199.16446pt.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-Underfull \vbox (badness 5939) has occurred while \output is active []
-
- [4]
-<graphs/cm_metacognitive.png, id=129, 578.16pt x 433.62pt>
-File: graphs/cm_metacognitive.png Graphic file (type png)
-<use graphs/cm_metacognitive.png>
-Package pdftex.def Info: graphs/cm_metacognitive.png  used on input line 241.
-(pdftex.def)             Requested size: 341.44667pt x 256.0748pt.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -436,33 +420,51 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [5 <./graphs/graph1.png>] [6 <./graphs/cm_merged.png>] (./main.bbl [7 <./graphs/cm_metacognitive.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 24--27
+ [5 <./graphs/graph1.png>]
+<graphs/cm_metacognitive_cot.png, id=141, 578.16pt x 433.62pt>
+File: graphs/cm_metacognitive_cot.png Graphic file (type png)
+<use graphs/cm_metacognitive_cot.png>
+Package pdftex.def Info: graphs/cm_metacognitive_cot.png  used on input line 247.
+(pdftex.def)             Requested size: 341.44667pt x 256.0748pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<graphs/cm_metacognitive_tot.png, id=145, 578.16pt x 433.62pt>
+File: graphs/cm_metacognitive_tot.png Graphic file (type png)
+<use graphs/cm_metacognitive_tot.png>
+Package pdftex.def Info: graphs/cm_metacognitive_tot.png  used on input line 301.
+(pdftex.def)             Requested size: 341.44667pt x 256.0748pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[6 <./graphs/cm_merged.png>] [7 <./graphs/cm_metacognitive_cot.png>] [8 <./graphs/cm_metacognitive_tot.png>] (./main.bbl
+Underfull \hbox (badness 10000) in paragraph at lines 51--55
 []\T1/lmr/m/n/10 Microsoft, Mo-jan Java-heripi, and Sébastien Bubeck.  Phi-2: The Sur-pris-ing Power of
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 24--27
+Underfull \hbox (badness 10000) in paragraph at lines 51--55
 \T1/lmr/m/n/10 Small Lan-guage Mod-els, 2023.  URL: []$\T1/lmtt/m/n/10 https : / / www . microsoft . com / en-[]us / research / blog /
  []
 
-) [8] [9] [10] [11] [12] [13] (./main.aux)
+) [9] [10] [11] [12] [13] [14] (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: A2742E09FB8EDF396812384FDE13859A;2525.
+(rerunfilecheck)             Checksum: 3C5976582D1E989252A98D9DFB768583;2816.
  ) 
 Here is how much of TeX's memory you used:
- 11097 strings out of 478268
- 166319 string characters out of 5846347
- 495786 words of memory out of 5000000
- 29070 multiletter control sequences out of 15000+600000
+ 11117 strings out of 478268
+ 166810 string characters out of 5846347
+ 498323 words of memory out of 5000000
+ 29083 multiletter control sequences out of 15000+600000
  524312 words of font info for 66 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 61i,13n,75p,1328b,440s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 61i,13n,75p,1328b,396s stack positions out of 10000i,1000n,20000p,200000b,200000s
 {/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{/usr/local/texlive/2022/texmf-dist/fonts/enc/dvips/lm/lm-ts1.enc}</usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmbx10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmmi10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmr10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmri10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmssbx10.pfb></usr/local/texlive/2022/texmf-dist/fonts/type1/public/lm/lmtt10.pfb>
-Output written on main.pdf (13 pages, 672152 bytes).
+Output written on main.pdf (14 pages, 699879 bytes).
 PDF statistics:
- 237 PDF objects out of 1000 (max. 8388607)
- 200 compressed objects within 2 object streams
- 49 named destinations out of 1000 (max. 500000)
- 152 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 258 PDF objects out of 1000 (max. 8388607)
+ 217 compressed objects within 3 object streams
+ 55 named destinations out of 1000 (max. 500000)
+ 165 words of extra memory for PDF output out of 10000 (max. 10000000)
 
