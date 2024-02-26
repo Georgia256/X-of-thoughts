@@ -38,14 +38,17 @@ To evaluate and analyze the generated XoT results, the initial `analyze.py` is u
 ```
 bash scripts/eval_gsm.sh
 ```
+
 To evaluate the first extension (metacognitive evaluation of CoT and the updated plan module), the `analyze_extension1.py` is used. To run the script, use the command:
 ```
 bash scripts/eval_extension1_gsm.sh
 ```
+
 To evaluate the second extension (incorporation of the ToT prompting method) with the initial plan module and without metacognitive evaluation, the `analyze_extension2a.py` is used. To run the script, use the command:
 ```
 bash scripts/eval_extension2a_gsm.sh
 ```
+
 To evaluate the second extension (incorporation of the ToT prompting method) with metacognitive evaluation and the updated plan module, the `analyze_extension2b.py` is used. To run the script, use the command:
 ```
 bash scripts/eval_extension2b_gsm.sh
