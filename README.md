@@ -1,4 +1,4 @@
-# MLRC 2023 - Plan, Verify and Switch: Integrated Reasoning with Diverse X-of-Thoughts
+# Pattern Recognition Project - Plan, Verify and Switch: Integrated Reasoning with Diverse X-of-Thoughts
 
 Reproducibility study and extension of the work in the [paper](https://arxiv.org/pdf/2310.14628.pdf).
 Original code can be found at this [repository](https://github.com/tengxiaoliu/XoT).
