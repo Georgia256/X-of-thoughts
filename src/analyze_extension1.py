@@ -609,12 +609,13 @@ if __name__ == "__main__":
                 else:
                     fn += 1
         evalution_accuracy = (tp+tn)/data_len
+        false_instances = fp + tn
         logger.info(f"===== Metacognitive evaluation results =====")
     
         logger.info(f"TP: {tp}, FP: {fp}, FN: {fn}, TN: {tn}")
         logger.info(f"Evaluation Accuracy: {evalution_accuracy}")
         logger.info(f"Numeric result accuracy: {result_accuracy / data_len}")
-        logger.info(f"Corrected instances: {corrected_instances}")
+        logger.info(f"Corrected instances: {corrected_instances}/{false_instances}")
 
 
     logger.info(f"Save results at {log_path}")
