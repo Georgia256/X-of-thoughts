@@ -359,62 +359,7 @@ class Brain_new:
 
     ####
 
-    def think_meta_eval(self, method="cot"):
-        if method not in ["cot", "pot", "eot"]:
-            raise ValueError(f"Invalid method '{method}' passed to think_meta_eval")
-
-        question = self.cache["inst/question"]
-        pred_init = self.cache.get(f"reason/{method}/ans")
-        if pred_init is None:
-            raise ValueError(f"Prediction for method '{method}' not found in cache")
-        answer = self.cache[f"reason/{method}"]
-        chat_input = self.build_chat_input(
-            META_EVAL_SYSTEM,
-            META_EVAL.format(question=question, answer=answer),
-        )
-        response = get_chat_response(self.args, chat_input, self.api_key, self.ORG_ID)
-        self.cache[f"metacognitive_eval/{method}"] = response
-
-        if "the solution is correct" in response.lower():
-            pred = pred_init
-            self.cache[f"metacognitive_eval/{method}/ans"] = pred
-        elif "the solution is incorrect" in response.lower():
-            answer_format_flag = "Corrected solution:" in response
-            pred_str = (
-                response.split("Corrected solution:")[-1]
-                .strip(".")
-                .replace(",", "")
-                .strip()
-            )
-            try:
-                all_digit = re.findall(r"[-+]?\d*\.?\d+|\d+", pred_str)
-                if answer_format_flag:
-                    pred = all_digit[0]
-                else:
-                    pred = all_digit[-1]
-                pred = floatify_ans(pred)
-                if pred is not None and "%" in pred_str:
-                    pred = pred / 100
-            except Exception as e:
-                print(e)
-                print(pred_str)
-                pred = None
-            self.cache[f"metacognitive_eval/{method}/ans"] = pred
-        else:
-            pred = None
-            print(f"Warning: Unknown response from metacognitive eval: {response}")
-        score = 0.0
-        if pred is not None:
-            score = 1.0 if abs(pred - self.cache["inst/gold_answer"]) < 1e-3 else 0.0
-        self.cache[f"metacognitive_eval/{method}/score"] = score
-
-        if self.debug:
-            print(f"=== inst i: {self.id} ===")
-            print(f"chat_input: {chat_input}")
-            print(f"response: {response}")
-            print(f"score: {score}")
-            print(f"score: {self.cache.get(f'reason/{method}/score', 'N/A')}")
-
+    
     def think_meta_eval_deepseek(self, method="cot"):
         if method not in ["cot", "tot"]:
             raise ValueError(f"Invalid method '{method}' passed to think_meta_eval")
