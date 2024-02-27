@@ -165,7 +165,7 @@ We specifically instructed the LLM to rate the suitability of each method for so
 
 \subsection{Incorporation of ToT into the XoT framework}
 
-In order to incorporate the Tree-of-Thoughts method into the XoT framework, we needed to adapt the prompts for the GSM8K dataset. The prompts that were used are based on the work of \cite{pandit2023tree}, and they encourage the LLM to think about the solution of the problem in small steps. We instructed the LLM to solve the problem in 4 steps. After every step that the LLM generates, we prompt it to give 3 alternatives for the next step of the solution to the problem, thereby creating a tree of depth 4, where each node, except the leaf nodes, has 3 child nodes.
+In order to incorporate the Tree-of-Thoughts method into the XoT framework, we needed to adapt the prompts for the GSM8K dataset. The prompts that were used are based on the work of \cite{pandit2023tree}, and they encourage the LLM to think about the solution of the problem in small steps. We instructed the LLM to solve the problem in 4 steps at most. After every step that the LLM generates, we prompt it to give from 1 to 3 alternatives for the next step of the solution to the problem, thereby creating a tree of depth 3, where each node, except the leaf nodes, has 3 child nodes.
 
 Additionally, we tested, with the same prompts as in the previous extension, the metacognitive evaluation for the ToT module. Specifically, the module for ToT metacognitive evaluation evaluates the suitability of the ToT solution by examining only the highest scoring path in the tree, which also represents the solution selected by the ToT module.
 
