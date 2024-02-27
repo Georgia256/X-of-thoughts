@@ -343,135 +343,7 @@ if __name__ == "__main__":
     # ===== Plan =====
     
     if plan_data is not None:
-        """
-        plan_pot_eot_acc = 0
-        unknown_plan_cnt = 0
-        plan_pot_idx = []
-        plan_eot_idx = []
-        for i in range(data_len):
-            pot_score = pot_data[i]['reason/pot/score']
-            eot_score = eot_data[i]['reason/eot/score']
-            plan_method = plan_data[i]['plan']
 
-            if 'equations' in plan_method:
-                plan_pot_eot_acc += eot_score
-                plan_eot_idx.append(i)
-            elif 'Python' in plan_method:
-                plan_pot_eot_acc += pot_score
-                plan_pot_idx.append(i)
-            else:
-                plan_pot_eot_acc += pot_score
-                plan_pot_idx.append(i)
-                unknown_plan_cnt += 1
-        logger.info(f"===== Plan PoT & EoT =====")
-        logger.info(plan_pot_eot_acc / data_len)
-        logger.info(f"Unknown plan method: {unknown_plan_cnt}")
-
-        # ===== Plan pot_tot=====
-        plan_pot_tot_acc = 0
-        unknown_plan_cnt = 0
-        plan_pot_idx = []
-        plan_tot_idx = []
-        for i in range(data_len):
-            pot_score = pot_data[i]['reason/pot/score']
-            tot_score = tot_data[i]['reason/tot/score']
-            plan_method = plan_data[i]['plan']
-
-            if 'equations' in plan_method:
-                plan_pot_tot_acc += tot_score
-                plan_tot_idx.append(i)
-            elif 'Python' in plan_method:
-                plan_pot_tot_acc += pot_score
-                plan_pot_idx.append(i)
-            else:
-                plan_pot_tot_acc += pot_score
-                plan_pot_idx.append(i)
-                unknown_plan_cnt += 1
-        logger.info(f"===== Plan PoT & tot =====")
-        logger.info(plan_pot_tot_acc / data_len)
-        logger.info(f"Unknown plan method: {unknown_plan_cnt}")
-
-        plan_pot_cnt = len(plan_pot_idx)
-        plan_tot_cnt = len(plan_tot_idx)
-        logger.info(f"Count PoT: {plan_pot_cnt} ({plan_pot_cnt /data_len}), tot: {plan_tot_cnt} ({plan_tot_cnt / data_len})")
-
-
-
-        # ===== Plan + assert + pe =====
-        plan_assert_pe_acc = 0
-        unknown_plan_cnt = 0
-        for i in range(data_len):
-            pot_score = pot_data[i]['reason/pot/score']
-            eot_score = eot_data[i]['reason/eot/score']
-            plan_method = plan_data[i]['plan']
-
-            if 'equations' in plan_method:
-                if eot_assertion_data[i]['think/check/eot/flag']:
-                    plan_assert_pe_acc += eot_score
-                else:
-                    plan_assert_pe_acc += pot_score
-            elif 'Python' in plan_method:
-                if pot_assertion_data[i]['think/check/pot/flag']:
-                    plan_assert_pe_acc += pot_score
-                else:
-                    plan_assert_pe_acc += eot_score
-            else:
-                if pot_assertion_data[i]['think/check/pot/flag']:
-                    plan_assert_pe_acc += pot_score
-                else:
-                    plan_assert_pe_acc += eot_score
-
-                unknown_plan_cnt += 1
-        logger.info(f"===== Plan Assert PE =====")
-        logger.info(plan_assert_pe_acc / data_len)
-        logger.info(f"Unknown plan method: {unknown_plan_cnt}")
-
-        # ===== Plan + passive =====
-        plan_passive_acc = 0
-        unknown_plan_cnt = 0
-        steps_sum = 0
-        for i in range(data_len):
-            pot_score = pot_data[i]['reason/pot/score']
-            eot_score = eot_data[i]['reason/eot/score']
-            tot_score = tot_data[i]['reason/tot/score']
-            plan_method = plan_data[i]['plan']
-
-            if 'equations' in plan_method:
-                if eot_data[i]['reason/eot/ans'] is not None:
-                    plan_passive_acc += eot_score
-                    steps_sum += 1
-                elif pot_data[i]['reason/pot/ans'] is not None:
-                    plan_passive_acc += pot_score
-                    steps_sum += 2
-                else:
-                    plan_passive_acc += tot_score
-                    steps_sum += 3
-            elif 'Python' in plan_method:
-                if pot_data[i]['reason/pot/ans'] is not None:
-                    plan_passive_acc += pot_score
-                    steps_sum += 1
-                elif eot_data[i]['reason/eot/ans'] is not None:
-                    plan_passive_acc += eot_score
-                    steps_sum += 2
-                else:
-                    plan_passive_acc += tot_score
-                    steps_sum += 3
-            else:
-                if pot_data[i]['reason/pot/ans'] is not None:
-                    plan_passive_acc += pot_score
-                    steps_sum += 1
-                elif eot_data[i]['reason/eot/ans'] is not None:
-                    plan_passive_acc += eot_score
-                    steps_sum += 2
-                else:
-                    plan_passive_acc += tot_score
-                    steps_sum += 3
-                unknown_plan_cnt += 1
-        logger.info(f"===== Plan Passive XoT =====")
-        logger.info(plan_passive_acc / data_len)
-        logger.info(f"Avg Steps: {steps_sum / data_len}")
-        logger.info(f"Unknown plan method: {unknown_plan_cnt}")
-"""
         # ===== XoT main results for plan module with three methods: Plan + assert =====
         plan_assert_acc = 0
         unknown_plan_cnt = 0
@@ -599,7 +471,6 @@ if __name__ == "__main__":
                 else:
                     tn += 1
                     if meta_eval_data[i]['metacognitive_eval/tot/score'] == 1:
-                        print(i)
                         result_accuracy += 1
                         corrected_instances += 1            
             else:
