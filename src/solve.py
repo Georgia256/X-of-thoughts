@@ -146,7 +146,6 @@ if __name__ == "__main__":
         elif phase == "metacognitive_eval":
             brain.set_instance_check(inst_i)
             brain.think_meta_eval_deepseek(method)
-            #brain.think_meta_eval(method)
         else:
             brain.set_instance(inst_i)
             if method == "plan":
